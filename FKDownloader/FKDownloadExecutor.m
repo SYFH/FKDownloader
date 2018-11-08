@@ -38,7 +38,9 @@
                     downloadTask.statusBlock(weak);
                 }
                 [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidSuspendNotication object:nil];
-                // TODO: 根据配置判断是否需要自动开始
+                if ([FKDownloadManager manager].configure.isAutoStart) {
+                    [[FKDownloadManager manager] resume:downloadTask.url];
+                }
             } else {
                 // 取消
                 [downloadTask setValue:@(TaskStatusCancelld) forKey:@"status"];
@@ -57,7 +59,7 @@
                 }
             }
         } else {
-            // TODO: 暂停后重启 app, task.status 会标识为 Completed, 会报 "No such file or directory" 错误, 需矫正
+            // TODO: 暂停后重启 app, task.status 会标识为 Completed, 移动缓存文件会报 "No such file or directory" 错误, 需矫正
             if ([error.domain isEqualToString:NSPOSIXErrorDomain] && (error.code == 2)
                 && downloadTask.isHasResumeData) {
                 
@@ -99,7 +101,6 @@
 #pragma mark - NSURLSessionDownloadDelegate
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     
-    // TODO: 暂停后重启 app, task.status 会标识为 Completed, 需要矫正
     FKTask *task = [[FKDownloadManager manager] acquire:downloadTask.currentRequest.URL.absoluteString];
     if ([[FKDownloadManager manager].fileManager fileExistsAtPath:task.filePath]) {
         

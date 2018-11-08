@@ -229,18 +229,16 @@ static FKDownloadManager *_instance = nil;
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     FKTask *task = [self acquire:url];
-    if (!task) {
-        return;
-    }
+    if (!task) { return; }
+    if (task.status == TaskStatusCancelld) { return; }
     [task cancel];
 }
 
 - (void)suspend:(NSString *)url {
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
-    if (![self acquire:url]) {
-        return;
-    }
+    if (![self acquire:url]) { return; }
+    if ([self acquire:url].status == TaskStatusSuspend) { return; }
     
     FKTask *task = [self acquire:url];
     [task suspend];
@@ -249,9 +247,8 @@ static FKDownloadManager *_instance = nil;
 - (void)resume:(NSString *)url {
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
-    if (![self acquire:url]) {
-        return;
-    }
+    if (![self acquire:url]) { return; }
+    if ([self acquire:url].status == TaskStatusExecuting) { return; }
     
     FKTask *task = [self acquire:url];
     [task resume];
@@ -260,14 +257,10 @@ static FKDownloadManager *_instance = nil;
 - (void)remove:(NSString *)url {
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
-    if (![self acquire:url]) {
-        return;
-    }
+    if (![self acquire:url]) { return; }
     
     FKTask *task = [self acquire:url];
-    if (task.status == TaskStatusExecuting) {
-        [task cancel];
-    }
+    if (task.status == TaskStatusExecuting) { [task cancel]; }
     [task clear];
     [self.tasks removeObject:task];
     [self.tasksMap removeObjectForKey:[url SHA256]];

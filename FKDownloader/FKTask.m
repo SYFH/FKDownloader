@@ -54,13 +54,15 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
             
         case NSURLSessionTaskStateCanceling:
             // TODO: iOS 12/12.1 BUG: 后台下载异常停止, 状态码为 Cancelld, 需要识别是否有恢复数据, 继续下载
-            // TODO: 根据本地是否有恢复数据来判断是否继续下载
             self.status = TaskStatusCancelld;
             break;
             
         case NSURLSessionTaskStateCompleted:
-            // TODO: 暂停后重启 app, task.status 会标识为 Completed, 但 error 会带有恢复数据, 可矫正
-            self.status = TaskStatusFinish;
+            if (self.isHasResumeData) {
+                self.status = TaskStatusSuspend;
+            } else {
+                self.status = TaskStatusFinish;
+            }
             break;
     }
 }
