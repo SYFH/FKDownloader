@@ -256,7 +256,7 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
-// TODO: iOS 12/12.1 后台下载时, 进入前台会导致监听失败, 但暂停时, 进度获取正确, 说明下载还在执行, 目前重置监听无效
+// TODO: iOS 12/12.1 后台下载时, 进入后台会导致监听失败, 但暂停时, 进度获取正确, 说明下载还在执行, 目前重置监听无效, 需要尝试进入前台手动暂停继续
 - (void)resetProgressObserver {
     [self.tasks forEach:^(FKTask *task) {
         [task removeProgressObserver];

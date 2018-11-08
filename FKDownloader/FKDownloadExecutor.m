@@ -38,9 +38,6 @@
                     downloadTask.statusBlock(weak);
                 }
                 [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidSuspendNotication object:nil];
-                if ([FKDownloadManager manager].configure.isAutoStart) {
-                    [[FKDownloadManager manager] resume:downloadTask.url];
-                }
             } else {
                 // 取消
                 [downloadTask setValue:@(TaskStatusCancelld) forKey:@"status"];

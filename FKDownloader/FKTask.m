@@ -136,7 +136,8 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotication object:nil];
     
-    // !!!:  https://stackoverflow.com/questions/39346231/resume-nsurlsession-on-ios10/39347461#39347461
+    // !!!: https://stackoverflow.com/questions/39346231/resume-nsurlsession-on-ios10/39347461#39347461
+    // !!!: iOS 12/12.1 resumeData 与之前格式不一致, 之前保存的文件为 xml 格式, 新的格式需要 NSKeyedUnarchiver 解码后才可得到与之前一致的 NSDictionary, 但是不影响正常使用, 只有在进入后台暂停, 进入前台继续才会出现 unknow error.
     __weak typeof(self) weak = self;
     [self.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
         __strong typeof(weak) strong = weak;

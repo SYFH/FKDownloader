@@ -9,3 +9,5 @@
 #import "FKDownloadManager.h"
 #import "FKConfigure.h"
 #import "FKTask.h"
+#import "NSString+FKDownload.h"
+#import "NSArray+FKDownload.h"

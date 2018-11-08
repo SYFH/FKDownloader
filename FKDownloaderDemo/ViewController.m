@@ -29,7 +29,6 @@
     NSLog(@"%@", NSStringFromSelector(_cmd));
     
     NSString *url = @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg";
-    
     if ([[FKDownloadManager manager] acquire:url].status == TaskStatusExecuting) {
         [[FKDownloadManager manager] suspend:url];
         return;
