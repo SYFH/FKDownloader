@@ -99,62 +99,6 @@ static FKDownloadManager *_instance = nil;
 }
 
 
-#pragma mark - Restore
-- (void)restory {
-    [[FKDownloadManager manager] loadTasks];
-    [[FKDownloadManager manager].session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> *dataTasks, NSArray<NSURLSessionUploadTask *> *uploadTasks, NSArray<NSURLSessionDownloadTask *> *downloadTasks) {
-        
-        [self restory:downloadTasks];
-    }];
-}
-
-- (void)restory:(NSArray<NSURLSessionDownloadTask *> *)tasks {
-    [tasks forEach:^(NSURLSessionDownloadTask *downloadTask) {
-        NSString *url = downloadTask.currentRequest.URL.absoluteString;
-        FKTask *task = [self acquire:url];
-        if (task) {
-            [task restore:downloadTask];
-        }
-    }];
-}
-
-- (void)saveTasks {
-    NSArray<NSString *> *urls = [self.tasks map:^id(FKTask *obj) { return obj.url; }];
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:urls format:NSPropertyListBinaryFormat_v1_0 options:0 error:nil];
-    [data writeToFile:self.configure.restorePath atomically:YES];
-}
-
-- (void)loadTasks {
-    if ([self.fileManager fileExistsAtPath:self.configure.restorePath]) {
-        NSData *data = [NSData dataWithContentsOfFile:self.configure.restorePath options:NSDataReadingMappedIfSafe error:nil];
-        NSArray<NSString *> *tasks = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:nil];
-        [tasks forEach:^(NSString *url) {
-            if (![self acquire:url]) {
-                FKTask *task = [self addTask:url];
-                if (self.configure.isAutoStart) {
-                    [self executeTask:task];
-                }
-            }
-        }];
-    }
-}
-
-// TODO: iOS 12/12.1 后台下载时, 进入前台会导致监听失败, 但暂停时, 进度获取正确, 说明下载还在执行, 目前重置监听无效
-- (void)resetProgressObserver {
-    [self.tasks forEach:^(FKTask *task) {
-        [task removeProgressObserver];
-        [task addProgressObserver];
-    }];
-}
-
-
-#pragma mark - Filter
-- (NSArray<FKTask *> *)filterTaskWithStatus:(NSUInteger)status {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"status == %d", status];
-    return [self.tasks filteredArrayUsingPredicate:predicate];
-}
-
-
 #pragma mark - Operation
 - (FKTask *)acquire:(NSString *)url {
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
@@ -266,6 +210,65 @@ static FKDownloadManager *_instance = nil;
     [self.tasksMap removeObjectForKey:[url SHA256]];
     
     [self saveTasks];
+}
+
+
+#pragma mark - Progress
+
+
+#pragma mark - Restore
+- (void)restory {
+    [[FKDownloadManager manager] loadTasks];
+    [[FKDownloadManager manager].session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> *dataTasks, NSArray<NSURLSessionUploadTask *> *uploadTasks, NSArray<NSURLSessionDownloadTask *> *downloadTasks) {
+        
+        [self restory:downloadTasks];
+    }];
+}
+
+- (void)restory:(NSArray<NSURLSessionDownloadTask *> *)tasks {
+    [tasks forEach:^(NSURLSessionDownloadTask *downloadTask) {
+        NSString *url = downloadTask.currentRequest.URL.absoluteString;
+        FKTask *task = [self acquire:url];
+        if (task) {
+            [task restore:downloadTask];
+        }
+    }];
+}
+
+- (void)saveTasks {
+    NSArray<NSString *> *urls = [self.tasks map:^id(FKTask *obj) { return obj.url; }];
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:urls format:NSPropertyListBinaryFormat_v1_0 options:0 error:nil];
+    [data writeToFile:self.configure.restorePath atomically:YES];
+}
+
+- (void)loadTasks {
+    if ([self.fileManager fileExistsAtPath:self.configure.restorePath]) {
+        NSData *data = [NSData dataWithContentsOfFile:self.configure.restorePath options:NSDataReadingMappedIfSafe error:nil];
+        NSArray<NSString *> *tasks = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:nil];
+        [tasks forEach:^(NSString *url) {
+            if (![self acquire:url]) {
+                FKTask *task = [self addTask:url];
+                if (self.configure.isAutoStart) {
+                    [self executeTask:task];
+                }
+            }
+        }];
+    }
+}
+
+// TODO: iOS 12/12.1 后台下载时, 进入前台会导致监听失败, 但暂停时, 进度获取正确, 说明下载还在执行, 目前重置监听无效
+- (void)resetProgressObserver {
+    [self.tasks forEach:^(FKTask *task) {
+        [task removeProgressObserver];
+        [task addProgressObserver];
+    }];
+}
+
+
+#pragma mark - Filter
+- (NSArray<FKTask *> *)filterTaskWithStatus:(NSUInteger)status {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"status == %d", status];
+    return [self.tasks filteredArrayUsingPredicate:predicate];
 }
 
 
