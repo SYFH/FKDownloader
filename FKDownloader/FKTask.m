@@ -29,8 +29,8 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 @property (nonatomic, strong) NSProgress  *progress;
 @property (nonatomic, strong) NSData      *resumeData;
 
-@property (nonatomic, assign) NSTimeInterval    prevReceiveDate;
-@property (nonatomic, strong) NSString          *speed;
+@property (nonatomic, strong) NSNumber    *estimatedTimeRemaining;
+@property (nonatomic, strong) NSNumber    *bytesPerSecondSpeed;
 
 @end
 
@@ -48,7 +48,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
             break;
             
         case NSURLSessionTaskStateSuspended:
-            // !!!: 根据配置判断是否需要自动开始任务, 目前看不需要, 后台任务没有暂停状态
+            // !!!: 后台任务没有暂停状态
             self.status = TaskStatusSuspend;
             break;
             
@@ -59,7 +59,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
             break;
             
         case NSURLSessionTaskStateCompleted:
-            // TODO: 暂停后重启 app, task.status 会标识为 Completed, 需要矫正
+            // TODO: 暂停后重启 app, task.status 会标识为 Completed, 但 error 会带有恢复数据, 可矫正
             self.status = TaskStatusFinish;
             break;
     }
@@ -77,7 +77,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
     
     [self addProgressObserver];
-    self.speed = [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:0 countStyle:NSByteCountFormatterCountStyleBinary]];
+    self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     
     if ([self.delegate respondsToSelector:@selector(downloader:willExecuteTask:)]) {
         [self.delegate downloader:self.manager willExecuteTask:self];
@@ -137,6 +137,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     [self.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
         __strong typeof(weak) strong = weak;
         strong.resumeData = resumeData;
+        self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     }];
 }
 
@@ -161,6 +162,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillCancelldNotication object:nil];
     
     [self.downloadTask cancel];
+    self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
 }
 
 - (void)sendProgressInfo {
@@ -249,12 +251,10 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     
     if ([object isKindOfClass:[self.downloadTask class]]) {
         if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesReceived))]) {
-            NSTimeInterval now = [NSDate date].timeIntervalSince1970;
-            NSTimeInterval time = now - self.prevReceiveDate;
-            int64_t receivCount = self.downloadTask.countOfBytesReceived - self.progress.completedUnitCount;
-            double speed = receivCount / time;
-            self.speed = [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:(long long)speed countStyle:NSByteCountFormatterCountStyleBinary]];
-            self.prevReceiveDate = now;
+            int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.progress.completedUnitCount;
+            self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:receivedCount];
+            NSUInteger remaining = self.progress.totalUnitCount / (receivedCount?:1);
+            self.estimatedTimeRemaining = [NSNumber numberWithLongLong:remaining];
             
             self.progress.completedUnitCount = self.downloadTask.countOfBytesReceived;
         }

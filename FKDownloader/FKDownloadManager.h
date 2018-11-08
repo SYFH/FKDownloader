@@ -30,6 +30,10 @@ __attribute__((objc_subclassing_restricted))
 - (void)remove:(NSString *)url;
 
 
+#pragma mark - Progress
+// TODO: 可添加总进度和总预期时间
+
+
 #pragma mark - Restore
 - (void)restory;
 - (void)restory:(NSArray<NSURLSessionDownloadTask *> *)tasks;

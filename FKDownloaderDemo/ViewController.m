@@ -56,7 +56,7 @@
 }
 
 - (void)downloader:(FKDownloadManager *)downloader progressingTask:(FKTask *)task {
-    NSLog(@"进度: %.6f, %@/%@, %@", task.progress.fractionCompleted, [NSByteCountFormatter stringFromByteCount:task.progress.completedUnitCount countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:task.progress.totalUnitCount countStyle:NSByteCountFormatterCountStyleFile], task.speed);
+    NSLog(@"进度: %.6f, %@/%@, %@, %@", task.progress.fractionCompleted, [NSByteCountFormatter stringFromByteCount:task.progress.completedUnitCount countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:task.progress.totalUnitCount countStyle:NSByteCountFormatterCountStyleFile], task.bytesPerSecondSpeed, task.estimatedTimeRemaining);
 }
 
 - (void)downloader:(FKDownloadManager *)downloader didFinishTask:(FKTask *)task {

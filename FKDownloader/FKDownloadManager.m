@@ -131,6 +131,7 @@ static FKDownloadManager *_instance = nil;
         for (NSString *url in tasks) {
             if (![self acquire:url]) {
                 [self addTask:url];
+                // !!!: 根据配置判断是否需要自动开始任务
             }
         }
     }
