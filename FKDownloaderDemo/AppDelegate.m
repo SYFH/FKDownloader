@@ -19,6 +19,11 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
+    FKConfigure *config = [FKConfigure defaultConfigure];
+    config.isBackgroudExecute = YES;
+    config.isAutoClearTask = YES;
+    config.isAutoStart = NO;
+    [FKDownloadManager manager].configure = config;
     [[FKDownloadManager manager] restory];
     
     return YES;

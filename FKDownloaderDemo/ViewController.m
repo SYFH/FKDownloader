@@ -29,10 +29,6 @@
     NSLog(@"%@", NSStringFromSelector(_cmd));
     
     NSString *url = @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg";
-    FKConfigure *config = [FKConfigure defaultConfigure];
-    config.isBackgroudExecute = YES;
-    config.isAutoClearTask = YES;
-    [FKDownloadManager manager].configure = config;
     
     if ([[FKDownloadManager manager] acquire:url].status == TaskStatusExecuting) {
         [[FKDownloadManager manager] suspend:url];

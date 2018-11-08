@@ -130,8 +130,10 @@ static FKDownloadManager *_instance = nil;
         NSArray<NSString *> *tasks = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:nil];
         for (NSString *url in tasks) {
             if (![self acquire:url]) {
-                [self addTask:url];
-                // !!!: 根据配置判断是否需要自动开始任务
+                FKTask *task = [self addTask:url];
+                if (self.configure.isAutoStart) {
+                    [self executeTask:task];
+                }
             }
         }
     }
