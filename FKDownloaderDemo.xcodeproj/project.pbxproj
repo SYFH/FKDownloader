@@ -1,0 +1,388 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3D35875E2192BD43000BD0E1 /* NSArray+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */; };
+		3DD308B0218BEDBA00BDF330 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308AF218BEDBA00BDF330 /* AppDelegate.m */; };
+		3DD308B3218BEDBA00BDF330 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308B2218BEDBA00BDF330 /* ViewController.m */; };
+		3DD308B6218BEDBA00BDF330 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3DD308B4218BEDBA00BDF330 /* Main.storyboard */; };
+		3DD308B8218BEDBB00BDF330 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DD308B7218BEDBB00BDF330 /* Assets.xcassets */; };
+		3DD308BB218BEDBB00BDF330 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3DD308B9218BEDBB00BDF330 /* LaunchScreen.storyboard */; };
+		3DD308BE218BEDBB00BDF330 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308BD218BEDBB00BDF330 /* main.m */; };
+		3DD308CE218BEE3300BDF330 /* FKConfigure.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308C7218BEE3300BDF330 /* FKConfigure.m */; };
+		3DD308CF218BEE3300BDF330 /* FKDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308CC218BEE3300BDF330 /* FKDownloadManager.m */; };
+		3DD308D0218BEE3300BDF330 /* FKTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308CD218BEE3300BDF330 /* FKTask.m */; };
+		3DD308D3218C403C00BDF330 /* FKDownloadExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308D2218C403C00BDF330 /* FKDownloadExecutor.m */; };
+		3DD308F8218C4E8D00BDF330 /* NSString+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308F7218C4E8D00BDF330 /* NSString+FKDownload.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3D35875C2192BD43000BD0E1 /* NSArray+FKDownload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+FKDownload.h"; sourceTree = "<group>"; };
+		3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+FKDownload.m"; sourceTree = "<group>"; };
+		3DD308AB218BEDBA00BDF330 /* FKDownloaderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKDownloaderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3DD308AE218BEDBA00BDF330 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		3DD308AF218BEDBA00BDF330 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		3DD308B1218BEDBA00BDF330 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		3DD308B2218BEDBA00BDF330 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		3DD308B5218BEDBA00BDF330 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3DD308B7218BEDBB00BDF330 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3DD308BA218BEDBB00BDF330 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3DD308BC218BEDBB00BDF330 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3DD308BD218BEDBB00BDF330 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		3DD308C7218BEE3300BDF330 /* FKConfigure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FKConfigure.m; sourceTree = "<group>"; };
+		3DD308C8218BEE3300BDF330 /* FKTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FKTask.h; sourceTree = "<group>"; };
+		3DD308C9218BEE3300BDF330 /* FKDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FKDownloadManager.h; sourceTree = "<group>"; };
+		3DD308CA218BEE3300BDF330 /* FKDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FKDownloader.h; sourceTree = "<group>"; };
+		3DD308CB218BEE3300BDF330 /* FKConfigure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FKConfigure.h; sourceTree = "<group>"; };
+		3DD308CC218BEE3300BDF330 /* FKDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FKDownloadManager.m; sourceTree = "<group>"; };
+		3DD308CD218BEE3300BDF330 /* FKTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FKTask.m; sourceTree = "<group>"; };
+		3DD308D1218C403C00BDF330 /* FKDownloadExecutor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKDownloadExecutor.h; sourceTree = "<group>"; };
+		3DD308D2218C403C00BDF330 /* FKDownloadExecutor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKDownloadExecutor.m; sourceTree = "<group>"; };
+		3DD308F6218C4E8D00BDF330 /* NSString+FKDownload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+FKDownload.h"; sourceTree = "<group>"; };
+		3DD308F7218C4E8D00BDF330 /* NSString+FKDownload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+FKDownload.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3DD308A8218BEDBA00BDF330 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3DD308A2218BEDBA00BDF330 = {
+			isa = PBXGroup;
+			children = (
+				3DD308C6218BEE3300BDF330 /* FKDownloader */,
+				3DD308AD218BEDBA00BDF330 /* FKDownloaderDemo */,
+				3DD308AC218BEDBA00BDF330 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3DD308AC218BEDBA00BDF330 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3DD308AB218BEDBA00BDF330 /* FKDownloaderDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3DD308AD218BEDBA00BDF330 /* FKDownloaderDemo */ = {
+			isa = PBXGroup;
+			children = (
+				3DD308AE218BEDBA00BDF330 /* AppDelegate.h */,
+				3DD308AF218BEDBA00BDF330 /* AppDelegate.m */,
+				3DD308B1218BEDBA00BDF330 /* ViewController.h */,
+				3DD308B2218BEDBA00BDF330 /* ViewController.m */,
+				3DD308B4218BEDBA00BDF330 /* Main.storyboard */,
+				3DD308B7218BEDBB00BDF330 /* Assets.xcassets */,
+				3DD308B9218BEDBB00BDF330 /* LaunchScreen.storyboard */,
+				3DD308BC218BEDBB00BDF330 /* Info.plist */,
+				3DD308BD218BEDBB00BDF330 /* main.m */,
+			);
+			path = FKDownloaderDemo;
+			sourceTree = "<group>";
+		};
+		3DD308C6218BEE3300BDF330 /* FKDownloader */ = {
+			isa = PBXGroup;
+			children = (
+				3DD308CA218BEE3300BDF330 /* FKDownloader.h */,
+				3DD308CB218BEE3300BDF330 /* FKConfigure.h */,
+				3DD308C7218BEE3300BDF330 /* FKConfigure.m */,
+				3DD308C9218BEE3300BDF330 /* FKDownloadManager.h */,
+				3DD308CC218BEE3300BDF330 /* FKDownloadManager.m */,
+				3DD308D1218C403C00BDF330 /* FKDownloadExecutor.h */,
+				3DD308D2218C403C00BDF330 /* FKDownloadExecutor.m */,
+				3DD308C8218BEE3300BDF330 /* FKTask.h */,
+				3DD308CD218BEE3300BDF330 /* FKTask.m */,
+				3DD308F6218C4E8D00BDF330 /* NSString+FKDownload.h */,
+				3DD308F7218C4E8D00BDF330 /* NSString+FKDownload.m */,
+				3D35875C2192BD43000BD0E1 /* NSArray+FKDownload.h */,
+				3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */,
+			);
+			path = FKDownloader;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3DD308AA218BEDBA00BDF330 /* FKDownloaderDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3DD308C1218BEDBB00BDF330 /* Build configuration list for PBXNativeTarget "FKDownloaderDemo" */;
+			buildPhases = (
+				3DD308A7218BEDBA00BDF330 /* Sources */,
+				3DD308A8218BEDBA00BDF330 /* Frameworks */,
+				3DD308A9218BEDBA00BDF330 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FKDownloaderDemo;
+			productName = FKDownloaderDemo;
+			productReference = 3DD308AB218BEDBA00BDF330 /* FKDownloaderDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3DD308A3218BEDBA00BDF330 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0940;
+				ORGANIZATIONNAME = Norld;
+				TargetAttributes = {
+					3DD308AA218BEDBA00BDF330 = {
+						CreatedOnToolsVersion = 9.4.1;
+					};
+				};
+			};
+			buildConfigurationList = 3DD308A6218BEDBA00BDF330 /* Build configuration list for PBXProject "FKDownloaderDemo" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3DD308A2218BEDBA00BDF330;
+			productRefGroup = 3DD308AC218BEDBA00BDF330 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3DD308AA218BEDBA00BDF330 /* FKDownloaderDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3DD308A9218BEDBA00BDF330 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DD308BB218BEDBB00BDF330 /* LaunchScreen.storyboard in Resources */,
+				3DD308B8218BEDBB00BDF330 /* Assets.xcassets in Resources */,
+				3DD308B6218BEDBA00BDF330 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3DD308A7218BEDBA00BDF330 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DD308B3218BEDBA00BDF330 /* ViewController.m in Sources */,
+				3DD308D0218BEE3300BDF330 /* FKTask.m in Sources */,
+				3DD308BE218BEDBB00BDF330 /* main.m in Sources */,
+				3DD308CF218BEE3300BDF330 /* FKDownloadManager.m in Sources */,
+				3DD308F8218C4E8D00BDF330 /* NSString+FKDownload.m in Sources */,
+				3DD308D3218C403C00BDF330 /* FKDownloadExecutor.m in Sources */,
+				3DD308B0218BEDBA00BDF330 /* AppDelegate.m in Sources */,
+				3DD308CE218BEE3300BDF330 /* FKConfigure.m in Sources */,
+				3D35875E2192BD43000BD0E1 /* NSArray+FKDownload.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		3DD308B4218BEDBA00BDF330 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3DD308B5218BEDBA00BDF330 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		3DD308B9218BEDBB00BDF330 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3DD308BA218BEDBB00BDF330 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3DD308BF218BEDBB00BDF330 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		3DD308C0218BEDBB00BDF330 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3DD308C2218BEDBB00BDF330 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YBE8S6568K;
+				INFOPLIST_FILE = FKDownloaderDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.FKDownloaderDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3DD308C3218BEDBB00BDF330 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YBE8S6568K;
+				INFOPLIST_FILE = FKDownloaderDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.FKDownloaderDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3DD308A6218BEDBA00BDF330 /* Build configuration list for PBXProject "FKDownloaderDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3DD308BF218BEDBB00BDF330 /* Debug */,
+				3DD308C0218BEDBB00BDF330 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3DD308C1218BEDBB00BDF330 /* Build configuration list for PBXNativeTarget "FKDownloaderDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3DD308C2218BEDBB00BDF330 /* Debug */,
+				3DD308C3218BEDBB00BDF330 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3DD308A3218BEDBA00BDF330 /* Project object */;
+}
