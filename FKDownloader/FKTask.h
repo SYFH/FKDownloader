@@ -61,6 +61,7 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 @property (nonatomic, strong, readonly) NSProgress  *progress;
 @property (nonatomic, strong, readonly) NSData      *resumeData;
 @property (nonatomic, strong) NSError               *error;
+@property (nonatomic, strong, readonly) NSString    *speed;
 
 @property (nonatomic, copy  ) FKProgress            progressBlock;
 @property (nonatomic, copy  ) FKStatus              statusBlock;

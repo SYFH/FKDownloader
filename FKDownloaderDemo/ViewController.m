@@ -20,6 +20,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     NSLog(@"%@", [FKDownloadManager manager].tasks);
+    
     // 进入界面后初始化代理, 以防止重启 app 后无法获取进度与状态
     [[FKDownloadManager manager] acquire:@"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg"].delegate = self;
 }
@@ -55,7 +56,7 @@
 }
 
 - (void)downloader:(FKDownloadManager *)downloader progressingTask:(FKTask *)task {
-    NSLog(@"进度: %.6f, %@/%@", task.progress.fractionCompleted, [NSByteCountFormatter stringFromByteCount:task.progress.completedUnitCount countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:task.progress.totalUnitCount countStyle:NSByteCountFormatterCountStyleFile]);
+    NSLog(@"进度: %.6f, %@/%@, %@", task.progress.fractionCompleted, [NSByteCountFormatter stringFromByteCount:task.progress.completedUnitCount countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:task.progress.totalUnitCount countStyle:NSByteCountFormatterCountStyleFile], task.speed);
 }
 
 - (void)downloader:(FKDownloadManager *)downloader didFinishTask:(FKTask *)task {

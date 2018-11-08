@@ -29,6 +29,9 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 @property (nonatomic, strong) NSProgress  *progress;
 @property (nonatomic, strong) NSData      *resumeData;
 
+@property (nonatomic, assign) NSTimeInterval    prevReceiveDate;
+@property (nonatomic, strong) NSString          *speed;
+
 @end
 
 @implementation FKTask
@@ -74,6 +77,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
     
     [self addProgressObserver];
+    self.speed = [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:0 countStyle:NSByteCountFormatterCountStyleBinary]];
     
     if ([self.delegate respondsToSelector:@selector(downloader:willExecuteTask:)]) {
         [self.delegate downloader:self.manager willExecuteTask:self];
@@ -245,6 +249,13 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     
     if ([object isKindOfClass:[self.downloadTask class]]) {
         if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesReceived))]) {
+            NSTimeInterval now = [NSDate date].timeIntervalSince1970;
+            NSTimeInterval time = now - self.prevReceiveDate;
+            int64_t receivCount = self.downloadTask.countOfBytesReceived - self.progress.completedUnitCount;
+            double speed = receivCount / time;
+            self.speed = [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:(long long)speed countStyle:NSByteCountFormatterCountStyleBinary]];
+            self.prevReceiveDate = now;
+            
             self.progress.completedUnitCount = self.downloadTask.countOfBytesReceived;
         }
         if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))]) {
