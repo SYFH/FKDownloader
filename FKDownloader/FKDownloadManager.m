@@ -164,7 +164,13 @@ static FKDownloadManager *_instance = nil;
     FKTask *task = [[FKTask alloc] init];
     task.url = url;
     task.manager = self;
-    [task setValue:@(TaskStatusNone) forKey:@"status"];
+    if (task.isHasResumeData) {
+        [task setValue:@(TaskStatusSuspend) forKey:@"status"];
+    } else if (task.isFinish) {
+        [task setValue:@(TaskStatusFinish) forKey:@"status"];
+    } else {
+        [task setValue:@(TaskStatusNone) forKey:@"status"];
+    }
     [self.tasks addObject:task];
     self.tasksMap[task.identifier] = task;
     return task;

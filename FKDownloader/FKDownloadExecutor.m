@@ -26,7 +26,7 @@
         if (error.code == NSURLErrorCancelled) {
             NSData *resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData];
             if (resumeData) {
-                // 取消带恢复数据
+                // 取消, 带恢复数据
                 [resumeData writeToFile:[downloadTask resumeFilePath] atomically:YES];
                 [downloadTask setValue:@(TaskStatusSuspend) forKey:@"status"];
                 
@@ -38,6 +38,7 @@
                     downloadTask.statusBlock(weak);
                 }
                 [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidSuspendNotication object:nil];
+                // TODO: 根据配置判断是否需要自动开始
             } else {
                 // 取消
                 [downloadTask setValue:@(TaskStatusCancelld) forKey:@"status"];

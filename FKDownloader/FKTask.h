@@ -84,5 +84,6 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 - (NSString *)filePath;
 - (NSString *)resumeFilePath;
 - (BOOL)isHasResumeData;
+- (BOOL)isFinish;
 
 @end

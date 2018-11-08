@@ -39,14 +39,13 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     self.downloadTask = task;
     [self addProgressObserver];
     
-    // TODO: 暂停后重启 app, task.status 会标识为 Completed, 需要矫正
     switch (task.state) {
         case NSURLSessionTaskStateRunning:
             self.status = TaskStatusExecuting;
             break;
             
         case NSURLSessionTaskStateSuspended:
-            // TODO: 根据配置判断是否需要自动开始任务
+            // !!!: 根据配置判断是否需要自动开始任务, 目前看不需要, 后台任务没有暂停状态
             self.status = TaskStatusSuspend;
             break;
             
@@ -57,6 +56,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
             break;
             
         case NSURLSessionTaskStateCompleted:
+            // TODO: 暂停后重启 app, task.status 会标识为 Completed, 需要矫正
             self.status = TaskStatusFinish;
             break;
     }
@@ -67,8 +67,8 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
     if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
         [self removeProgressObserver];
-        // TODO: 使用过 resumeData 后, 需删除
         self.downloadTask = [self.manager.session downloadTaskWithResumeData:[self resumeData]];
+        [self clearResumeData];
     } else {
         self.downloadTask = [self.manager.session downloadTaskWithRequest:request];
     }
@@ -101,14 +101,12 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 }
 
 - (void)execute {
-    if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
-        [self removeProgressObserver];
-        // TODO: 使用过 resumeData 后, 需删除
-        self.downloadTask = [self.manager.session downloadTaskWithResumeData:[self resumeData]];
-        [self addProgressObserver];
+    if (self.isHasResumeData) {
+        [self resume];
+    } else {
+        [self.downloadTask resume];
+        self.status = TaskStatusExecuting;
     }
-    [self.downloadTask resume];
-    self.status = TaskStatusExecuting;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didExecuteTask:)]) {
         [self.delegate downloader:self.manager didExecuteTask:self];
@@ -130,6 +128,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotication object:nil];
     
+    // TODO: iOS 10.2 系统生成的 resumeData 数据异常, 需要修正
     __weak typeof(self) weak = self;
     [self.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
         __strong typeof(weak) strong = weak;
@@ -137,11 +136,11 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }];
 }
 
-// TODO: 使用过 resumeData 后, 需删除
 - (void)resume {
     self.status = TaskStatusResuming;
     [self removeProgressObserver];
     self.downloadTask = [self.manager.session downloadTaskWithResumeData:self.resumeData];
+    [self clearResumeData];
     [self addProgressObserver];
     [self.downloadTask resume];
     self.status = TaskStatusExecuting;
@@ -185,51 +184,56 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     return [self.manager.fileManager fileExistsAtPath:[self resumeFilePath]];
 }
 
+- (BOOL)isFinish {
+    return [self.manager.fileManager fileExistsAtPath:[self filePath]];
+}
+
 - (void)clear {
     [self removeProgressObserver];
+    [self clearResumeData];
 }
 
 - (NSString *)statusDescription:(TaskStatus)status {
     NSString *description = @"";
     switch (status) {
         case TaskStatusNone:
-            description = @"已加入下载列表";
+            description = @"TaskStatusNone";
             break;
             
         case TaskStatusPrepare:
-            description = @"预处理";
+            description = @"TaskStatusPrepare";
             break;
             
         case TaskStatusIdle:
-            description = @"等待下载";
+            description = @"TaskStatusIdle";
             break;
             
         case TaskStatusExecuting:
-            description = @"下载中";
+            description = @"TaskStatusExecuting";
             break;
             
         case TaskStatusFinish:
-            description = @"下载完成";
+            description = @"TaskStatusFinish";
             break;
             
         case TaskStatusSuspend:
-            description = @"已暂停";
+            description = @"TaskStatusSuspend";
             break;
             
         case TaskStatusResuming:
-            description = @"恢复中";
+            description = @"TaskStatusResuming";
             break;
             
         case TaskStatusChecking:
-            description = @"校验中";
+            description = @"TaskStatusChecking";
             break;
             
         case TaskStatusCancelld:
-            description = @"已取消";
+            description = @"TaskStatusCancelld";
             break;
             
         case TaskStatusUnknowError:
-            description = @"未知错误";
+            description = @"TaskStatusUnknowError";
             break;
     }
     return description;
@@ -252,7 +256,16 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 
 
 #pragma mark - Private Method
+- (void)clearResumeData {
+    self.resumeData = nil;
+    if (self.isHasResumeData) {
+        [self.manager.fileManager removeItemAtPath:[self resumeFilePath] error:nil];
+    }
+}
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p> <URL: %@, status: %@>", NSStringFromClass([self class]), &self, self.url, [self statusDescription:self.status]];
+}
 
 
 #pragma mark - Getter/Setter
