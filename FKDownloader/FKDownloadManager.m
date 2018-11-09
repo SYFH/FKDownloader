@@ -257,6 +257,8 @@ static FKDownloadManager *_instance = nil;
 }
 
 // TODO: iOS 12/12.1 后台下载时, 进入后台会导致监听失败, 但暂停时, 进度获取正确, 说明下载还在执行, 目前重置监听无效, 需要尝试进入前台手动暂停继续
+// TODO: 目前所有尝试都失效, 可能需要针对性判断, 使用 NSTimer 监听进度
+// TODO: 问题根源在于 countOfBytesReceived/countOfBytesExpectedToReceive 没有改变, 导致代理和 KVO 失效, 需要寻找新的方法来获取进度
 - (void)resetProgressObserver {
     [self.tasks forEach:^(FKTask *task) {
         [task removeProgressObserver];

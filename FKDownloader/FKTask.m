@@ -54,7 +54,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
             break;
             
         case NSURLSessionTaskStateCanceling:
-            // TODO: iOS 12/12.1 BUG: 后台下载异常停止, 状态码为 Cancelld, 需要识别是否有恢复数据, 继续下载
+            // !!!: iOS 12/12.1, 机型 8 以下.  BUG: 完全退出 app, 后台下载异常停止, 状态码为 Cancelld, 需要识别是否有恢复数据, 继续下载
             self.status = TaskStatusCancelld;
             break;
             
