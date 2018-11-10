@@ -23,6 +23,12 @@
     
     // 进入界面后初始化代理, 以防止重启 app 后无法获取进度与状态
     [[FKDownloadManager manager] acquire:@"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg"].delegate = self;
+    
+    NSError *error;
+    [[FKDownloadManager manager].fileManager removeItemAtPath:[[FKDownloadManager manager].configure.resumePath stringByAppendingPathComponent:@"dd.gds"] error:&error];
+    if (error) {
+        NSLog(@"%@", error);
+    }
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -77,7 +83,5 @@
 - (void)downloader:(FKDownloadManager *)downloader errorTask:(FKTask *)task {
     NSLog(@"执行出错: %@", task.error);
 }
-
-
 
 @end

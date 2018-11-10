@@ -12,6 +12,20 @@
 #import "FKDownloadExecutor.h"
 #import "NSString+FKDownload.h"
 #import "NSArray+FKDownload.h"
+#import <sys/utsname.h>
+#import <UIKit/UIKit.h>
+
+
+typedef NS_OPTIONS(NSInteger, DeviceModel) {
+    DeviceModelAirPods,
+    DeviceModelAppleTV,
+    DeviceModelAppleWatch,
+    DeviceModelHomePod,
+    DeviceModeliPad,
+    DeviceModeliPadMini,
+    DeviceModeliPhone,
+    DeviceModeliPodTouch,
+};
 
 @interface FKDownloadManager ()
 
@@ -256,14 +270,23 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
-// TODO: iOS 12/12.1 后台下载时, 进入后台会导致监听失败, 但暂停时, 进度获取正确, 说明下载还在执行, 目前重置监听无效, 需要尝试进入前台手动暂停继续
-// TODO: 目前所有尝试都失效, 可能需要针对性判断, 使用 NSTimer 监听进度
-// TODO: 问题根源在于 countOfBytesReceived/countOfBytesExpectedToReceive 没有改变, 导致代理和 KVO 失效, 需要寻找新的方法来获取进度
-- (void)resetProgressObserver {
-    [self.tasks forEach:^(FKTask *task) {
-        [task removeProgressObserver];
-        [task addProgressObserver];
-    }];
+// !!!: iOS 12/12.1, iPhone 8以下, 后台下载时, 进入后台会导致监听失败, 但暂停时, 进度获取正确, 说明下载还在执行, 目前重置监听无效, 需要尝试进入后台暂停, 即将前台继续
+// !!!: 目前前后台切换状态尝试都失效, 会出现 unknown error, 可能需要针对性判断, 使用 NSTimer 监听进度
+// !!!: 问题根源在于 countOfBytesReceived/countOfBytesExpectedToReceive 没有改变, 导致代理, KVO 和 NSTimer 失效, 需要寻找新的方法来获取进度
+// !!!: 目前使用带有恢复数据的取消后再次继续执行可解决问题, 但必须在 -[AppDelegate applicationDidBecomeActive] 内执行, 在`applicationWillEnterForeground` 内执行失败, 且必须在写入恢复数据后继续才有效, 否则出现 load error.
+- (void)fixProgressNotChanage {
+    if (([[UIDevice currentDevice] systemVersion].floatValue == 12.0 ||
+         [[UIDevice currentDevice] systemVersion].floatValue == 12.1) &&
+        [self currentDeviceModelVersion:DeviceModeliPhone] < 10) {
+        
+        [self.tasks forEach:^(FKTask *task) {
+            if (task.status == TaskStatusExecuting) {
+                [task suspendWithComplete:^{
+                    [task resume];
+                }];
+            }
+        }];
+    }
 }
 
 
@@ -271,6 +294,91 @@ static FKDownloadManager *_instance = nil;
 - (NSArray<FKTask *> *)filterTaskWithStatus:(NSUInteger)status {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"status == %d", status];
     return [self.tasks filteredArrayUsingPredicate:predicate];
+}
+
+
+#pragma mark - Private Methode
+// !!!: https://www.theiphonewiki.com/wiki/Models 可根据版本号和子版本号确定设备, NSNotFound 为暂时无法识别
+- (NSInteger)currentDeviceModelVersion:(DeviceModel)model {
+    NSInteger version = NSNotFound;
+    switch (model) {
+        case DeviceModelAirPods: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AirPods".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModelAppleTV: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AppleTV".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModelAppleWatch: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"Watch".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModelHomePod: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AudioAccessory".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModeliPad: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPad".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModeliPadMini: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPad".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModeliPhone: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPhone".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModeliPodTouch: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPod".length, 1)] integerValue];
+        } break;
+    }
+    return version;
+}
+
+- (NSInteger)currentDeviceModelSubversion:(DeviceModel)model {
+    NSInteger version = NSNotFound;
+    switch (model) {
+        case DeviceModelAirPods: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AirPodsx.".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModelAppleTV: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AppleTVx.".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModelAppleWatch: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"Watchx.".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModelHomePod: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AudioAccessoryx.".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModeliPad: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPadx.".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModeliPadMini: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPadx.".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModeliPhone: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPhonex.".length, 1)] integerValue];
+        } break;
+            
+        case DeviceModeliPodTouch: {
+            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPodx.".length, 1)] integerValue];
+        } break;
+    }
+    return version;
+}
+
+- (NSString *)currentDeviceName {
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    return [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
 }
 
 

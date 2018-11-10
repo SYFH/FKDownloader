@@ -61,6 +61,7 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 @property (nonatomic, strong, readonly) NSProgress  *progress;
 @property (nonatomic, strong, readonly) NSData      *resumeData;
 @property (nonatomic, strong) NSError               *error;
+@property (nonatomic, strong, readonly) NSURLSessionDownloadTask *downloadTask;
 
 // TODO: 目前下载速度依赖数据接收监听, 后期可改为按指定间隔计算
 @property (nonatomic, strong, readonly) NSNumber    *estimatedTimeRemaining;
@@ -74,6 +75,7 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 - (void)reday;
 - (void)execute;
 - (void)suspend;
+- (void)suspendWithComplete:(void (^)(void))complete;
 - (void)resume;
 - (void)cancel;
 - (void)clear;

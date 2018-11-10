@@ -18,7 +18,7 @@ __attribute__((objc_subclassing_restricted))
 @property (nonatomic, strong, readonly) NSFileManager   *fileManager;
 @property (nonatomic, copy  , readonly) NSMutableArray<FKTask *> *tasks;
 + (instancetype)manager;
-
+- (void)setupPath;
 
 #pragma mark - Operation
 - (FKTask *)acquire:(NSString *)url;
@@ -39,7 +39,7 @@ __attribute__((objc_subclassing_restricted))
 - (void)restory:(NSArray<NSURLSessionDownloadTask *> *)tasks;
 - (void)saveTasks;
 - (void)loadTasks;
-- (void)resetProgressObserver;
+- (void)fixProgressNotChanage;
 
 
 #pragma mark - Filter

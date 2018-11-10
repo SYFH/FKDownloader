@@ -49,7 +49,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
             break;
             
         case NSURLSessionTaskStateSuspended:
-            // !!!: 后台任务没有暂停状态
+            // tips: 后台任务没有暂停状态
             self.status = TaskStatusSuspend;
             break;
             
@@ -127,6 +127,10 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 }
 
 - (void)suspend {
+    [self suspendWithComplete:nil];
+}
+
+- (void)suspendWithComplete:(void (^)(void))complete {
     if ([self.delegate respondsToSelector:@selector(downloader:willSuspendTask:)]) {
         [self.delegate downloader:self.manager willSuspendTask:self];
     }
@@ -137,13 +141,19 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotication object:nil];
     
     // !!!: https://stackoverflow.com/questions/39346231/resume-nsurlsession-on-ios10/39347461#39347461
-    // !!!: iOS 12/12.1 resumeData 与之前格式不一致, 之前保存的文件为 xml 格式, 新的格式需要 NSKeyedUnarchiver 解码后才可得到与之前一致的 NSDictionary, 但是不影响正常使用, 只有在进入后台暂停, 进入前台继续才会出现 unknow error.
+    // tips: iOS 12/12.1 resumeData 与之前格式不一致, 之前保存的文件为 xml 格式, 新的格式需要 NSKeyedUnarchiver 解码后才可得到与之前一致的 NSDictionary, 但是不影响正常使用.
     __weak typeof(self) weak = self;
     [self.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
         __strong typeof(weak) strong = weak;
         strong.resumeData = [self correctRequestData:resumeData];
         strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
         strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+        if (complete) {
+            // !!!: 此处使用 dispatch_after 是为了唤醒下载线程和防止写入恢复数据/读取回复数据冲突导致 fix 后台下载进度失败
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                complete();
+            });
+        }
     }];
 }
 
