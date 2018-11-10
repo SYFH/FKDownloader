@@ -121,7 +121,7 @@ static FKDownloadManager *_instance = nil;
     return self.tasksMap[identifier];
 }
 
-- (FKTask *)addTask:(NSString *)url {
+- (FKTask *)createPreserveTask:(NSString *)url {
     FKTask *task = [[FKTask alloc] init];
     task.url = url;
     task.manager = self;
@@ -146,6 +146,19 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
+// TODO: 状态切换: 在添加任务时是 none, 直接开始任务时是 idle/executing, 暂停时是 suspend, 取消时是 del?/idle?/none?
+- (FKTask *)add:(NSString *)url {
+    NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    
+    if ([self acquire:url]) {
+        return [self acquire:url];
+    }
+    
+    FKTask *task = [self createPreserveTask:url];
+    [self saveTasks];
+    return task;
+}
+
 - (FKTask *)start:(NSString *)url {
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
@@ -159,8 +172,7 @@ static FKDownloadManager *_instance = nil;
         return task;
     }
     
-    FKTask *task = [self addTask:url];
-    [self saveTasks];
+    FKTask *task = [self createPreserveTask:url];
     
     /*
      因在返回 FKTask 后才设置代理, 所以部分代理和回调无法被调用
@@ -226,6 +238,68 @@ static FKDownloadManager *_instance = nil;
     [self saveTasks];
 }
 
+- (void)addTask:(FKTask *)task {
+    NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    
+    if ([self acquire:task.url]) {
+        return;
+    }
+    
+    [self.tasks addObject:task];
+    self.tasksMap[task.identifier] = task;
+    [self saveTasks];
+}
+
+- (void)startTask:(FKTask *)task {
+    NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    
+    if ([self acquire:task.url].status == TaskStatusExecuting) {
+        return;
+    }
+    
+    [self start:task.url];
+}
+
+- (void)cancelTask:(FKTask *)task {
+    NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    
+    if (![self acquire:task.url]) {
+        return;
+    }
+    
+    [self cancel:task.url];
+}
+
+- (void)suspendTask:(FKTask *)task {
+    NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    
+    if (![self acquire:task.url]) {
+        return;
+    }
+    
+    [self suspend:task.url];
+}
+
+- (void)resumeTask:(FKTask *)task {
+    NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    
+    if (![self acquire:task.url]) {
+        return;
+    }
+    
+    [self remove:task.url];
+}
+
+- (void)removeTask:(FKTask *)task {
+    NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    
+    if (![self acquire:task.url]) {
+        return;
+    }
+    
+    [self remove:task.url];
+}
+
 
 #pragma mark - Progress
 
@@ -261,9 +335,11 @@ static FKDownloadManager *_instance = nil;
         NSArray<NSString *> *tasks = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:nil];
         [tasks forEach:^(NSString *url) {
             if (![self acquire:url]) {
-                FKTask *task = [self addTask:url];
+                FKTask *task = [self createPreserveTask:url];
                 if (self.configure.isAutoStart) {
-                    [self executeTask:task];
+                    if (task.status != TaskStatusUnknowError) {
+                        [self executeTask:task];
+                    }
                 }
             }
         }];
@@ -275,10 +351,11 @@ static FKDownloadManager *_instance = nil;
 // !!!: 问题根源在于 countOfBytesReceived/countOfBytesExpectedToReceive 没有改变, 导致代理, KVO 和 NSTimer 失效, 需要寻找新的方法来获取进度
 // !!!: 目前使用带有恢复数据的取消后再次继续执行可解决问题, 但必须在 -[AppDelegate applicationDidBecomeActive] 内执行, 在`applicationWillEnterForeground` 内执行失败, 且必须在写入恢复数据后继续才有效, 否则出现 load error.
 - (void)fixProgressNotChanage {
-    if (([[UIDevice currentDevice] systemVersion].floatValue == 12.0 ||
-         [[UIDevice currentDevice] systemVersion].floatValue == 12.1) &&
+    if (([[[UIDevice currentDevice] systemVersion] isEqualToString:@"12.0"] ||
+         [[[UIDevice currentDevice] systemVersion] isEqualToString:@"12.1"]) &&
         [self currentDeviceModelVersion:DeviceModeliPhone] < 10) {
         
+        NSLog(@"开始解决进度监听失效");
         [self.tasks forEach:^(FKTask *task) {
             if (task.status == TaskStatusExecuting) {
                 [task suspendWithComplete:^{

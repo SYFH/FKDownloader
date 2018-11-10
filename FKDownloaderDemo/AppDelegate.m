@@ -21,7 +21,7 @@
     
     FKConfigure *config = [FKConfigure defaultConfigure];
     config.isBackgroudExecute = YES;
-    config.isAutoClearTask = YES;
+    config.isAutoClearTask = NO;
     config.isAutoStart = NO;
     [FKDownloadManager manager].configure = config;
     [[FKDownloadManager manager] restory];

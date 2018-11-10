@@ -65,8 +65,11 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 
 // TODO: 目前下载速度依赖数据接收监听, 后期可改为按指定间隔计算
 @property (nonatomic, strong, readonly) NSNumber    *estimatedTimeRemaining;
+@property (nonatomic, strong, readonly) NSString    *estimatedTimeRemainingDescription;
 @property (nonatomic, strong, readonly) NSNumber    *bytesPerSecondSpeed;
+@property (nonatomic, strong, readonly) NSString    *bytesPerSecondSpeedDescription;
 
+// TODO: 设置状态监听时, 将当前状态传出
 @property (nonatomic, copy  ) FKProgress            progressBlock;
 @property (nonatomic, copy  ) FKStatus              statusBlock;
 @property (nonatomic, weak  ) id<FKTaskDelegate>    delegate;

@@ -7,9 +7,11 @@
 //
 
 #import "ViewController.h"
-#import "FKDownloader.h"
+#import "TaskListController.h"
 
-@interface ViewController ()<FKTaskDelegate>
+@interface ViewController ()
+
+@property (nonatomic, strong) UIButton *button;
 
 @end
 
@@ -19,28 +21,17 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    NSLog(@"%@", [FKDownloadManager manager].tasks);
-    
-    // 进入界面后初始化代理, 以防止重启 app 后无法获取进度与状态
-    [[FKDownloadManager manager] acquire:@"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg"].delegate = self;
-    
-    NSError *error;
-    [[FKDownloadManager manager].fileManager removeItemAtPath:[[FKDownloadManager manager].configure.resumePath stringByAppendingPathComponent:@"dd.gds"] error:&error];
-    if (error) {
-        NSLog(@"%@", error);
-    }
+    self.button = [[UIButton alloc] init];
+    [self.button setTitle:@"查看下载列表" forState: UIControlStateNormal];
+    [self.button setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
+    [self.button addTarget:self action:@selector(pushTaskList) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.button];
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
     
-    NSString *url = @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg";
-    if ([[FKDownloadManager manager] acquire:url].status == TaskStatusExecuting) {
-        [[FKDownloadManager manager] suspend:url];
-        return;
-    }
-
-    [[FKDownloadManager manager] start:url].delegate = self;
+    self.button.frame = CGRectMake(0, 200, self.view.bounds.size.width, 30);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -48,40 +39,9 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)downloader:(FKDownloadManager *)downloader willExecuteTask:(FKTask *)task {
-    NSLog(@"准备执行");
-}
-
-- (void)downloader:(FKDownloadManager *)downloader didExecuteTask:(FKTask *)task {
-    NSLog(@"开始执行");
-}
-
-- (void)downloader:(FKDownloadManager *)downloader progressingTask:(FKTask *)task {
-    NSLog(@"进度: %.6f, %@/%@, %@, %@", task.progress.fractionCompleted, [NSByteCountFormatter stringFromByteCount:task.progress.completedUnitCount countStyle:NSByteCountFormatterCountStyleFile], [NSByteCountFormatter stringFromByteCount:task.progress.totalUnitCount countStyle:NSByteCountFormatterCountStyleFile], task.bytesPerSecondSpeed, task.estimatedTimeRemaining);
-}
-
-- (void)downloader:(FKDownloadManager *)downloader didFinishTask:(FKTask *)task {
-    NSLog(@"执行完成");
-}
-
-- (void)downloader:(FKDownloadManager *)downloader willSuspendTask:(FKTask *)task {
-    NSLog(@"准备暂停");
-}
-
-- (void)downloader:(FKDownloadManager *)downloader didSuspendTask:(FKTask *)task {
-    NSLog(@"暂停完成");
-}
-
-- (void)downloader:(FKDownloadManager *)downloader willCanceldTask:(FKTask *)task {
-    NSLog(@"准备停止");
-}
-
-- (void)downloader:(FKDownloadManager *)downloader didCancelldTask:(FKTask *)task {
-    NSLog(@"停止完成");
-}
-
-- (void)downloader:(FKDownloadManager *)downloader errorTask:(FKTask *)task {
-    NSLog(@"执行出错: %@", task.error);
+- (void)pushTaskList {
+    TaskListController *listController = [[TaskListController alloc] init];
+    [self.navigationController pushViewController:listController animated:YES];
 }
 
 @end

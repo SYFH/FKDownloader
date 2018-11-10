@@ -30,6 +30,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 @property (nonatomic, strong) NSProgress  *progress;
 @property (nonatomic, strong) NSData      *resumeData;
 
+@property (nonatomic, assign) NSTimeInterval prevTime;
 @property (nonatomic, strong) NSNumber    *estimatedTimeRemaining;
 @property (nonatomic, strong) NSNumber    *bytesPerSecondSpeed;
 
@@ -80,15 +81,20 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
     
     [self addProgressObserver];
+    self.prevTime = 1;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     
     if ([self.delegate respondsToSelector:@selector(downloader:willExecuteTask:)]) {
-        [self.delegate downloader:self.manager willExecuteTask:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager willExecuteTask:self];
+        });
     }
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
-        self.statusBlock(weak);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillExecuteNotification object:nil];
 }
@@ -117,13 +123,19 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
     
     if ([self.delegate respondsToSelector:@selector(downloader:didExecuteTask:)]) {
-        [self.delegate downloader:self.manager didExecuteTask:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didExecuteTask:self];
+        });
     }
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
-        self.statusBlock(weak);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidExecuteNotication object:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidExecuteNotication object:nil];
+    });
 }
 
 - (void)suspend {
@@ -132,13 +144,19 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 
 - (void)suspendWithComplete:(void (^)(void))complete {
     if ([self.delegate respondsToSelector:@selector(downloader:willSuspendTask:)]) {
-        [self.delegate downloader:self.manager willSuspendTask:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager willSuspendTask:self];
+        });
     }
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
-        self.statusBlock(weak);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotication object:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotication object:nil];
+    });
     
     // !!!: https://stackoverflow.com/questions/39346231/resume-nsurlsession-on-ios10/39347461#39347461
     // tips: iOS 12/12.1 resumeData 与之前格式不一致, 之前保存的文件为 xml 格式, 新的格式需要 NSKeyedUnarchiver 解码后才可得到与之前一致的 NSDictionary, 但是不影响正常使用.
@@ -169,28 +187,58 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 
 - (void)cancel {
     if ([self.delegate respondsToSelector:@selector(downloader:willCanceldTask:)]) {
-        [self.delegate downloader:self.manager willCanceldTask:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager willCanceldTask:self];
+        });
     }
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
-        self.statusBlock(weak);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillCancelldNotication object:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillCancelldNotication object:nil];
+    });
     
     [self.downloadTask cancel];
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+    
+    if (self.status != TaskStatusExecuting) {
+        self.status = TaskStatusCancelld;
+        if ([self.delegate respondsToSelector:@selector(downloader:didCancelldTask:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate downloader:self.manager didCancelldTask:self];
+            });
+        }
+        if (self.statusBlock) {
+            __weak typeof(self) weak = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weak.statusBlock(weak);
+            });
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidCancelldNotication object:nil];
+        });
+    }
 }
 
 - (void)sendProgressInfo {
     if ([self.delegate respondsToSelector:@selector(downloader:progressingTask:)]) {
-        [self.delegate downloader:self.manager progressingTask:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager progressingTask:self];
+        });
     }
     if (self.progressBlock) {
-        __weak typeof(self) weakTask = self;
-        self.progressBlock(weakTask);
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.progressBlock(weak);
+        });
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskProgressNotication object:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskProgressNotication object:nil];
+    });
 }
 
 - (NSString *)filePath {
@@ -268,8 +316,11 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     
     if ([object isKindOfClass:[self.downloadTask class]]) {
         if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesReceived))]) {
+            NSTimeInterval now = [NSDate date].timeIntervalSince1970;
             int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.progress.completedUnitCount;
-            self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:receivedCount];
+            self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
+            self.prevTime = now;
+            
             NSUInteger remaining = self.progress.totalUnitCount / (receivedCount?:1);
             self.estimatedTimeRemaining = [NSNumber numberWithLongLong:remaining];
             
@@ -426,6 +477,28 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     [self willChangeValueForKey:@"status"];
     _status = status;
     [self didChangeValueForKey:@"status"];
+}
+
+- (NSString *)estimatedTimeRemainingDescription {
+    NSString *remaining = @"";
+    NSInteger seconds = self.estimatedTimeRemaining.longLongValue % 60;
+    remaining = [[NSString stringWithFormat:@"%lds", seconds] stringByAppendingString:remaining];
+    
+    NSInteger minutes = self.estimatedTimeRemaining.longLongValue / 60 % 60;
+    if (minutes) {
+        remaining = [[NSString stringWithFormat:@"%ldm:", minutes] stringByAppendingString:remaining];
+    }
+    
+    NSInteger hours = self.estimatedTimeRemaining.longLongValue / (60 * 60);
+    if (hours) {
+        remaining = [[NSString stringWithFormat:@"%ldh:", hours] stringByAppendingString:remaining];
+    }
+    
+    return [NSString stringWithFormat:@"%@", remaining];
+}
+
+- (NSString *)bytesPerSecondSpeedDescription {
+    return [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:self.bytesPerSecondSpeed.longLongValue countStyle:NSByteCountFormatterCountStyleBinary]];
 }
 
 @end

@@ -22,13 +22,22 @@ __attribute__((objc_subclassing_restricted))
 
 #pragma mark - Operation
 - (FKTask *)acquire:(NSString *)url;
+
+- (FKTask *)add:(NSString *)url;
 - (FKTask *)start:(NSString *)url;
-- (void)startNextIdleTask;
 - (void)cancel:(NSString *)url;
 - (void)suspend:(NSString *)url;
 - (void)resume:(NSString *)url;
 - (void)remove:(NSString *)url;
 
+- (void)addTask:(FKTask *)task;
+- (void)startTask:(FKTask *)task;
+- (void)cancelTask:(FKTask *)task;
+- (void)suspendTask:(FKTask *)task;
+- (void)resumeTask:(FKTask *)task;
+- (void)removeTask:(FKTask *)task;
+
+- (void)startNextIdleTask;
 
 #pragma mark - Progress
 // TODO: 可添加总进度和总预期时间

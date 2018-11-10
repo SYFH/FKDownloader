@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3D35875E2192BD43000BD0E1 /* NSArray+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */; };
+		3D71563A2196B805008F91A7 /* TaskListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7156392196B805008F91A7 /* TaskListController.m */; };
+		3D71563D2196B81B008F91A7 /* TaskViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D71563C2196B81B008F91A7 /* TaskViewCell.m */; };
 		3DD308B0218BEDBA00BDF330 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308AF218BEDBA00BDF330 /* AppDelegate.m */; };
 		3DD308B3218BEDBA00BDF330 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308B2218BEDBA00BDF330 /* ViewController.m */; };
 		3DD308B6218BEDBA00BDF330 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3DD308B4218BEDBA00BDF330 /* Main.storyboard */; };
@@ -24,6 +26,10 @@
 /* Begin PBXFileReference section */
 		3D35875C2192BD43000BD0E1 /* NSArray+FKDownload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+FKDownload.h"; sourceTree = "<group>"; };
 		3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+FKDownload.m"; sourceTree = "<group>"; };
+		3D7156382196B805008F91A7 /* TaskListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TaskListController.h; sourceTree = "<group>"; };
+		3D7156392196B805008F91A7 /* TaskListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TaskListController.m; sourceTree = "<group>"; };
+		3D71563B2196B81B008F91A7 /* TaskViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TaskViewCell.h; sourceTree = "<group>"; };
+		3D71563C2196B81B008F91A7 /* TaskViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TaskViewCell.m; sourceTree = "<group>"; };
 		3DD308AB218BEDBA00BDF330 /* FKDownloaderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKDownloaderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DD308AE218BEDBA00BDF330 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3DD308AF218BEDBA00BDF330 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -82,6 +88,10 @@
 				3DD308AF218BEDBA00BDF330 /* AppDelegate.m */,
 				3DD308B1218BEDBA00BDF330 /* ViewController.h */,
 				3DD308B2218BEDBA00BDF330 /* ViewController.m */,
+				3D7156382196B805008F91A7 /* TaskListController.h */,
+				3D7156392196B805008F91A7 /* TaskListController.m */,
+				3D71563B2196B81B008F91A7 /* TaskViewCell.h */,
+				3D71563C2196B81B008F91A7 /* TaskViewCell.m */,
 				3DD308B4218BEDBA00BDF330 /* Main.storyboard */,
 				3DD308B7218BEDBB00BDF330 /* Assets.xcassets */,
 				3DD308B9218BEDBB00BDF330 /* LaunchScreen.storyboard */,
@@ -187,8 +197,10 @@
 				3DD308CF218BEE3300BDF330 /* FKDownloadManager.m in Sources */,
 				3DD308F8218C4E8D00BDF330 /* NSString+FKDownload.m in Sources */,
 				3DD308D3218C403C00BDF330 /* FKDownloadExecutor.m in Sources */,
+				3D71563D2196B81B008F91A7 /* TaskViewCell.m in Sources */,
 				3DD308B0218BEDBA00BDF330 /* AppDelegate.m in Sources */,
 				3DD308CE218BEE3300BDF330 /* FKConfigure.m in Sources */,
+				3D71563A2196B805008F91A7 /* TaskListController.m in Sources */,
 				3D35875E2192BD43000BD0E1 /* NSArray+FKDownload.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
