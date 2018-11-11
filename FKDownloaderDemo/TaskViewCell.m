@@ -110,6 +110,7 @@
 }
 
 - (void)downloader:(FKDownloadManager *)downloader progressingTask:(FKTask *)task {
+    NSLog(@"%@: %.6f", task.url, task.progress.fractionCompleted);
     self.progress.progress = task.progress.fractionCompleted;
     self.speedLable.text = [task bytesPerSecondSpeedDescription];
     self.remainingLable.text = [task estimatedTimeRemainingDescription];

@@ -44,6 +44,10 @@
     self.listView.frame = self.view.bounds;
 }
 
+- (void)dealloc {
+    NSLog(@"下载列表释放");
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -77,10 +81,10 @@
 #pragma mark - Getter/Setter
 - (NSArray<NSString *> *)urls {
     return @[@"http://m4.pc6.com/cjh3/Remotix.dmg",
-             @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg",
              @"http://m4.pc6.com/cjh3/deliver259.dmg",
              @"http://m4.pc6.com/cjh3/LogMeInInstaller7009.zip",
              @"http://m4.pc6.com/cjh3/VicomsoftFTPClient.dmg",
+             @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg",
              @"http://m5.pc6.com/xuh5/hype363.zip"];
 }
 

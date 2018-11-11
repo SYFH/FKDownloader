@@ -15,7 +15,6 @@
 #import <sys/utsname.h>
 #import <UIKit/UIKit.h>
 
-
 typedef NS_OPTIONS(NSInteger, DeviceModel) {
     DeviceModelAirPods,
     DeviceModelAppleTV,
@@ -73,6 +72,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)setupSession {
+    FKLog(@"配置 NSURLSession")
     if (self.session) { return; }
     if (self.configure.isBackgroudExecute) {
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.configure.sessionIdentifier];
@@ -86,6 +86,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)setupPath {
+    FKLog(@"配置文件路径")
     BOOL isDirectory = NO;
     BOOL isFileExist = NO;
     
@@ -115,6 +116,7 @@ static FKDownloadManager *_instance = nil;
 
 #pragma mark - Operation
 - (FKTask *)acquire:(NSString *)url {
+    FKLog(@"获取 FKTask: %@", url)
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     NSString *identifier = [url SHA256];
@@ -122,6 +124,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (FKTask *)createPreserveTask:(NSString *)url {
+    FKLog(@"创建并保存 FKTask:%@", url)
     FKTask *task = [[FKTask alloc] init];
     task.url = url;
     task.manager = self;
@@ -138,16 +141,20 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)executeTask:(FKTask *)task {
+    FKLog(@"开始执行 FKTask: %@", task)
     [task reday];
     if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
+        FKLog(@"当前执行数量 %lu 小于 %ld", (unsigned long)[self filterTaskWithStatus:TaskStatusExecuting].count, (unsigned long)self.configure.maximumExecutionTask)
         [task execute];
     } else {
+        FKLog(@"当前执行数量 %ld 已超过 %ld", (unsigned long)[self filterTaskWithStatus:TaskStatusExecuting].count, (unsigned long)self.configure.maximumExecutionTask)
         [task setValue:@(TaskStatusIdle) forKey:@"status"];
     }
 }
 
 // TODO: 状态切换: 在添加任务时是 none, 直接开始任务时是 idle/executing, 暂停时是 suspend, 取消时是 del?/idle?/none?
 - (FKTask *)add:(NSString *)url {
+    FKLog(@"添加任务: %@", url)
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if ([self acquire:url]) {
@@ -160,15 +167,14 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (FKTask *)start:(NSString *)url {
+    FKLog(@"开始任务: %@", url)
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if ([self acquire:url]) {
         FKTask *task = [self acquire:url];
-        if (task.status != TaskStatusExecuting) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self executeTask:task];
-            });
-        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self executeTask:task];
+        });
         return task;
     }
     
@@ -187,6 +193,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)startNextIdleTask {
+    FKLog(@"开始执行下一个等待中任务")
     if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
         FKTask *nextTask = [[FKDownloadManager manager] filterTaskWithStatus:TaskStatusIdle].firstObject;
         if (nextTask) {
@@ -196,6 +203,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)cancel:(NSString *)url {
+    FKLog(@"取消任务: %@", url)
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     FKTask *task = [self acquire:url];
@@ -205,6 +213,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)suspend:(NSString *)url {
+    FKLog(@"暂停任务: %@", url)
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if (![self acquire:url]) { return; }
@@ -215,6 +224,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)resume:(NSString *)url {
+    FKLog(@"恢复任务: %@", url)
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if (![self acquire:url]) { return; }
@@ -225,6 +235,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)remove:(NSString *)url {
+    FKLog(@"移除任务: %@", url)
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if (![self acquire:url]) { return; }
@@ -239,6 +250,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)addTask:(FKTask *)task {
+    FKLog(@"添加任务: %@", task)
     NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if ([self acquire:task.url]) {
@@ -251,6 +263,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)startTask:(FKTask *)task {
+    FKLog(@"开始任务: %@", task)
     NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if ([self acquire:task.url].status == TaskStatusExecuting) {
@@ -261,6 +274,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)cancelTask:(FKTask *)task {
+    FKLog(@"取消任务: %@", task)
     NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if (![self acquire:task.url]) {
@@ -271,6 +285,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)suspendTask:(FKTask *)task {
+    FKLog(@"暂停任务: %@", task)
     NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if (![self acquire:task.url]) {
@@ -281,6 +296,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)resumeTask:(FKTask *)task {
+    FKLog(@"恢复任务: %@", task)
     NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if (![self acquire:task.url]) {
@@ -291,6 +307,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)removeTask:(FKTask *)task {
+    FKLog(@"移除任务: %@", task)
     NSAssert([NSURL URLWithString:task.url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
     
     if (![self acquire:task.url]) {

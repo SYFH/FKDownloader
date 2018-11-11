@@ -70,6 +70,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 }
 
 - (void)reday {
+    FKLog(@"开始准备: %@", self)
     self.status = TaskStatusPrepare;
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
     if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
@@ -115,9 +116,12 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 }
 
 - (void)execute {
+    FKLog(@"执行: %@", self)
     if (self.isHasResumeData) {
+        FKLog(@"检测到恢复数据: %@", self)
         [self resume];
     } else {
+        FKLog(@"没有恢复数据: %@", self)
         [self.downloadTask resume];
         self.status = TaskStatusExecuting;
     }
@@ -314,23 +318,21 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     
-    if ([object isKindOfClass:[self.downloadTask class]]) {
-        if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesReceived))]) {
-            NSTimeInterval now = [NSDate date].timeIntervalSince1970;
-            int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.progress.completedUnitCount;
-            self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
-            self.prevTime = now;
-            
-            NSUInteger remaining = self.progress.totalUnitCount / (receivedCount?:1);
-            self.estimatedTimeRemaining = [NSNumber numberWithLongLong:remaining];
-            
-            self.progress.completedUnitCount = self.downloadTask.countOfBytesReceived;
-        }
-        if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))]) {
-            self.progress.totalUnitCount = self.downloadTask.countOfBytesExpectedToReceive;
-        }
-        [self sendProgressInfo];
+    if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesReceived))]) {
+        NSTimeInterval now = [NSDate date].timeIntervalSince1970;
+        int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.progress.completedUnitCount;
+        self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
+        self.prevTime = now;
+        
+        double remaining = self.progress.totalUnitCount / (receivedCount?:1);
+        self.estimatedTimeRemaining = [NSNumber numberWithDouble:remaining];
+        
+        self.progress.completedUnitCount = self.downloadTask.countOfBytesReceived;
     }
+    if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))]) {
+        self.progress.totalUnitCount = self.downloadTask.countOfBytesExpectedToReceive;
+    }
+    [self sendProgressInfo];
 }
 
 
@@ -361,17 +363,17 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
     NSInteger k = 0;
     id objectss = archive[@"$objects"];
-    while ([objectss[1] objectForKey:[NSString stringWithFormat:@"$%ld",k]] != nil) {
+    while ([objectss[1] objectForKey:[NSString stringWithFormat:@"$%ld",(long)k]] != nil) {
         k += 1;
     }
     NSInteger i = 0;
-    while ([archive[@"$objects"][1] objectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",i]] != nil) {
+    while ([archive[@"$objects"][1] objectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",(long)i]] != nil) {
         NSMutableArray *arr = archive[@"$objects"];
         NSMutableDictionary *dic = arr[1];
-        id obj = [dic objectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",i]];
+        id obj = [dic objectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",(long)i]];
         if (obj) {
-            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%ld",i+k]];
-            [dic removeObjectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",i]];
+            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%ld",i + k]];
+            [dic removeObjectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",(long)i]];
             [arr replaceObjectAtIndex:1 withObject:dic];
             archive[@"$objects"] = arr;
         }
@@ -382,7 +384,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
         NSMutableDictionary *dic = arr[1];
         id obj = [dic objectForKey:@"__nsurlrequest_proto_props"];
         if (obj) {
-            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%ld",i+k]];
+            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%ld",i + k]];
             [dic removeObjectForKey:@"__nsurlrequest_proto_props"];
             [arr replaceObjectAtIndex:1 withObject:dic];
             archive[@"$objects"] = arr;
@@ -482,16 +484,16 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 - (NSString *)estimatedTimeRemainingDescription {
     NSString *remaining = @"";
     NSInteger seconds = self.estimatedTimeRemaining.longLongValue % 60;
-    remaining = [[NSString stringWithFormat:@"%lds", seconds] stringByAppendingString:remaining];
+    remaining = [[NSString stringWithFormat:@"%lds", (long)seconds] stringByAppendingString:remaining];
     
     NSInteger minutes = self.estimatedTimeRemaining.longLongValue / 60 % 60;
     if (minutes) {
-        remaining = [[NSString stringWithFormat:@"%ldm:", minutes] stringByAppendingString:remaining];
+        remaining = [[NSString stringWithFormat:@"%ldm:", (long)minutes] stringByAppendingString:remaining];
     }
     
-    NSInteger hours = self.estimatedTimeRemaining.longLongValue / (60 * 60);
+    NSInteger hours = self.estimatedTimeRemaining.doubleValue / (60 * 60);
     if (hours) {
-        remaining = [[NSString stringWithFormat:@"%ldh:", hours] stringByAppendingString:remaining];
+        remaining = [[NSString stringWithFormat:@"%ldh:", (long)hours] stringByAppendingString:remaining];
     }
     
     return [NSString stringWithFormat:@"%@", remaining];

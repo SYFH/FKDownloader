@@ -118,9 +118,9 @@
                 [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotication object:nil];
             });
         }
-    } else {
-        [[FKDownloadManager manager] startNextIdleTask];
     }
+    
+    [[FKDownloadManager manager] startNextIdleTask];
 }
 
 
