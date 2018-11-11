@@ -82,10 +82,7 @@
 
 #pragma mark - Operation
 - (void)operationDidTap:(UIButton *)sender {
-    if ([[FKDownloadManager manager] acquire:self.url].status == TaskStatusNone ||
-        [[FKDownloadManager manager] acquire:self.url].status == TaskStatusIdle ||
-        [[FKDownloadManager manager] acquire:self.url].status == TaskStatusCancelld) {
-        
+    if ([[FKDownloadManager manager] acquire:self.url].status != TaskStatusExecuting) {
         [[FKDownloadManager manager] start:self.url];
     } else if ([[FKDownloadManager manager] acquire:self.url].status == TaskStatusSuspend) {
         [[FKDownloadManager manager] resume:self.url];

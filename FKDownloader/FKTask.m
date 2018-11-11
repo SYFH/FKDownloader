@@ -117,7 +117,31 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 
 - (void)execute {
     FKLog(@"执行: %@", self)
-    if (self.isHasResumeData) {
+    if (self.isFinish) {
+        FKLog(@"文件早已下载完成: %@", self)
+        self.status = TaskStatusFinish;
+        self.progress.totalUnitCount = 1;
+        self.progress.completedUnitCount = 1;
+        
+        if ([self.delegate respondsToSelector:@selector(downloader:didFinishTask:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate downloader:self.manager didFinishTask:self];
+            });
+        }
+        if (self.statusBlock) {
+            __weak typeof(self) weak = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weak.statusBlock(weak);
+            });
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidFinishNotication object:nil];
+        });
+        
+        if (self.manager.configure.isAutoClearTask) {
+            [self.manager remove:self.url];
+        }
+    } else if (self.isHasResumeData) {
         FKLog(@"检测到恢复数据: %@", self)
         [self resume];
     } else {
@@ -247,7 +271,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 
 - (NSString *)filePath {
     NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
-    return [self.manager.configure.resumePath stringByAppendingPathComponent:fileName];
+    return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
 }
 
 - (NSString *)resumeFilePath {
@@ -324,7 +348,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
         self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
         self.prevTime = now;
         
-        double remaining = self.progress.totalUnitCount / (receivedCount?:1);
+        double remaining = (self.progress.totalUnitCount - self.progress.completedUnitCount) / (receivedCount?:1);
         self.estimatedTimeRemaining = [NSNumber numberWithDouble:remaining];
         
         self.progress.completedUnitCount = self.downloadTask.countOfBytesReceived;
@@ -372,7 +396,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
         NSMutableDictionary *dic = arr[1];
         id obj = [dic objectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",(long)i]];
         if (obj) {
-            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%ld",i + k]];
+            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%d", (int)(i + k)]];
             [dic removeObjectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",(long)i]];
             [arr replaceObjectAtIndex:1 withObject:dic];
             archive[@"$objects"] = arr;
@@ -384,7 +408,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
         NSMutableDictionary *dic = arr[1];
         id obj = [dic objectForKey:@"__nsurlrequest_proto_props"];
         if (obj) {
-            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%ld",i + k]];
+            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%d", (int)(i + k)]];
             [dic removeObjectForKey:@"__nsurlrequest_proto_props"];
             [arr replaceObjectAtIndex:1 withObject:dic];
             archive[@"$objects"] = arr;

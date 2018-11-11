@@ -33,7 +33,7 @@
             downloadTask.error = [NSError errorWithDomain:NSURLErrorDomain
                                                      code:NSURLErrorUnknown
                                                  userInfo:@{NSFilePathErrorKey: task.currentRequest.URL.absoluteString,
-                                                            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %ld", statusCode]}];
+                                                            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
             [downloadTask setValue:@(TaskStatusUnknowError) forKey:@"status"];
             
             if ([downloadTask.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
@@ -134,9 +134,9 @@
         NSInteger statusCode = httpResponse.statusCode;
         if (statusCode < 200 || statusCode > 300) {
             task.error = [NSError errorWithDomain:NSURLErrorDomain
-                                                     code:NSURLErrorUnknown
-                                                 userInfo:@{NSFilePathErrorKey: downloadTask.currentRequest.URL.absoluteString,
-                                                            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %ld", statusCode]}];
+                                             code:NSURLErrorUnknown
+                                         userInfo:@{NSFilePathErrorKey: downloadTask.currentRequest.URL.absoluteString,
+                                                    NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
             [task setValue:@(TaskStatusUnknowError) forKey:@"status"];
             
             if ([task.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
@@ -157,7 +157,7 @@
         }
     }
     
-    if ([[FKDownloadManager manager].fileManager fileExistsAtPath:location.absoluteString]) {
+    if ([[FKDownloadManager manager].fileManager fileExistsAtPath:location.path]) {
         if ([[FKDownloadManager manager].fileManager fileExistsAtPath:task.filePath]) {
             [task setValue:@(TaskStatusFinish) forKey:@"status"];
             
@@ -181,7 +181,7 @@
             }
         } else {
             NSError *error;
-            [[FKDownloadManager manager].fileManager copyItemAtPath:location.absoluteString toPath:task.filePath error:&error];
+            [[FKDownloadManager manager].fileManager copyItemAtPath:location.path toPath:task.filePath error:&error];
             if (error) {
                 task.error = error;
                 [task setValue:@(TaskStatusUnknowError) forKey:@"status"];
@@ -226,7 +226,7 @@
     } else {
         task.error = [NSError errorWithDomain:NSPOSIXErrorDomain
                                          code:2
-                                     userInfo:@{NSFilePathErrorKey: location.absoluteString,
+                                     userInfo:@{NSFilePathErrorKey: location.path,
                                                 NSLocalizedDescriptionKey: @"The operation couldn’t be completed. No such file or directory"}];
         [task setValue:@(TaskStatusUnknowError) forKey:@"status"];
         
