@@ -12,18 +12,67 @@ typedef void(^handler)(void);
 
 @interface FKConfigure : NSObject
 
+/**
+ 是否设置为后台下载. 默认为 Yes
+ */
 @property (nonatomic, assign) BOOL isBackgroudExecute;
+
+/**
+ 是否自动开始, 当载入本地归档任务时起效. 默认为 No
+ */
 @property (nonatomic, assign) BOOL isAutoStart;
+
+/**
+ 是否自动清理, 当任务失败或完成时起效. 默认为 No
+ */
 @property (nonatomic, assign) BOOL isAutoClearTask;
+
+/**
+ 最大并行任务数量. 默认为 3
+ */
 @property (nonatomic, assign) NSInteger maximumExecutionTask;
+
+/**
+ FKDownloadManager 的根目录. 默认为 Library/Caches/com.fk.downloader/
+ */
 @property (nonatomic, strong) NSString  *rootPath;
+
+/**
+ 文件保存路径. 默认为 Library/Caches/com.fk.downloader/file/
+ */
 @property (nonatomic, strong) NSString  *savePath;
+
+/**
+ 任务恢复数据保存路径. 默认为 Library/Caches/com.fk.downloader/resume/
+ */
 @property (nonatomic, strong) NSString  *resumePath;
+
+/**
+ 持久化任务文档路径. 默认为 Library/Caches/com.fk.downloader/downloader.restore
+ */
 @property (nonatomic, strong) NSString  *restorePath;
+
+/**
+ 后台下载句柄
+ */
 @property (nonatomic, copy  ) handler   backgroundHandler;
+
+/**
+ 任务超时时间. 默认为 30s
+ */
 @property (nonatomic, assign) NSInteger timeoutInterval;
+
+/**
+ Session 标识. 默认为 com.fk.downloader
+ */
 @property (nonatomic, strong) NSString  *sessionIdentifier;
 
+
+/**
+ 默认配置
+
+ @return 默认配置实例
+ */
 + (instancetype)defaultConfigure;
 
 @end

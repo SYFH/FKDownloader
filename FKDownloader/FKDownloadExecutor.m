@@ -13,6 +13,7 @@
 
 @implementation FKDownloadExecutor
 
+// TODO: 将状态传递进行封装
 #pragma mark - NSURLSessionDelegate
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
     if (self.manager.configure.backgroundHandler) {

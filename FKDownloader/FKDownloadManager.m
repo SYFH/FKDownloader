@@ -73,17 +73,20 @@ static FKDownloadManager *_instance = nil;
 
 - (void)setupSession {
     FKLog(@"配置 NSURLSession")
-    if (self.session) { return; }
-    if (self.configure.isBackgroudExecute) {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.configure.sessionIdentifier];
-        config.timeoutIntervalForRequest = self.configure.timeoutInterval;
-        config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
+    if (self.session) {
+        return;
     } else {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        config.timeoutIntervalForRequest = self.configure.timeoutInterval;
-        config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
+        if (self.configure.isBackgroudExecute) {
+            NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.configure.sessionIdentifier];
+            config.timeoutIntervalForRequest = self.configure.timeoutInterval;
+            config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+            self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
+        } else {
+            NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+            config.timeoutIntervalForRequest = self.configure.timeoutInterval;
+            config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+            self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
+        }
     }
 }
 
