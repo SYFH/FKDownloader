@@ -35,7 +35,10 @@
     self.listView.tableFooterView = [[UIView alloc] init];
     [self.view addSubview:self.listView];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"全部开始" style: UIBarButtonItemStyleDone target:self action:@selector(rightDidTap:)];
+    UIBarButtonItem *startItem = [[UIBarButtonItem alloc] initWithTitle:@"全部开始" style: UIBarButtonItemStyleDone target:self action:@selector(startDidTap:)];
+    UIBarButtonItem *stopItem = [[UIBarButtonItem alloc] initWithTitle:@"全部停止" style: UIBarButtonItemStyleDone target:self action:@selector(stopDidTap:)];
+    UIBarButtonItem *suspendItem = [[UIBarButtonItem alloc] initWithTitle:@"全部暂停" style: UIBarButtonItemStyleDone target:self action:@selector(suspendDidTap:)];
+    self.navigationItem.rightBarButtonItems = @[ startItem, stopItem, suspendItem ];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -53,9 +56,21 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)rightDidTap:(UIBarButtonItem *)sender {
+- (void)startDidTap:(UIBarButtonItem *)sender {
     [[FKDownloadManager manager].tasks forEach:^(FKTask *task) {
         [[FKDownloadManager manager] start:task.url];
+    }];
+}
+
+- (void)stopDidTap:(UIBarButtonItem *)sender {
+    [[FKDownloadManager manager].tasks forEach:^(FKTask *task) {
+        [[FKDownloadManager manager] cancel:task.url];
+    }];
+}
+
+- (void)suspendDidTap:(UIBarButtonItem *)sender {
+    [[FKDownloadManager manager].tasks forEach:^(FKTask *task) {
+        [[FKDownloadManager manager] suspend:task.url];
     }];
 }
 
@@ -78,14 +93,35 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"删除";
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    NSString *url = self.urls[indexPath.row];
+    [[FKDownloadManager manager] remove:url];
+    NSMutableArray *temp = [NSMutableArray arrayWithArray:self.urls];
+    [temp removeObjectAtIndex:indexPath.row];
+    self.urls = [NSArray arrayWithArray:temp];
+    [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+}
+
 #pragma mark - Getter/Setter
 - (NSArray<NSString *> *)urls {
-    return @[@"http://m4.pc6.com/cjh3/Remotix.dmg",
-             @"http://m4.pc6.com/cjh3/deliver259.dmg",
-             @"http://m4.pc6.com/cjh3/LogMeInInstaller7009.zip",
-             @"http://m4.pc6.com/cjh3/VicomsoftFTPClient.dmg",
-             @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg",
-             @"http://m5.pc6.com/xuh5/hype363.zip"];
+    if (!_urls) {
+        _urls = @[@"http://m4.pc6.com/cjh3/Remotix.dmg",
+                  @"http://m4.pc6.com/cjh3/deliver259.dmg",
+                  @"http://m4.pc6.com/cjh3/LogMeInInstaller7009.zip",
+                  @"http://m4.pc6.com/cjh3/VicomsoftFTPClient.dmg",
+                  @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg",
+                  @"http://m5.pc6.com/xuh5/hype363.zip"];
+    }
+    return _urls;
 }
 
 @end

@@ -18,7 +18,7 @@
     config.isBackgroudExecute   = YES;
     config.timeoutInterval      = 30;
     config.sessionIdentifier    = @"com.fk.downloader";
-    config.maximumExecutionTask = 5;
+    config.maximumExecutionTask = 3;
     config.rootPath     = [cachePath stringByAppendingPathComponent:@"com.fk.downloader"];
     config.savePath     = [cachePath stringByAppendingPathComponent:@"com.fk.downloader/file"];
     config.resumePath   = [cachePath stringByAppendingPathComponent:@"com.fk.downloader/resume"];

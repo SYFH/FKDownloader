@@ -36,13 +36,6 @@ __attribute__((objc_subclassing_restricted))
 - (void)resume:(NSString *)url;
 - (void)remove:(NSString *)url;
 
-- (void)addTask:(FKTask *)task;
-- (void)startTask:(FKTask *)task;
-- (void)cancelTask:(FKTask *)task;
-- (void)suspendTask:(FKTask *)task;
-- (void)resumeTask:(FKTask *)task;
-- (void)removeTask:(FKTask *)task;
-
 - (void)startNextIdleTask;
 
 #pragma mark - Progress
