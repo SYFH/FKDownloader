@@ -43,6 +43,7 @@
 　　
 # 安装
 - CocoaPods
+　　`pod 'FKDownloader'`
 - Carthage
 - Manual
 
