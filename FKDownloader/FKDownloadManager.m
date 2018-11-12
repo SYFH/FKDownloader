@@ -309,7 +309,7 @@ static FKDownloadManager *_instance = nil;
          [[[UIDevice currentDevice] systemVersion] isEqualToString:@"12.1"]) &&
         [self currentDeviceModelVersion:DeviceModeliPhone] < 10) {
         
-        NSLog(@"开始解决进度监听失效");
+        FKLog(@"开始解决进度监听失效")
         [self.tasks forEach:^(FKTask *task) {
             if (task.status == TaskStatusExecuting) {
                 [task suspendWithComplete:^{
@@ -332,6 +332,10 @@ static FKDownloadManager *_instance = nil;
 // !!!: https://www.theiphonewiki.com/wiki/Models 可根据版本号和子版本号确定设备, NSNotFound 为暂时无法识别
 - (NSInteger)currentDeviceModelVersion:(DeviceModel)model {
     NSInteger version = NSNotFound;
+    if (TARGET_IPHONE_SIMULATOR) {
+        return version;
+    }
+    
     switch (model) {
         case DeviceModelAirPods: {
             version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AirPods".length, 1)] integerValue];
