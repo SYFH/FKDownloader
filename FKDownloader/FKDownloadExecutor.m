@@ -31,26 +31,11 @@
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
         NSInteger statusCode = httpResponse.statusCode;
         if (statusCode < 200 || statusCode > 300) {
-            downloadTask.error = [NSError errorWithDomain:NSURLErrorDomain
-                                                     code:NSURLErrorUnknown
-                                                 userInfo:@{NSFilePathErrorKey: task.currentRequest.URL.absoluteString,
-                                                            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
-            [downloadTask setValue:@(TaskStatusUnknowError) forKey:@"status"];
-            
-            if ([downloadTask.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [downloadTask.delegate downloader:downloadTask.manager errorTask:downloadTask];
-                });
-            }
-            if (downloadTask.statusBlock) {
-                __weak typeof(downloadTask) weak = downloadTask;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weak.statusBlock(weak);
-                });
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotication object:nil];
-            });
+            NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                 code:NSURLErrorUnknown
+                                             userInfo:@{NSFilePathErrorKey: task.currentRequest.URL.absoluteString,
+                                                        NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
+            [downloadTask sendErrorInfo:error];
             return;
         }
     }
@@ -61,63 +46,13 @@
             if (resumeData) {
                 // 取消, 带恢复数据
                 [resumeData writeToFile:[downloadTask resumeFilePath] atomically:YES];
-                [downloadTask setValue:@(TaskStatusSuspend) forKey:@"status"];
-                
-                if ([downloadTask.delegate respondsToSelector:@selector(downloader:didSuspendTask:)]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [downloadTask.delegate downloader:downloadTask.manager didSuspendTask:downloadTask];
-                    });
-                }
-                if (downloadTask.statusBlock) {
-                    __weak typeof(downloadTask) weak = downloadTask;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        weak.statusBlock(weak);
-                    });
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidSuspendNotication object:nil];
-                });
+                [downloadTask sendSuspendInfo];
             } else {
                 // 取消
-                [downloadTask setValue:@(TaskStatusCancelld) forKey:@"status"];
-                
-                if ([downloadTask.delegate respondsToSelector:@selector(downloader:didCancelldTask:)]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [downloadTask.delegate downloader:downloadTask.manager didCancelldTask:downloadTask];
-                    });
-                }
-                if (downloadTask.statusBlock) {
-                    __weak typeof(downloadTask) weak = downloadTask;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        weak.statusBlock(weak);
-                    });
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidCancelldNotication object:nil];
-                });
-                
-                if ([FKDownloadManager manager].configure.isAutoClearTask) {
-                    [[FKDownloadManager manager] remove:task.currentRequest.URL.absoluteString];
-                }
+                [downloadTask sendCancelldInfo];
             }
         } else {
-            downloadTask.error = error;
-            [downloadTask setValue:@(TaskStatusUnknowError) forKey:@"status"];
-            
-            if ([downloadTask.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [downloadTask.delegate downloader:downloadTask.manager errorTask:downloadTask];
-                });
-            }
-            if (downloadTask.statusBlock) {
-                __weak typeof(downloadTask) weak = downloadTask;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weak.statusBlock(weak);
-                });
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotication object:nil];
-            });
+            [downloadTask sendErrorInfo:error];
         }
     }
     
@@ -134,117 +69,33 @@
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)downloadTask.response;
         NSInteger statusCode = httpResponse.statusCode;
         if (statusCode < 200 || statusCode > 300) {
-            task.error = [NSError errorWithDomain:NSURLErrorDomain
-                                             code:NSURLErrorUnknown
-                                         userInfo:@{NSFilePathErrorKey: downloadTask.currentRequest.URL.absoluteString,
-                                                    NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
-            [task setValue:@(TaskStatusUnknowError) forKey:@"status"];
-            
-            if ([task.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [task.delegate downloader:task.manager errorTask:task];
-                });
-            }
-            if (task.statusBlock) {
-                __weak typeof(task) weak = task;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weak.statusBlock(weak);
-                });
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotication object:nil];
-            });
+            NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                 code:NSURLErrorUnknown
+                                             userInfo:@{NSFilePathErrorKey: downloadTask.currentRequest.URL.absoluteString,
+                                                        NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
+            [task sendErrorInfo:error];
             return;
         }
     }
     
     if ([[FKDownloadManager manager].fileManager fileExistsAtPath:location.path]) {
         if ([[FKDownloadManager manager].fileManager fileExistsAtPath:task.filePath]) {
-            [task setValue:@(TaskStatusFinish) forKey:@"status"];
-            
-            if ([task.delegate respondsToSelector:@selector(downloader:didFinishTask:)]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [task.delegate downloader:task.manager didFinishTask:task];
-                });
-            }
-            if (task.statusBlock) {
-                __weak typeof(task) weak = task;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weak.statusBlock(weak);
-                });
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidFinishNotication object:nil];
-            });
-            
-            if ([FKDownloadManager manager].configure.isAutoClearTask) {
-                [[FKDownloadManager manager] remove:downloadTask.currentRequest.URL.absoluteString];
-            }
+            [task sendFinishInfo];
         } else {
             NSError *error;
             [[FKDownloadManager manager].fileManager copyItemAtPath:location.path toPath:task.filePath error:&error];
             if (error) {
-                task.error = error;
-                [task setValue:@(TaskStatusUnknowError) forKey:@"status"];
-                
-                if ([task.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [task.delegate downloader:task.manager errorTask:task];
-                    });
-                }
-                if (task.statusBlock) {
-                    __weak typeof(task) weak = task;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        weak.statusBlock(weak);
-                    });
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotication object:nil];
-                });
+                [task sendErrorInfo:error];
             } else {
-                [task setValue:@(TaskStatusFinish) forKey:@"status"];
-                
-                if ([task.delegate respondsToSelector:@selector(downloader:didFinishTask:)]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [task.delegate downloader:task.manager didFinishTask:task];
-                    });
-                }
-                if (task.statusBlock) {
-                    __weak typeof(task) weak = task;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        weak.statusBlock(weak);
-                    });
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidFinishNotication object:nil];
-                });
-                
-                if ([FKDownloadManager manager].configure.isAutoClearTask) {
-                    [[FKDownloadManager manager] remove:downloadTask.currentRequest.URL.absoluteString];
-                }
+                [task sendFinishInfo];
             }
         }
     } else {
-        task.error = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                         code:2
-                                     userInfo:@{NSFilePathErrorKey: location.path,
-                                                NSLocalizedDescriptionKey: @"The operation couldn’t be completed. No such file or directory"}];
-        [task setValue:@(TaskStatusUnknowError) forKey:@"status"];
-        
-        if ([task.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [task.delegate downloader:task.manager errorTask:task];
-            });
-        }
-        if (task.statusBlock) {
-            __weak typeof(task) weak = task;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                weak.statusBlock(weak);
-            });
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotication object:nil];
-        });
+        NSError *error = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                             code:2
+                                         userInfo:@{NSFilePathErrorKey: location.path,
+                                                    NSLocalizedDescriptionKey: @"The operation couldn’t be completed. No such file or directory"}];
+        [task sendErrorInfo:error];
     }
 }
 

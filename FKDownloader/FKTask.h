@@ -74,6 +74,8 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 @property (nonatomic, copy  ) FKStatus              statusBlock;
 @property (nonatomic, weak  ) id<FKTaskDelegate>    delegate;
 
+
+#pragma mark - Operation
 - (void)restore:(NSURLSessionDownloadTask *)task;
 - (void)reday;
 - (void)execute;
@@ -83,13 +85,20 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 - (void)cancel;
 - (void)clear;
 
+
+#pragma mark - Send Info
+- (void)sendSuspendInfo;
+- (void)sendCancelldInfo;
+- (void)sendFinishInfo;
+- (void)sendErrorInfo:(NSError *)error;
 - (void)sendProgressInfo;
 
-- (void)addProgressObserver;
-- (void)removeProgressObserver;
 
+#pragma mark - Description
 - (NSString *)statusDescription:(TaskStatus)status;
 
+
+#pragma mark - Basic
 - (NSString *)filePath;
 - (NSString *)resumeFilePath;
 - (BOOL)isHasResumeData;

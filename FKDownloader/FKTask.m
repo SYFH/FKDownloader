@@ -39,6 +39,8 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 @implementation FKTask
 @synthesize resumeData = _resumeData;
 
+
+#pragma mark - Operation
 - (void)restore:(NSURLSessionDownloadTask *)task {
     [self clear];
     self.downloadTask = task;
@@ -252,6 +254,93 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
 }
 
+
+#pragma mark - Send Info
+- (void)sendSuspendInfo {
+    self.status = TaskStatusSuspend;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:didSuspendTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didSuspendTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidSuspendNotication object:nil];
+    });
+}
+
+- (void)sendCancelldInfo {
+    self.status = TaskStatusCancelld;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:didCancelldTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didCancelldTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidCancelldNotication object:nil];
+    });
+    
+    if (self.manager.configure.isAutoClearTask) {
+        [self.manager remove:self.url];
+    }
+}
+
+- (void)sendFinishInfo {
+    self.status = TaskStatusFinish;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:didFinishTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didFinishTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidFinishNotication object:nil];
+    });
+    
+    if (self.manager.configure.isAutoClearTask) {
+        [self.manager remove:self.url];
+    }
+}
+
+- (void)sendErrorInfo:(NSError *)error {
+    self.error = error;
+    self.status = TaskStatusUnknowError;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager errorTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotication object:nil];
+    });
+}
+
 - (void)sendProgressInfo {
     if ([self.delegate respondsToSelector:@selector(downloader:progressingTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -269,29 +358,8 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     });
 }
 
-- (NSString *)filePath {
-    NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
-    return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
-}
 
-- (NSString *)resumeFilePath {
-    NSString *fileName = [NSString stringWithFormat:@"%@.resume", self.identifier];
-    return [self.manager.configure.resumePath stringByAppendingPathComponent:fileName];
-}
-
-- (BOOL)isHasResumeData {
-    return [self.manager.fileManager fileExistsAtPath:[self resumeFilePath]];
-}
-
-- (BOOL)isFinish {
-    return [self.manager.fileManager fileExistsAtPath:[self filePath]];
-}
-
-- (void)clear {
-    [self removeProgressObserver];
-    [self clearResumeData];
-}
-
+#pragma mark - Description
 - (NSString *)statusDescription:(TaskStatus)status {
     NSString *description = @"";
     switch (status) {
@@ -336,6 +404,31 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
             break;
     }
     return description;
+}
+
+
+#pragma mark - Basic
+- (NSString *)filePath {
+    NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
+    return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
+}
+
+- (NSString *)resumeFilePath {
+    NSString *fileName = [NSString stringWithFormat:@"%@.resume", self.identifier];
+    return [self.manager.configure.resumePath stringByAppendingPathComponent:fileName];
+}
+
+- (BOOL)isHasResumeData {
+    return [self.manager.fileManager fileExistsAtPath:[self resumeFilePath]];
+}
+
+- (BOOL)isFinish {
+    return [self.manager.fileManager fileExistsAtPath:[self filePath]];
+}
+
+- (void)clear {
+    [self removeProgressObserver];
+    [self clearResumeData];
 }
 
 
