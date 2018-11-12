@@ -45,6 +45,7 @@
 - CocoaPods  
 　　`pod 'FKDownloader'`
 - Carthage  
+　　`github 'SYFH/FKDownloader'`
 - Manual  
 
 # 关于
