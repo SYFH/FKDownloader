@@ -43,10 +43,11 @@
 　　
 # 安装
 - CocoaPods  
-　　`pod 'FKDownloader'`
+　　`pod 'FKDownloader'`  
 - Carthage  
-　　`github 'SYFH/FKDownloader'`
+　　`github 'SYFH/FKDownloader'`  
 - Manual  
+　　将`FKDownloader` 文件夹复制到项目中, `#import "FKDownloader.h"` 即可开始  
 
 # 关于
 如果觉得好用, 可以 Star 哟~  
