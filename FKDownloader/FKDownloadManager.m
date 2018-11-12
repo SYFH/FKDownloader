@@ -332,7 +332,7 @@ static FKDownloadManager *_instance = nil;
 // !!!: https://www.theiphonewiki.com/wiki/Models 可根据版本号和子版本号确定设备, NSNotFound 为暂时无法识别
 - (NSInteger)currentDeviceModelVersion:(DeviceModel)model {
     NSInteger version = NSNotFound;
-    if (TARGET_IPHONE_SIMULATOR) {
+    if ([self currentDeviceSimulator]) {
         return version;
     }
     
@@ -374,40 +374,22 @@ static FKDownloadManager *_instance = nil;
 
 - (NSInteger)currentDeviceModelSubversion:(DeviceModel)model {
     NSInteger version = NSNotFound;
-    switch (model) {
-        case DeviceModelAirPods: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AirPodsx.".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModelAppleTV: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AppleTVx.".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModelAppleWatch: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"Watchx.".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModelHomePod: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AudioAccessoryx.".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModeliPad: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPadx.".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModeliPadMini: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPadx.".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModeliPhone: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPhonex.".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModeliPodTouch: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPodx.".length, 1)] integerValue];
-        } break;
+    if ([self currentDeviceSimulator]) {
+        return version;
     }
+    
+    version = [[[self currentDeviceName] substringWithRange:NSMakeRange([self currentDeviceName].length - 1, 1)] integerValue];
     return version;
+}
+
+- (BOOL)currentDeviceSimulator {
+    if ([[self currentDeviceName] isEqualToString:@"i386"] ||
+        [[self currentDeviceName] isEqualToString:@"x86_64"]) {
+        
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (NSString *)currentDeviceName {
