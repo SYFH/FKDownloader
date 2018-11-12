@@ -42,10 +42,10 @@
 　　直接运行 Demo 即可.
 　　
 # 安装
-- CocoaPods
+- CocoaPods  
 　　`pod 'FKDownloader'`
-- Carthage
-- Manual
+- Carthage  
+- Manual  
 
 # 关于
 如果觉得好用, 可以 Star 哟~  
