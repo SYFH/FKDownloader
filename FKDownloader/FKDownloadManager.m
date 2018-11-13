@@ -153,7 +153,7 @@ static FKDownloadManager *_instance = nil;
         [task execute];
     } else {
         FKLog(@"当前执行数量 %ld 已超过 %ld", (unsigned long)[self filterTaskWithStatus:TaskStatusExecuting].count, (unsigned long)self.configure.maximumExecutionTask)
-        [task setValue:@(TaskStatusIdle) forKey:@"status"];
+        [task sendIdleInfo];
     }
 }
 

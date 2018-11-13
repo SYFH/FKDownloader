@@ -13,9 +13,12 @@
 #import <objc/runtime.h>
 #import <UIKit/UIKit.h>
 
+FKNotificationName const FKTaskDidPrepareNotification   = @"FKTaskDidPrepareNotification";
+FKNotificationName const FKTaskDidIdleNotification      = @"FKTaskDidIdleNotification";
 FKNotificationName const FKTaskWillExecuteNotification  = @"FKTaskWillExecuteNotification";
 FKNotificationName const FKTaskDidExecuteNotication     = @"FKTaskDidExecuteNotication";
 FKNotificationName const FKTaskProgressNotication       = @"FKTaskProgressNotication";
+FKNotificationName const FKTaskDidResumingNotification  = @"FKTaskDidResumingNotification";
 FKNotificationName const FKTaskDidFinishNotication      = @"FKTaskDidFinishNotication";
 FKNotificationName const FKTaskErrorNotication          = @"FKTaskErrorNotication";
 FKNotificationName const FKTaskWillSuspendNotication    = @"FKTaskWillSuspendNotication";
@@ -73,7 +76,6 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 
 - (void)reday {
     FKLog(@"开始准备: %@", self)
-    self.status = TaskStatusPrepare;
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
     if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
         [self removeProgressObserver];
@@ -88,18 +90,8 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     
-    if ([self.delegate respondsToSelector:@selector(downloader:willExecuteTask:)]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate downloader:self.manager willExecuteTask:self];
-        });
-    }
-    if (self.statusBlock) {
-        __weak typeof(self) weak = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
-        });
-    }
-    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillExecuteNotification object:nil];
+    [self sendPrepareInfo];
+    [self sendWillExecutingInfo];
 }
 
 - (void)addProgressObserver {
@@ -121,51 +113,17 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     FKLog(@"执行: %@", self)
     if (self.isFinish) {
         FKLog(@"文件早已下载完成: %@", self)
-        self.status = TaskStatusFinish;
         self.progress.totalUnitCount = 1;
         self.progress.completedUnitCount = 1;
-        
-        if ([self.delegate respondsToSelector:@selector(downloader:didFinishTask:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate downloader:self.manager didFinishTask:self];
-            });
-        }
-        if (self.statusBlock) {
-            __weak typeof(self) weak = self;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                weak.statusBlock(weak);
-            });
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidFinishNotication object:nil];
-        });
-        
-        if (self.manager.configure.isAutoClearTask) {
-            [self.manager remove:self.url];
-        }
+        [self sendFinishInfo];
     } else if (self.isHasResumeData) {
         FKLog(@"检测到恢复数据: %@", self)
         [self resume];
     } else {
         FKLog(@"没有恢复数据: %@", self)
         [self.downloadTask resume];
-        self.status = TaskStatusExecuting;
+        [self sendExecutingInfo];
     }
-    
-    if ([self.delegate respondsToSelector:@selector(downloader:didExecuteTask:)]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate downloader:self.manager didExecuteTask:self];
-        });
-    }
-    if (self.statusBlock) {
-        __weak typeof(self) weak = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
-        });
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidExecuteNotication object:nil];
-    });
 }
 
 - (void)suspend {
@@ -173,20 +131,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 }
 
 - (void)suspendWithComplete:(void (^)(void))complete {
-    if ([self.delegate respondsToSelector:@selector(downloader:willSuspendTask:)]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate downloader:self.manager willSuspendTask:self];
-        });
-    }
-    if (self.statusBlock) {
-        __weak typeof(self) weak = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
-        });
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotication object:nil];
-    });
+    [self sendWillSuspendInfo];
     
     // !!!: https://stackoverflow.com/questions/39346231/resume-nsurlsession-on-ios10/39347461#39347461
     // tips: iOS 12/12.1 resumeData 与之前格式不一致, 之前保存的文件为 xml 格式, 新的格式需要 NSKeyedUnarchiver 解码后才可得到与之前一致的 NSDictionary, 但是不影响正常使用.
@@ -206,19 +151,38 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 }
 
 - (void)resume {
-    self.status = TaskStatusResuming;
+    [self sendResumingInfo];
+    
     [self removeProgressObserver];
     self.downloadTask = [self.manager.session downloadTaskWithResumeData:self.resumeData];
     [self clearResumeData];
     [self addProgressObserver];
     [self.downloadTask resume];
-    self.status = TaskStatusExecuting;
+    
+    [self sendExecutingInfo];
 }
 
 - (void)cancel {
-    if ([self.delegate respondsToSelector:@selector(downloader:willCanceldTask:)]) {
+    [self sendWillCancelldInfo];
+    
+    if (self.downloadTask.state == NSURLSessionTaskStateCanceling) {
+        [self sendCancelldInfo];
+        return;
+    }
+    
+    [self.downloadTask cancel];
+    self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+    self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+}
+
+
+#pragma mark - Send Info
+- (void)sendIdleInfo {
+    self.status = TaskStatusIdle;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:didIdleTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate downloader:self.manager willCanceldTask:self];
+            [self.delegate downloader:self.manager didIdleTask:self];
         });
     }
     if (self.statusBlock) {
@@ -228,34 +192,95 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillCancelldNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidIdleNotification object:nil];
     });
-    
-    [self.downloadTask cancel];
-    self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
-    self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
-    
-    if (self.status != TaskStatusExecuting) {
-        self.status = TaskStatusCancelld;
-        if ([self.delegate respondsToSelector:@selector(downloader:didCancelldTask:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate downloader:self.manager didCancelldTask:self];
-            });
-        }
-        if (self.statusBlock) {
-            __weak typeof(self) weak = self;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                weak.statusBlock(weak);
-            });
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidCancelldNotication object:nil];
-        });
-    }
 }
 
+- (void)sendPrepareInfo {
+    self.status = TaskStatusPrepare;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:didPrepareTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didPrepareTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidPrepareNotification object:nil];
+}
 
-#pragma mark - Send Info
+- (void)sendResumingInfo {
+    self.status = TaskStatusResuming;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:didResumingTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didResumingTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidResumingNotification object:nil];
+}
+
+- (void)sendWillExecutingInfo {
+    if ([self.delegate respondsToSelector:@selector(downloader:willExecuteTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager willExecuteTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillExecuteNotification object:nil];
+}
+
+- (void)sendExecutingInfo {
+    self.status = TaskStatusExecuting;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:didExecuteTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didExecuteTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidExecuteNotication object:nil];
+    });
+}
+
+- (void)sendWillSuspendInfo {
+    if ([self.delegate respondsToSelector:@selector(downloader:willSuspendTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager willSuspendTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotication object:nil];
+    });
+}
+
 - (void)sendSuspendInfo {
     self.status = TaskStatusSuspend;
     
@@ -272,6 +297,23 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     }
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidSuspendNotication object:nil];
+    });
+}
+
+- (void)sendWillCancelldInfo {
+    if ([self.delegate respondsToSelector:@selector(downloader:willCanceldTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager willCanceldTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillCancelldNotication object:nil];
     });
 }
 
@@ -567,6 +609,51 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 - (void)setUrl:(NSString *)url {
     _url = url;
     self.identifier = [url SHA256];
+}
+
+- (void)setDelegate:(id<FKTaskDelegate>)delegate {
+    _delegate = delegate;
+    
+    switch (self.status) {
+        case TaskStatusPrepare: {
+            [self sendPrepareInfo];
+        } break;
+            
+        case TaskStatusIdle: {
+            [self sendIdleInfo];
+        } break;
+            
+        case TaskStatusExecuting: {
+            [self sendExecutingInfo];
+        } break;
+            
+        case TaskStatusFinish: {
+            [self sendFinishInfo];
+        } break;
+            
+        case TaskStatusSuspend: {
+            [self sendSuspendInfo];
+        } break;
+            
+        case TaskStatusResuming: {
+            [self sendResumingInfo];
+        } break;
+            
+        case TaskStatusChecking: {
+            
+        } break;
+            
+        case TaskStatusCancelld: {
+            [self sendCancelldInfo];
+        } break;
+            
+        case TaskStatusUnknowError: {
+            [self sendErrorInfo:self.error];
+        } break;
+            
+        default:
+            break;
+    }
 }
 
 - (NSData *)resumeData {
