@@ -70,7 +70,8 @@ __attribute__((objc_subclassing_restricted))
 - (FKTask *)add:(NSString *)url;
 
 /**
- 开始任务, 如果下载链接对应的任务不存在, 就会创建任务, 任务状态变动为 TaskStatusNone -> TaskStatusPrepare -> TaskStatusExecuting
+ 开始任务, 如果下载链接对应的任务不存在, 就会创建任务
+ 任务状态变动为 TaskStatusNone -> TaskStatusPrepare -> TaskStatusExecuting
 
  @param url 下载地址
  @return 任务实例
@@ -117,12 +118,14 @@ __attribute__((objc_subclassing_restricted))
 
 #pragma mark - Restore
 /**
- 恢复任务, 需要在 -[AppDelegate didFinishLaunchingWithOptions] 中设置完配置实例后调用, 以加载并恢复被持久化的任务
+ 恢复任务, 需要在 -[AppDelegate didFinishLaunchingWithOptions] 中设置完配置实例后调用
+ 以加载并恢复被持久化的任务
  */
 - (void)restory;
 
 /**
- 修复在 iOS 12/12.1 iPhone 8以下出现前后台切换后进度无法正确获取的问题, 必须在 -[AppDelegate applicationDidBecomeActive] 内执行
+ 修复在 iOS 12/12.1 iPhone 8以下出现前后台切换后进度无法正确获取的问题
+ 必须在 -[AppDelegate applicationDidBecomeActive] 内执行
  */
 - (void)fixProgressNotChanage;
 

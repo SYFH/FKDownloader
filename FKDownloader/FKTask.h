@@ -83,7 +83,8 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 @property (nonatomic, assign, readonly) TaskStatus  status;
 
 /**
- 当前任务的下载进度, progress.totalUnitCount 为文件总大小, progress.completedUnitCount 为已下载大小, progress.fractionCompleted 为进度百分比
+ 当前任务的下载进度, progress.totalUnitCount 为文件总大小
+ progress.completedUnitCount 为已下载大小, progress.fractionCompleted 为进度百分比
  */
 @property (nonatomic, strong, readonly) NSProgress  *progress;
 
