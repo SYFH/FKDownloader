@@ -25,6 +25,7 @@ FKNotificationName const FKTaskWillSuspendNotication    = @"FKTaskWillSuspendNot
 FKNotificationName const FKTaskDidSuspendNotication     = @"FKTaskDidSuspendNotication";
 FKNotificationName const FKTaskWillCancelldNotication   = @"FKTaskWillCancelldNotication";
 FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNotication";
+FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotication";
 
 @interface FKTask ()
 
@@ -33,14 +34,28 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 @property (nonatomic, strong) NSProgress  *progress;
 @property (nonatomic, strong) NSData      *resumeData;
 
-@property (nonatomic, assign) NSTimeInterval prevTime;
-@property (nonatomic, strong) NSNumber    *estimatedTimeRemaining;
-@property (nonatomic, strong) NSNumber    *bytesPerSecondSpeed;
+@property (nonatomic, strong) NSTimer *timer;
+
+@property (nonatomic, assign) NSTimeInterval    prevTime;
+@property (nonatomic, assign) int64_t           prevReceivedBytes;
+@property (nonatomic, strong) NSNumber          *estimatedTimeRemaining;
+@property (nonatomic, strong) NSNumber          *bytesPerSecondSpeed;
 
 @end
 
 @implementation FKTask
 @synthesize resumeData = _resumeData;
+
+
+#pragma mark - Init
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(refreshProgerss) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    }
+    return self;
+}
 
 
 #pragma mark - Operation
@@ -400,6 +415,23 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
     });
 }
 
+- (void)sendSpeedInfo {
+    if ([self.delegate respondsToSelector:@selector(downloader:speedInfo:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager speedInfo:self];
+        });
+    }
+    if (self.speedBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.speedBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskSpeedInfoNotication object:nil];
+    });
+}
+
 
 #pragma mark - Description
 - (NSString *)statusDescription:(TaskStatus)status {
@@ -471,6 +503,7 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 - (void)clear {
     [self removeProgressObserver];
     [self clearResumeData];
+    [self clearSpeedTimer];
 }
 
 
@@ -478,14 +511,6 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     
     if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesReceived))]) {
-        NSTimeInterval now = [NSDate date].timeIntervalSince1970;
-        int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.progress.completedUnitCount;
-        self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
-        self.prevTime = now;
-        
-        double remaining = (self.progress.totalUnitCount - self.progress.completedUnitCount) / (receivedCount?:1);
-        self.estimatedTimeRemaining = [NSNumber numberWithDouble:remaining];
-        
         self.progress.completedUnitCount = self.downloadTask.countOfBytesReceived;
     }
     if ([keyPath isEqualToString:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))]) {
@@ -601,6 +626,30 @@ FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNot
         return result;
     } else {
         return data;
+    }
+}
+
+- (void)refreshProgerss {
+    if (self.status != TaskStatusExecuting || self.downloadTask.state != NSURLSessionTaskStateRunning) {
+        return;
+    }
+    
+    NSTimeInterval now = [NSDate date].timeIntervalSince1970;
+    int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.prevReceivedBytes;
+    self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
+    self.prevTime = now;
+    self.prevReceivedBytes = self.downloadTask.countOfBytesReceived;
+    
+    double remaining = (self.progress.totalUnitCount - self.progress.completedUnitCount) / (receivedCount?:1);
+    self.estimatedTimeRemaining = [NSNumber numberWithDouble:remaining];
+    
+    [self sendSpeedInfo];
+}
+
+- (void)clearSpeedTimer {
+    if (self.timer || !self.timer.isValid) {
+        [self.timer invalidate];
+        self.timer = nil;
     }
 }
 

@@ -109,8 +109,6 @@
 - (void)downloader:(FKDownloadManager *)downloader progressingTask:(FKTask *)task {
     NSLog(@"%@: %.6f", task.url, task.progress.fractionCompleted);
     self.progress.progress = task.progress.fractionCompleted;
-    self.speedLable.text = [task bytesPerSecondSpeedDescription];
-    self.remainingLable.text = [task estimatedTimeRemainingDescription];
 }
 
 - (void)downloader:(FKDownloadManager *)downloader didFinishTask:(FKTask *)task {
@@ -143,6 +141,11 @@
 - (void)downloader:(FKDownloadManager *)downloader errorTask:(FKTask *)task {
     NSLog(@"下载出错: %@", task.error);
     [self.operationButton setTitle:@"开始" forState:UIControlStateNormal];
+}
+
+- (void)downloader:(FKDownloadManager *)downloader speedInfo:(FKTask *)task {
+    self.speedLable.text = [task bytesPerSecondSpeedDescription];
+    self.remainingLable.text = [task estimatedTimeRemainingDescription];
 }
 
 

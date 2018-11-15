@@ -24,9 +24,11 @@ extern FKNotificationName const FKTaskWillSuspendNotication;
 extern FKNotificationName const FKTaskDidSuspendNotication;
 extern FKNotificationName const FKTaskWillCancelldNotication;
 extern FKNotificationName const FKTaskDidCancelldNotication;
+extern FKNotificationName const FKTaskSpeedInfoNotication;
 
 typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
 typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
+typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
 
 typedef NS_ENUM(NSUInteger, TaskStatus) {
     TaskStatusNone,         // 无状态, 仅表示已加入队列
@@ -57,6 +59,7 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 - (void)downloader:(FKDownloadManager *)downloader willCanceldTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader didCancelldTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader errorTask:(FKTask *)task;
+- (void)downloader:(FKDownloadManager *)downloader speedInfo:(FKTask *)task;
 
 @end
 
@@ -103,7 +106,6 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  */
 @property (nonatomic, strong, readonly) NSURLSessionDownloadTask *downloadTask;
 
-// TODO: 目前下载速度依赖数据接收监听, 后期可改为按指定间隔计算
 /**
  预期下载完成需要的时间
  */
@@ -134,6 +136,11 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  任务状态监听 Block
  */
 @property (nonatomic, copy  ) FKStatus              statusBlock;
+
+/**
+ 任务速度监听 Block
+ */
+@property (nonatomic, copy  ) FKSpeed               speedBlock;
 
 
 /**
@@ -220,6 +227,11 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  发送任务下载进度信息
  */
 - (void)sendProgressInfo;
+
+/**
+ 发送任务下载速度/预期时间信息
+ */
+- (void)sendSpeedInfo;
 
 
 #pragma mark - Description
