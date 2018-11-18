@@ -10,7 +10,7 @@
 @class FKDownloadManager;
 @class FKTask;
 
-// 人物状态的细化通知, 与枚举 ·TaskStatus· 等同, will 表示开始处理, did 表示处理完成
+// 任务状态的细化通知, 与枚举 ·TaskStatus· 等同, will 表示开始处理, did 表示处理完成
 typedef NSString * FKNotificationName;
 extern FKNotificationName const FKTaskDidPrepareNotification;
 extern FKNotificationName const FKTaskDidIdleNotification;
@@ -18,6 +18,8 @@ extern FKNotificationName const FKTaskWillExecuteNotification;
 extern FKNotificationName const FKTaskDidExecuteNotication;
 extern FKNotificationName const FKTaskProgressNotication;
 extern FKNotificationName const FKTaskDidResumingNotification;
+extern FKNotificationName const FKTaskWillChecksumNotification;
+extern FKNotificationName const FKTaskDidChecksumNotification;
 extern FKNotificationName const FKTaskDidFinishNotication;
 extern FKNotificationName const FKTaskErrorNotication;
 extern FKNotificationName const FKTaskWillSuspendNotication;
@@ -25,6 +27,12 @@ extern FKNotificationName const FKTaskDidSuspendNotication;
 extern FKNotificationName const FKTaskWillCancelldNotication;
 extern FKNotificationName const FKTaskDidCancelldNotication;
 extern FKNotificationName const FKTaskSpeedInfoNotication;
+
+typedef NSString * FKTaskInfoName;
+extern FKTaskInfoName const FKTaskInfoURL;
+extern FKTaskInfoName const FKTaskInfoFileName;
+extern FKTaskInfoName const FKTaskInfoVerificationType;
+extern FKTaskInfoName const FKTaskInfoVerification;
 
 typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
 typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
@@ -38,9 +46,17 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
     TaskStatusFinish,       // 已完成
     TaskStatusSuspend,      // 已暂停
     TaskStatusResuming,     // 恢复中
-    TaskStatusChecking,     // 文件校验中
+    TaskStatusChecksumming, // 文件校验中
+    TaskStatusChecksummed,  // 文件校验完成
     TaskStatusCancelld,     // 已取消
     TaskStatusUnknowError   // 未知错误
+};
+
+typedef NS_ENUM(NSUInteger, VerifyType) {
+    VerifyTypeMD5,
+    VerifyTypeSHA1,
+    VerifyTypeSHA256,
+    VerifyTypeSHA512
 };
 
 @protocol FKTaskDelegate<NSObject>
@@ -53,6 +69,8 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
 - (void)downloader:(FKDownloadManager *)downloader didExecuteTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader didResumingTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader progressingTask:(FKTask *)task;
+- (void)downloader:(FKDownloadManager *)downloader willChecksumTask:(FKTask *)task;
+- (void)downloader:(FKDownloadManager *)downloader didChecksumTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader didFinishTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader willSuspendTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader didSuspendTask:(FKTask *)task;
@@ -74,6 +92,21 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  任务的下载链接, 只支持 http 和 https, 不合法 URL 会造成断言不通过
  */
 @property (nonatomic, strong) NSString              *url;
+
+/**
+ 保存时的文件名, 注意: 使用时不必添加后缀名
+ */
+@property (nonatomic, strong) NSString              *fileName;
+
+/**
+ 文件校验码, 支持 MD5, SHA1, SHA256
+ */
+@property (nonatomic, strong) NSString              *verification;
+
+/**
+ 文件校验码类型
+ */
+@property (nonatomic, assign) VerifyType            verificationType;
 
 /**
  父管理器
@@ -126,6 +159,10 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  */
 @property (nonatomic, strong, readonly) NSString    *bytesPerSecondSpeedDescription;
 
+/**
+ 是否通过校验
+ */
+@property (nonatomic, assign, readonly) BOOL        isPassChecksum;
 
 /**
  任务进度监听 Blok
@@ -156,6 +193,13 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  @param task task
  */
 - (void)restore:(NSURLSessionDownloadTask *)task;
+
+/**
+ 设置附加数据
+
+ @param info 附加数据
+ */
+- (void)settingInfo:(NSDictionary *)info;
 
 /**
  开始准备任务, 如创建 task, 添加 KVO, 持久化等
@@ -189,11 +233,12 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  */
 - (void)cancel;
 
-// TODO: 当任务暂停/取消/完成时, 从管理者减少相应的字节长度
 /**
- 当任务暂停/取消/完成时, 从管理者减少相应的字节长度
+ 检验文件
+
+ @return 是否通过校验
  */
-- (void)clearTaskInfo;
+- (BOOL)checksum;
 
 /**
  清除任务, 从管理器中排除, 并解除持久化
@@ -216,6 +261,11 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  发送 TaskStatusCancelld 状态信息
  */
 - (void)sendCancelldInfo;
+
+/**
+ 发送 TaskStatusChecking 状态信息
+ */
+- (void)sendChecksumInfo;
 
 /**
  发送 TaskStatusFinish 状态信息

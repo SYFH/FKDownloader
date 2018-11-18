@@ -10,17 +10,17 @@
 
 @implementation NSArray (FKDownload)
 
-- (NSArray *)map:(id (^)(id obj))block {
+- (NSArray *)map:(id (^)(id obj, NSUInteger idx))block {
     NSMutableArray *mutableArray = [NSMutableArray new];
     [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [mutableArray addObject:block(obj)];
+        [mutableArray addObject:block(obj, idx)];
     }];
     return mutableArray;
 }
 
-- (void)forEach:(void (^)(id obj))block {
+- (void)forEach:(void (^)(id obj, NSUInteger idx))block {
     [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        block(obj);
+        block(obj, idx);
     }];
 }
 

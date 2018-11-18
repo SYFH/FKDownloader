@@ -11,11 +11,35 @@
 
 @implementation NSString (FKDownload)
 
+- (NSString *)MD5 {
+    unsigned int outputLength = CC_MD5_DIGEST_LENGTH;
+    unsigned char output[outputLength];
+    
+    CC_MD5(self.UTF8String, [self UTF8Length], output);
+    return [self toHexString:output length:outputLength];
+}
+
+- (NSString *)SHA1 {
+    unsigned int outputLength = CC_SHA1_DIGEST_LENGTH;
+    unsigned char output[outputLength];
+    
+    CC_SHA1(self.UTF8String, [self UTF8Length], output);
+    return [self toHexString:output length:outputLength];
+}
+
 - (NSString *)SHA256 {
     unsigned int outputLength = CC_SHA256_DIGEST_LENGTH;
     unsigned char output[outputLength];
     
     CC_SHA256(self.UTF8String, [self UTF8Length], output);
+    return [self toHexString:output length:outputLength];
+}
+
+- (NSString *)SHA512 {
+    unsigned int outputLength = CC_SHA512_DIGEST_LENGTH;
+    unsigned char output[outputLength];
+    
+    CC_SHA512(self.UTF8String, [self UTF8Length], output);
     return [self toHexString:output length:outputLength];
 }
 

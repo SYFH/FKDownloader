@@ -10,7 +10,7 @@
 
 @interface NSArray<ObjectType> (FKDownload)
 
-- (NSArray *)map:(id (^)(ObjectType obj))block;
-- (void)forEach:(void (^)(ObjectType obj))block;
+- (NSArray *)map:(id (^)(ObjectType obj, NSUInteger idx))block;
+- (void)forEach:(void (^)(ObjectType obj, NSUInteger idx))block;
 
 @end

@@ -10,6 +10,7 @@
 
 typedef void(^handler)(void);
 
+// TODO: 任务速度更新间隔, 是否进行文件校验
 @interface FKConfigure : NSObject
 
 /**
@@ -26,6 +27,11 @@ typedef void(^handler)(void);
  是否自动清理, 当任务失败或完成时起效. 默认为 No
  */
 @property (nonatomic, assign) BOOL isAutoClearTask;
+
+/**
+ 是否进行文件校验
+ */
+@property (nonatomic, assign) BOOL isFileChecksum;
 
 /**
  最大并行任务数量. 默认为 3
@@ -67,6 +73,10 @@ typedef void(^handler)(void);
  */
 @property (nonatomic, strong) NSString  *sessionIdentifier;
 
+/**
+ 任务速度/预计完成时间更新间隔
+ */
+@property (nonatomic, assign) NSTimeInterval speedRefreshInterval;
 
 /**
  默认配置

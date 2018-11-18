@@ -178,6 +178,29 @@ static FKDownloadManager *_instance = nil;
     return task;
 }
 
+- (FKTask *)addInfo:(NSDictionary *)info {
+    if ([info.allKeys containsObject:FKTaskInfoURL]) {
+        NSString *url = info[FKTaskInfoURL];
+        FKLog(@"添加任务: %@", url)
+        NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+        
+        if ([self acquire:url]) {
+            FKTask *task = [self acquire:url];
+            [task settingInfo:info];
+            return [self acquire:url];
+        }
+        
+        FKTask *task = [self createPreserveTask:url];
+        [task settingInfo:info];
+        
+        [self saveTasks];
+        return task;
+    } else {
+        NSAssert([NSURL URLWithString:@""] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+        return nil;
+    }
+}
+
 - (FKTask *)start:(NSString *)url {
     FKLog(@"开始任务: %@", url)
     NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
@@ -272,7 +295,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)restory:(NSArray<NSURLSessionDownloadTask *> *)tasks {
-    [tasks forEach:^(NSURLSessionDownloadTask *downloadTask) {
+    [tasks forEach:^(NSURLSessionDownloadTask *downloadTask, NSUInteger idx) {
         NSString *url = downloadTask.currentRequest.URL.absoluteString;
         FKTask *task = [self acquire:url];
         if (task) {
@@ -282,7 +305,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)saveTasks {
-    NSArray<NSString *> *urls = [self.tasks map:^id(FKTask *obj) { return obj.url; }];
+    NSArray<NSString *> *urls = [self.tasks map:^id(FKTask *obj, NSUInteger idx) { return obj.url; }];
     NSData *data = [NSPropertyListSerialization dataWithPropertyList:urls format:NSPropertyListBinaryFormat_v1_0 options:0 error:nil];
     [data writeToFile:self.configure.restorePath atomically:YES];
 }
@@ -291,7 +314,7 @@ static FKDownloadManager *_instance = nil;
     if ([self.fileManager fileExistsAtPath:self.configure.restorePath]) {
         NSData *data = [NSData dataWithContentsOfFile:self.configure.restorePath options:NSDataReadingMappedIfSafe error:nil];
         NSArray<NSString *> *tasks = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:nil];
-        [tasks forEach:^(NSString *url) {
+        [tasks forEach:^(NSString *url, NSUInteger idx) {
             if (![self acquire:url]) {
                 FKTask *task = [self createPreserveTask:url];
                 if (self.configure.isAutoStart) {
@@ -314,7 +337,7 @@ static FKDownloadManager *_instance = nil;
         [self currentDeviceModelVersion:DeviceModeliPhone] < 10) {
         
         FKLog(@"开始解决进度监听失效")
-        [self.tasks forEach:^(FKTask *task) {
+        [self.tasks forEach:^(FKTask *task, NSUInteger idx) {
             if (task.status == TaskStatusExecuting) {
                 [task suspendWithComplete:^{
                     [task resume];

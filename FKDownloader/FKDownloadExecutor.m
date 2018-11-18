@@ -78,6 +78,7 @@
     }
     
     if ([[FKDownloadManager manager].fileManager fileExistsAtPath:location.path]) {
+        // TODO: 为防止检验中途文件被删除, 所以需将文件转移后开始校验
         if ([[FKDownloadManager manager].fileManager fileExistsAtPath:task.filePath]) {
             [task sendFinishInfo];
         } else {
@@ -86,7 +87,15 @@
             if (error) {
                 [task sendErrorInfo:error];
             } else {
-                [task sendFinishInfo];
+                if ([task checksum]) {
+                    NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                         code:NSURLErrorUnknown
+                                                     userInfo:@{NSFilePathErrorKey: task.url,
+                                                                NSLocalizedDescriptionKey: [NSString stringWithFormat:@"File verification failed"]}];
+                    [task sendErrorInfo:error];
+                } else {
+                    [task sendFinishInfo];
+                }
             }
         }
     } else {

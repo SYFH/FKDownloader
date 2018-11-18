@@ -9,6 +9,7 @@
 #import "FKTask.h"
 #import "FKDownloadManager.h"
 #import "FKConfigure.h"
+#import "FKChecksum.h"
 #import "NSString+FKDownload.h"
 #import <objc/runtime.h>
 #import <UIKit/UIKit.h>
@@ -19,6 +20,8 @@ FKNotificationName const FKTaskWillExecuteNotification  = @"FKTaskWillExecuteNot
 FKNotificationName const FKTaskDidExecuteNotication     = @"FKTaskDidExecuteNotication";
 FKNotificationName const FKTaskProgressNotication       = @"FKTaskProgressNotication";
 FKNotificationName const FKTaskDidResumingNotification  = @"FKTaskDidResumingNotification";
+FKNotificationName const FKTaskWillChecksumNotification = @"FKTaskWillChecksumNotification";
+FKNotificationName const FKTaskDidChecksumNotification  = @"FKTaskDidChecksumNotification";
 FKNotificationName const FKTaskDidFinishNotication      = @"FKTaskDidFinishNotication";
 FKNotificationName const FKTaskErrorNotication          = @"FKTaskErrorNotication";
 FKNotificationName const FKTaskWillSuspendNotication    = @"FKTaskWillSuspendNotication";
@@ -26,6 +29,11 @@ FKNotificationName const FKTaskDidSuspendNotication     = @"FKTaskDidSuspendNoti
 FKNotificationName const FKTaskWillCancelldNotication   = @"FKTaskWillCancelldNotication";
 FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNotication";
 FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotication";
+
+FKTaskInfoName const FKTaskInfoURL              = @"FKTaskInfoURL";
+FKTaskInfoName const FKTaskInfoFileName         = @"FKTaskInfoFileName";
+FKTaskInfoName const FKTaskInfoVerificationType = @"FKTaskInfoVerificationType";
+FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 
 @interface FKTask ()
 
@@ -41,6 +49,8 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
 @property (nonatomic, strong) NSNumber          *estimatedTimeRemaining;
 @property (nonatomic, strong) NSNumber          *bytesPerSecondSpeed;
 
+@property (nonatomic, assign) BOOL              isPassChecksum;
+
 @end
 
 @implementation FKTask
@@ -51,7 +61,11 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(refreshSpeed) userInfo:nil repeats:YES];
+        self.timer = [NSTimer timerWithTimeInterval:1
+                                             target:self
+                                           selector:@selector(refreshSpeed)
+                                           userInfo:nil
+                                            repeats:YES];
         [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
     }
     return self;
@@ -86,6 +100,24 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
                 self.status = TaskStatusFinish;
             }
             break;
+    }
+}
+
+- (void)settingInfo:(NSDictionary *)info {
+    if ([info.allKeys containsObject:FKTaskInfoURL]) {
+        self.url = info[FKTaskInfoURL];
+    }
+    
+    if ([info.allKeys containsObject:FKTaskInfoFileName]) {
+        self.fileName = info[FKTaskInfoFileName];
+    }
+    
+    if ([info.allKeys containsObject:FKTaskInfoVerificationType]) {
+        self.verificationType = [info[FKTaskInfoVerificationType] unsignedIntegerValue];
+    }
+    
+    if ([info.allKeys containsObject:FKTaskInfoVerification]) {
+        self.verification = info[FKTaskInfoVerification];
     }
 }
 
@@ -188,6 +220,35 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
     [self.downloadTask cancel];
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+}
+
+- (BOOL)checksum {
+    if (self.manager.configure.isFileChecksum) {
+        [self sendWillChecksumInfo];
+        switch (self.verificationType) {
+            case VerifyTypeMD5:
+                self.isPassChecksum = [[FKChecksum MD5:[self filePath]] isEqualToString:self.verification];
+                [self sendChecksumInfo];
+                return self.isPassChecksum;
+                
+            case VerifyTypeSHA1:
+                self.isPassChecksum = [[FKChecksum SHA1:[self filePath]] isEqualToString:self.verification];
+                [self sendChecksumInfo];
+                return self.isPassChecksum;
+                
+            case VerifyTypeSHA256:
+                self.isPassChecksum = [[FKChecksum SHA256:[self filePath]] isEqualToString:self.verification];
+                [self sendChecksumInfo];
+                return self.isPassChecksum;
+                
+            case VerifyTypeSHA512:
+                self.isPassChecksum = [[FKChecksum SHA512:[self filePath]] isEqualToString:self.verification];
+                [self sendChecksumInfo];
+                return self.isPassChecksum;
+        }
+    } else {
+        return YES;
+    }
 }
 
 
@@ -355,6 +416,44 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
     }
 }
 
+- (void)sendWillChecksumInfo {
+    self.status = TaskStatusChecksumming;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:willChecksumTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager willChecksumTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillChecksumNotification object:nil];
+    });
+}
+
+- (void)sendChecksumInfo {
+    self.status = TaskStatusChecksummed;
+    
+    if ([self.delegate respondsToSelector:@selector(downloader:didChecksumTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didChecksumTask:self];
+        });
+    }
+    if (self.statusBlock) {
+        __weak typeof(self) weak = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weak.statusBlock(weak);
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidChecksumNotification object:nil];
+    });
+}
+
 - (void)sendFinishInfo {
     self.status = TaskStatusFinish;
     
@@ -465,8 +564,12 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
             description = @"TaskStatusResuming";
             break;
             
-        case TaskStatusChecking:
-            description = @"TaskStatusChecking";
+        case TaskStatusChecksumming:
+            description = @"TaskStatusChecksumming";
+            break;
+            
+        case TaskStatusChecksummed:
+            description = @"TaskStatusChecksummed";
             break;
             
         case TaskStatusCancelld:
@@ -483,8 +586,13 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
 
 #pragma mark - Basic
 - (NSString *)filePath {
-    NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
-    return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
+    if (self.fileName.length) {
+        NSString *fileName = [NSString stringWithFormat:@"%@.%@", self.fileName, [NSURL URLWithString:self.url].pathExtension];
+        return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
+    } else {
+        NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
+        return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
+    }
 }
 
 - (NSString *)resumeFilePath {
@@ -498,10 +606,6 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
 
 - (BOOL)isFinish {
     return [self.manager.fileManager fileExistsAtPath:[self filePath]];
-}
-
-- (void)clearTaskInfo {
-    
 }
 
 - (void)clear {
@@ -692,8 +796,12 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
             [self sendResumingInfo];
         } break;
             
-        case TaskStatusChecking: {
+        case TaskStatusChecksumming: {
+            [self sendWillChecksumInfo];
+        } break;
             
+        case TaskStatusChecksummed: {
+            [self sendChecksumInfo];
         } break;
             
         case TaskStatusCancelld: {

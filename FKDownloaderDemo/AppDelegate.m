@@ -23,6 +23,8 @@
     config.isBackgroudExecute = YES;
     config.isAutoClearTask = NO;
     config.isAutoStart = NO;
+    config.isFileChecksum = YES;
+    config.speedRefreshInterval = 1;
     [FKDownloadManager manager].configure = config;
     [[FKDownloadManager manager] restory];
     

@@ -10,6 +10,9 @@
 
 @interface NSString (FKDownload)
 
+- (NSString *)MD5;
+- (NSString *)SHA1;
 - (NSString *)SHA256;
+- (NSString *)SHA512;
 
 @end

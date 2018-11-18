@@ -16,9 +16,11 @@
     config.isAutoStart          = NO;
     config.isAutoClearTask      = NO;
     config.isBackgroudExecute   = YES;
+    config.isFileChecksum       = NO;
     config.timeoutInterval      = 30;
     config.sessionIdentifier    = @"com.fk.downloader";
     config.maximumExecutionTask = 3;
+    config.speedRefreshInterval = 1;
     config.rootPath     = [cachePath stringByAppendingPathComponent:@"com.fk.downloader"];
     config.savePath     = [cachePath stringByAppendingPathComponent:@"com.fk.downloader/file"];
     config.resumePath   = [cachePath stringByAppendingPathComponent:@"com.fk.downloader/resume"];

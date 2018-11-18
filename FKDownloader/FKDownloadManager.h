@@ -75,6 +75,15 @@ __attribute__((objc_subclassing_restricted))
 - (FKTask *)add:(NSString *)url;
 
 /**
+ 添加任务, 可附带指定参数, 但不执行, 任务状态为 TaskStatusNone
+ 可添加参数请查看 `FKTaskInfoName` 相关的信息
+
+ @param info 包含附加参数的url
+ @return 任务实例
+ */
+- (FKTask *)addInfo:(NSDictionary *)info;
+
+/**
  开始任务, 如果下载链接对应的任务不存在, 就会创建任务
  任务状态变动为 TaskStatusNone -> TaskStatusPrepare -> TaskStatusExecuting
 

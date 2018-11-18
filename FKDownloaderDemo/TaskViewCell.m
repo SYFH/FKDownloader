@@ -137,6 +137,14 @@
     [self.operationButton setTitle:@"开始" forState:UIControlStateNormal];
 }
 
+- (void)downloader:(FKDownloadManager *)downloader willChecksumTask:(FKTask *)task {
+    NSLog(@"开始校验文件");
+}
+
+- (void)downloader:(FKDownloadManager *)downloader didChecksumTask:(FKTask *)task {
+    NSLog(@"校验文件结束: %d", task.isPassChecksum);
+}
+
 - (void)downloader:(FKDownloadManager *)downloader errorTask:(FKTask *)task {
     NSLog(@"下载出错: %@", task.error);
     [self.operationButton setTitle:@"开始" forState:UIControlStateNormal];

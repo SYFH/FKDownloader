@@ -24,8 +24,15 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    [self.urls forEach:^(NSString *url) {
-        [[FKDownloadManager manager] add:url];
+    [self.urls forEach:^(NSString *url, NSUInteger idx) {
+        if (idx == 0) {
+            [[FKDownloadManager manager] addInfo:@{FKTaskInfoURL: url,
+                                                   FKTaskInfoFileName: @"123",
+                                                   FKTaskInfoVerificationType: @(VerifyTypeMD5),
+                                                   FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c" }];
+        } else {
+            [[FKDownloadManager manager] add:url];
+        }
     }];
     
     self.listView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
@@ -57,19 +64,19 @@
 }
 
 - (void)startDidTap:(UIBarButtonItem *)sender {
-    [[FKDownloadManager manager].tasks forEach:^(FKTask *task) {
+    [[FKDownloadManager manager].tasks forEach:^(FKTask *task, NSUInteger idx) {
         [[FKDownloadManager manager] start:task.url];
     }];
 }
 
 - (void)stopDidTap:(UIBarButtonItem *)sender {
-    [[FKDownloadManager manager].tasks forEach:^(FKTask *task) {
+    [[FKDownloadManager manager].tasks forEach:^(FKTask *task, NSUInteger idx) {
         [[FKDownloadManager manager] cancel:task.url];
     }];
 }
 
 - (void)suspendDidTap:(UIBarButtonItem *)sender {
-    [[FKDownloadManager manager].tasks forEach:^(FKTask *task) {
+    [[FKDownloadManager manager].tasks forEach:^(FKTask *task, NSUInteger idx) {
         [[FKDownloadManager manager] suspend:task.url];
     }];
 }
