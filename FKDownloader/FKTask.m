@@ -61,8 +61,7 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        // TODO: 使用配置实例中的时间间隔 CPU 飙升, 待解决
-        self.timer = [NSTimer timerWithTimeInterval:1
+        self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
                                              target:self
                                            selector:@selector(refreshSpeed)
                                            userInfo:nil
