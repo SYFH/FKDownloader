@@ -88,13 +88,13 @@
                 [task sendErrorInfo:error];
             } else {
                 if ([task checksum]) {
+                    [task sendFinishInfo];
+                } else {
                     NSError *error = [NSError errorWithDomain:NSURLErrorDomain
                                                          code:NSURLErrorUnknown
                                                      userInfo:@{NSFilePathErrorKey: task.url,
                                                                 NSLocalizedDescriptionKey: [NSString stringWithFormat:@"File verification failed"]}];
                     [task sendErrorInfo:error];
-                } else {
-                    [task sendFinishInfo];
                 }
             }
         }
