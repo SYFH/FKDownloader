@@ -189,6 +189,12 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
  */
 - (void)cancel;
 
+// TODO: 当任务暂停/取消/完成时, 从管理者减少相应的字节长度
+/**
+ 当任务暂停/取消/完成时, 从管理者减少相应的字节长度
+ */
+- (void)clearTaskInfo;
+
 /**
  清除任务, 从管理器中排除, 并解除持久化
  */

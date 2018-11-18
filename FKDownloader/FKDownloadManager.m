@@ -33,6 +33,8 @@ typedef NS_OPTIONS(NSInteger, DeviceModel) {
 @property (nonatomic, copy  ) NSMutableArray<FKTask *> *tasks;
 @property (nonatomic, copy  ) NSMutableDictionary   *tasksMap;
 
+@property (nonatomic, strong) NSProgress            *progress;
+
 @end
 
 #pragma clang diagnostic push
@@ -67,6 +69,7 @@ static FKDownloadManager *_instance = nil;
     if (self) {
         [self setupSession];
         [self setupPath];
+        [self setupProperty];
     }
     return self;
 }
@@ -116,6 +119,10 @@ static FKDownloadManager *_instance = nil;
                                          error:nil];
         }
     }
+}
+
+- (void)setupProperty {
+    self.progress = [[NSProgress alloc] init];
 }
 
 
@@ -253,9 +260,6 @@ static FKDownloadManager *_instance = nil;
     
     [self saveTasks];
 }
-
-
-#pragma mark - Progress
 
 
 #pragma mark - Restore

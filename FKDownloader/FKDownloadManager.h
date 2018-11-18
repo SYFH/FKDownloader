@@ -40,6 +40,11 @@ __attribute__((objc_subclassing_restricted))
 @property (nonatomic, copy  , readonly) NSMutableArray<FKTask *> *tasks;
 
 /**
+ 总任务进度
+ */
+@property (nonatomic, strong, readonly) NSProgress *progress;
+
+/**
  初始化下载管理器
 
  @return 单例模式
@@ -111,9 +116,6 @@ __attribute__((objc_subclassing_restricted))
  开始下一个等待中的任务
  */
 - (void)startNextIdleTask;
-
-#pragma mark - Progress
-// TODO: 可添加总进度和总预期时间
 
 
 #pragma mark - Restore

@@ -51,7 +51,7 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(refreshProgerss) userInfo:nil repeats:YES];
+        self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(refreshSpeed) userInfo:nil repeats:YES];
         [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
     }
     return self;
@@ -500,6 +500,10 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
     return [self.manager.fileManager fileExistsAtPath:[self filePath]];
 }
 
+- (void)clearTaskInfo {
+    
+}
+
 - (void)clear {
     [self removeProgressObserver];
     [self clearResumeData];
@@ -629,7 +633,7 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
     }
 }
 
-- (void)refreshProgerss {
+- (void)refreshSpeed {
     if (self.status != TaskStatusExecuting || self.downloadTask.state != NSURLSessionTaskStateRunning) {
         return;
     }
@@ -723,7 +727,10 @@ FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotic
 
 - (NSProgress *)progress {
     if (!_progress) {
-        _progress = [[NSProgress alloc] init];
+        self.manager.progress.totalUnitCount += 100;
+        [self.manager.progress becomeCurrentWithPendingUnitCount:100];
+        _progress = [NSProgress progressWithTotalUnitCount:0];
+        [self.manager.progress resignCurrent];
     }
     return _progress;
 }
