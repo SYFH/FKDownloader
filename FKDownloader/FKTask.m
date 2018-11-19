@@ -214,11 +214,18 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 - (void)cancel {
     [self sendWillCancelldInfo];
     
-    if (self.downloadTask.state == NSURLSessionTaskStateCanceling) {
+    if (self.status == TaskStatusCancelld) {
         [self sendCancelldInfo];
         return;
     }
-    // TODO: 已暂停任务取消时无法调用系统代理, 需手动做通知
+    // !!!: 带有恢复数据的系统任务暂停后, 状态为已完成, 需手动做取消通知和数据清理
+    if (self.status == TaskStatusSuspend) {
+        self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+        self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+        [self clearResumeData];
+        [self sendCancelldInfo];
+    }
+    
     [self.downloadTask cancel];
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
@@ -603,7 +610,7 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 }
 
 - (BOOL)isHasResumeData {
-    // TODO: 还需要判断缓存文件是否还存在
+    // TODO: 还需要判断缓存文件是否还存在, 当开始下载时缓存文件位置为 Library/Caches/com.apple.nsurlsessiond/Downloads/“Bundle ID”/“NSURLSessionResumeInfoTempFileName”, 当暂停时缓存文件为 temp/“NSURLSessionResumeInfoTempFileName”
     return [self.manager.fileManager fileExistsAtPath:[self resumeFilePath]];
 }
 
