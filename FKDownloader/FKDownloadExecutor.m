@@ -78,7 +78,6 @@
     }
     
     if ([[FKDownloadManager manager].fileManager fileExistsAtPath:location.path]) {
-        // TODO: 为防止检验中途文件被删除, 所以需将文件转移后开始校验
         if ([[FKDownloadManager manager].fileManager fileExistsAtPath:task.filePath]) {
             [task sendFinishInfo];
         } else {
