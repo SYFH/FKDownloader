@@ -96,6 +96,11 @@
 }
 
 #pragma mark - FKTaskDelegate
+- (void)downloader:(FKDownloadManager *)downloader prepareTask:(FKTask *)task {
+    NSLog(@"准备预处理: %@", task.url);
+    // 在这里可以最后一次处理任务信息
+}
+
 - (void)downloader:(FKDownloadManager *)downloader willExecuteTask:(FKTask *)task {
     NSLog(@"准备开始: %@", task.url);
     self.nameLable.text = [NSURL URLWithString:task.url].lastPathComponent;

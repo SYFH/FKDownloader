@@ -12,7 +12,7 @@
 
 // 任务状态的细化通知, 与枚举 ·TaskStatus· 等同, will 表示开始处理, did 表示处理完成
 typedef NSString * FKNotificationName;
-extern FKNotificationName const FKTaskDidPrepareNotification;
+extern FKNotificationName const FKTaskPrepareNotification;
 extern FKNotificationName const FKTaskDidIdleNotification;
 extern FKNotificationName const FKTaskWillExecuteNotification;
 extern FKNotificationName const FKTaskDidExecuteNotication;
@@ -63,7 +63,7 @@ typedef NS_ENUM(NSUInteger, VerifyType) {
 
 // 与通知等价
 @optional
-- (void)downloader:(FKDownloadManager *)downloader didPrepareTask:(FKTask *)task;
+- (void)downloader:(FKDownloadManager *)downloader prepareTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader didIdleTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader willExecuteTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader didExecuteTask:(FKTask *)task;

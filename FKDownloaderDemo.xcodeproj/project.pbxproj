@@ -29,6 +29,9 @@
 		3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41D0321A2AAEC00B48D03 /* NSData+FKDownload.h */; };
 		3DA41D0621A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */; };
 		3DA41D0721A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */; };
+		3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */; };
+		3DA41D0B21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */; };
+		3DA41D0C21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */; };
 		3DD308B0218BEDBA00BDF330 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308AF218BEDBA00BDF330 /* AppDelegate.m */; };
 		3DD308B3218BEDBA00BDF330 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308B2218BEDBA00BDF330 /* ViewController.m */; };
 		3DD308B6218BEDBA00BDF330 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3DD308B4218BEDBA00BDF330 /* Main.storyboard */; };
@@ -56,6 +59,8 @@
 		3DA41CD721A1AA3100B48D03 /* FKChecksum.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKChecksum.m; sourceTree = "<group>"; };
 		3DA41D0321A2AAEC00B48D03 /* NSData+FKDownload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+FKDownload.h"; sourceTree = "<group>"; };
 		3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+FKDownload.m"; sourceTree = "<group>"; };
+		3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKResumeHelper.h; sourceTree = "<group>"; };
+		3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKResumeHelper.m; sourceTree = "<group>"; };
 		3DD308AB218BEDBA00BDF330 /* FKDownloaderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKDownloaderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DD308AE218BEDBA00BDF330 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3DD308AF218BEDBA00BDF330 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -159,6 +164,8 @@
 				3DD308CD218BEE3300BDF330 /* FKTask.m */,
 				3DA41CD621A1AA3100B48D03 /* FKChecksum.h */,
 				3DA41CD721A1AA3100B48D03 /* FKChecksum.m */,
+				3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */,
+				3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */,
 				3DD308F6218C4E8D00BDF330 /* NSString+FKDownload.h */,
 				3DD308F7218C4E8D00BDF330 /* NSString+FKDownload.m */,
 				3D35875C2192BD43000BD0E1 /* NSArray+FKDownload.h */,
@@ -182,6 +189,7 @@
 				3D0C622C21996B560041BA82 /* FKTask.h in Headers */,
 				3D0C622D21996B560041BA82 /* NSString+FKDownload.h in Headers */,
 				3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */,
+				3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */,
 				3D0C622E21996B560041BA82 /* NSArray+FKDownload.h in Headers */,
 				3DA41CD821A1AA3100B48D03 /* FKChecksum.h in Headers */,
 				3D0C622521996AF60041BA82 /* FKDownloader.h in Headers */,
@@ -287,6 +295,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DA41D0C21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */,
 				3D0C622F21996B630041BA82 /* FKConfigure.m in Sources */,
 				3D0C623021996B630041BA82 /* FKDownloadManager.m in Sources */,
 				3D0C623121996B630041BA82 /* FKDownloadExecutor.m in Sources */,
@@ -303,6 +312,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DD308B3218BEDBA00BDF330 /* ViewController.m in Sources */,
+				3DA41D0B21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */,
 				3DD308D0218BEE3300BDF330 /* FKTask.m in Sources */,
 				3DD308BE218BEDBB00BDF330 /* main.m in Sources */,
 				3DA41D0621A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */,

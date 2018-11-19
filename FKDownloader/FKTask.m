@@ -10,11 +10,12 @@
 #import "FKDownloadManager.h"
 #import "FKConfigure.h"
 #import "FKChecksum.h"
+#import "FKResumeHelper.h"
 #import "NSString+FKDownload.h"
 #import <objc/runtime.h>
 #import <UIKit/UIKit.h>
 
-FKNotificationName const FKTaskDidPrepareNotification   = @"FKTaskDidPrepareNotification";
+FKNotificationName const FKTaskPrepareNotification      = @"FKTaskPrepareNotification";
 FKNotificationName const FKTaskDidIdleNotification      = @"FKTaskDidIdleNotification";
 FKNotificationName const FKTaskWillExecuteNotification  = @"FKTaskWillExecuteNotification";
 FKNotificationName const FKTaskDidExecuteNotication     = @"FKTaskDidExecuteNotication";
@@ -123,6 +124,8 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 
 - (void)reday {
     FKLog(@"开始准备: %@", self)
+    [self sendPrepareInfo];
+    
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
     if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
         [self removeProgressObserver];
@@ -137,7 +140,6 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     
-    [self sendPrepareInfo];
     [self sendWillExecutingInfo];
 }
 
@@ -181,11 +183,11 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
     [self sendWillSuspendInfo];
     
     // !!!: https://stackoverflow.com/questions/39346231/resume-nsurlsession-on-ios10/39347461#39347461
-    // tips: iOS 12/12.1 resumeData 与之前格式不一致, 之前保存的文件为 xml 格式, 新的格式需要 NSKeyedUnarchiver 解码后才可得到与之前一致的 NSDictionary, 但是不影响正常使用.
+    // tips: iOS 12/12.1 resumeData 与之前格式不一致, 之前保存的文件为 xml 格式的二进制数据, 新的格式需要 NSKeyedUnarchiver 解码后才可得到与之前一致的 NSDictionary, 但是不影响正常使用.
     __weak typeof(self) weak = self;
     [self.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
         __strong typeof(weak) strong = weak;
-        strong.resumeData = [self correctRequestData:resumeData];
+        strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
         strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
         strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
         if (complete) {
@@ -216,7 +218,7 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
         [self sendCancelldInfo];
         return;
     }
-    
+    // TODO: 已暂停任务取消时无法调用系统代理, 需手动做通知
     [self.downloadTask cancel];
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
@@ -275,9 +277,9 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 - (void)sendPrepareInfo {
     self.status = TaskStatusPrepare;
     
-    if ([self.delegate respondsToSelector:@selector(downloader:didPrepareTask:)]) {
+    if ([self.delegate respondsToSelector:@selector(downloader:prepareTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate downloader:self.manager didPrepareTask:self];
+            [self.delegate downloader:self.manager prepareTask:self];
         });
     }
     if (self.statusBlock) {
@@ -286,7 +288,7 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
             weak.statusBlock(weak);
         });
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidPrepareNotification object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskPrepareNotification object:nil];
 }
 
 - (void)sendResumingInfo {
@@ -601,6 +603,7 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 }
 
 - (BOOL)isHasResumeData {
+    // TODO: 还需要判断缓存文件是否还存在
     return [self.manager.fileManager fileExistsAtPath:[self resumeFilePath]];
 }
 
@@ -640,103 +643,6 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
     return [NSString stringWithFormat:@"<%@: %p> <URL: %@, status: %@>", NSStringFromClass([self class]), &self, self.url, [self statusDescription:self.status]];
 }
 
-- (NSData *)correctRequestData:(NSData *)data {
-    if (!data) {
-        return nil;
-    }
-    // return the same data if it's correct
-    if ([NSKeyedUnarchiver unarchiveObjectWithData:data] != nil) {
-        return data;
-    }
-    NSMutableDictionary *archive = [[NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:nil] mutableCopy];
-    
-    if (!archive) {
-        return nil;
-    }
-    NSInteger k = 0;
-    id objectss = archive[@"$objects"];
-    while ([objectss[1] objectForKey:[NSString stringWithFormat:@"$%ld",(long)k]] != nil) {
-        k += 1;
-    }
-    NSInteger i = 0;
-    while ([archive[@"$objects"][1] objectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",(long)i]] != nil) {
-        NSMutableArray *arr = archive[@"$objects"];
-        NSMutableDictionary *dic = arr[1];
-        id obj = [dic objectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",(long)i]];
-        if (obj) {
-            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%d", (int)(i + k)]];
-            [dic removeObjectForKey:[NSString stringWithFormat:@"__nsurlrequest_proto_prop_obj_%ld",(long)i]];
-            [arr replaceObjectAtIndex:1 withObject:dic];
-            archive[@"$objects"] = arr;
-        }
-        i++;
-    }
-    if ([archive[@"$objects"][1] objectForKey:@"__nsurlrequest_proto_props"] != nil) {
-        NSMutableArray *arr = archive[@"$objects"];
-        NSMutableDictionary *dic = arr[1];
-        id obj = [dic objectForKey:@"__nsurlrequest_proto_props"];
-        if (obj) {
-            [dic setValue:obj forKey:[NSString stringWithFormat:@"$%d", (int)(i + k)]];
-            [dic removeObjectForKey:@"__nsurlrequest_proto_props"];
-            [arr replaceObjectAtIndex:1 withObject:dic];
-            archive[@"$objects"] = arr;
-        }
-    }
-    // Rectify weird "NSKeyedArchiveRootObjectKey" top key to NSKeyedArchiveRootObjectKey = "root"
-    if ([archive[@"$top"] objectForKey:@"NSKeyedArchiveRootObjectKey"] != nil) {
-        [archive[@"$top"] setObject:archive[@"$top"][@"NSKeyedArchiveRootObjectKey"] forKey: NSKeyedArchiveRootObjectKey];
-        [archive[@"$top"] removeObjectForKey:@"NSKeyedArchiveRootObjectKey"];
-    }
-    // Reencode archived object
-    NSData *result = [NSPropertyListSerialization dataWithPropertyList:archive format:NSPropertyListBinaryFormat_v1_0 options:0 error:nil];
-    return result;
-}
-
-- (NSMutableDictionary *)getResumeDictionary:(NSData *)data {
-    NSMutableDictionary *iresumeDictionary = nil;
-    id root = nil;
-    id  keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-    @try {
-        if (@available(iOS 9.0, *)) {
-            root = [keyedUnarchiver decodeTopLevelObjectForKey:@"NSKeyedArchiveRootObjectKey" error:nil];
-        }
-        if (root == nil) {
-            if (@available(iOS 9.0, *)) {
-                root = [keyedUnarchiver decodeTopLevelObjectForKey:NSKeyedArchiveRootObjectKey error:nil];
-            }
-        }
-    } @catch(NSException *exception) { }
-    [keyedUnarchiver finishDecoding];
-    iresumeDictionary = [root mutableCopy];
-    
-    if (iresumeDictionary == nil) {
-        iresumeDictionary = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:nil];
-    }
-    return iresumeDictionary;
-}
-
-- (NSData *)correctResumeData:(NSData *)data {
-    if ([[UIDevice currentDevice] systemVersion].floatValue == 10.0
-        || [[UIDevice currentDevice] systemVersion].floatValue == 10.1) {
-        
-        NSString *kResumeCurrentRequest = @"NSURLSessionResumeCurrentRequest";
-        NSString *kResumeOriginalRequest = @"NSURLSessionResumeOriginalRequest";
-        if (data == nil) {
-            return  nil;
-        }
-        NSMutableDictionary *resumeDictionary = [self getResumeDictionary:data];
-        if (resumeDictionary == nil) {
-            return nil;
-        }
-        resumeDictionary[kResumeCurrentRequest] = [self correctRequestData:resumeDictionary[kResumeCurrentRequest]];
-        resumeDictionary[kResumeOriginalRequest] = [self correctRequestData:resumeDictionary[kResumeOriginalRequest]];
-        NSData *result = [NSPropertyListSerialization dataWithPropertyList:resumeDictionary format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
-        return result;
-    } else {
-        return data;
-    }
-}
-
 - (void)refreshSpeed {
     if (self.status != TaskStatusExecuting || self.downloadTask.state != NSURLSessionTaskStateRunning) {
         return;
@@ -765,7 +671,9 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 #pragma mark - Getter/Setter
 - (void)setUrl:(NSString *)url {
     _url = url;
-    self.identifier = [url SHA256];
+    // !!!: 需要兼容可过期地址, 一般为附带参数需要改变, 可以只使用文件网络路径计算标识符
+    NSURL *u = [NSURL URLWithString:url];
+    self.identifier = [[NSString stringWithFormat:@"%@://%@%@", u.scheme, u.host, u.path] SHA256];
 }
 
 - (void)setDelegate:(id<FKTaskDelegate>)delegate {
