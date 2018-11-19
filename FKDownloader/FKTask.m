@@ -223,7 +223,7 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 }
 
 - (BOOL)checksum {
-    if (self.manager.configure.isFileChecksum) {
+    if (self.manager.configure.isFileChecksum && self.verification.length) {
         [self sendWillChecksumInfo];
         switch (self.verificationType) {
             case VerifyTypeMD5:
