@@ -1,5 +1,4 @@
-# FKDonwloader
-👍🏻📥Maybe the best file downloader.   
+# FKDonwloader 
 👍🏻📥也许是最好的文件下载器.
 
 # Features
