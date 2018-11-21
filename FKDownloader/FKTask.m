@@ -9,11 +9,9 @@
 #import "FKTask.h"
 #import "FKDownloadManager.h"
 #import "FKConfigure.h"
-#import "FKChecksum.h"
+#import "FKHashHelper.h"
 #import "FKResumeHelper.h"
 #import "NSString+FKDownload.h"
-#import <objc/runtime.h>
-#import <UIKit/UIKit.h>
 
 FKNotificationName const FKTaskPrepareNotification      = @"FKTaskPrepareNotification";
 FKNotificationName const FKTaskDidIdleNotification      = @"FKTaskDidIdleNotification";
@@ -244,22 +242,22 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
         [self sendWillChecksumInfo];
         switch (self.verificationType) {
             case VerifyTypeMD5:
-                self.isPassChecksum = [[FKChecksum MD5:[self filePath]] isEqualToString:self.verification];
+                self.isPassChecksum = [[FKHashHelper MD5:[self filePath]] isEqualToString:self.verification];
                 [self sendChecksumInfo];
                 return self.isPassChecksum;
                 
             case VerifyTypeSHA1:
-                self.isPassChecksum = [[FKChecksum SHA1:[self filePath]] isEqualToString:self.verification];
+                self.isPassChecksum = [[FKHashHelper SHA1:[self filePath]] isEqualToString:self.verification];
                 [self sendChecksumInfo];
                 return self.isPassChecksum;
                 
             case VerifyTypeSHA256:
-                self.isPassChecksum = [[FKChecksum SHA256:[self filePath]] isEqualToString:self.verification];
+                self.isPassChecksum = [[FKHashHelper SHA256:[self filePath]] isEqualToString:self.verification];
                 [self sendChecksumInfo];
                 return self.isPassChecksum;
                 
             case VerifyTypeSHA512:
-                self.isPassChecksum = [[FKChecksum SHA512:[self filePath]] isEqualToString:self.verification];
+                self.isPassChecksum = [[FKHashHelper SHA512:[self filePath]] isEqualToString:self.verification];
                 [self sendChecksumInfo];
                 return self.isPassChecksum;
         }
@@ -643,6 +641,20 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
         self.progress.totalUnitCount = self.downloadTask.countOfBytesExpectedToReceive;
     }
     [self sendProgressInfo];
+}
+
+
+#pragma mark - Coding
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    // url, status, progress
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
 }
 
 

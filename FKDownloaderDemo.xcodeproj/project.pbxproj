@@ -23,9 +23,15 @@
 		3D35875E2192BD43000BD0E1 /* NSArray+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */; };
 		3D71563A2196B805008F91A7 /* TaskListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7156392196B805008F91A7 /* TaskListController.m */; };
 		3D71563D2196B81B008F91A7 /* TaskViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D71563C2196B81B008F91A7 /* TaskViewCell.m */; };
-		3DA41CD821A1AA3100B48D03 /* FKChecksum.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41CD621A1AA3100B48D03 /* FKChecksum.h */; };
-		3DA41CD921A1AA3100B48D03 /* FKChecksum.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41CD721A1AA3100B48D03 /* FKChecksum.m */; };
-		3DA41CDA21A1AB5000B48D03 /* FKChecksum.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41CD721A1AA3100B48D03 /* FKChecksum.m */; };
+		3D8CA7A321A5027F00E4BBEA /* FKSystemHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D8CA7A121A5027F00E4BBEA /* FKSystemHelper.h */; };
+		3D8CA7A421A5027F00E4BBEA /* FKSystemHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8CA7A221A5027F00E4BBEA /* FKSystemHelper.m */; };
+		3D8CA7A521A5027F00E4BBEA /* FKSystemHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8CA7A221A5027F00E4BBEA /* FKSystemHelper.m */; };
+		3D8CA7A921A506D300E4BBEA /* FKTaskStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D8CA7A721A506D300E4BBEA /* FKTaskStorage.h */; };
+		3D8CA7AA21A506D300E4BBEA /* FKTaskStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8CA7A821A506D300E4BBEA /* FKTaskStorage.m */; };
+		3D8CA7AB21A506D300E4BBEA /* FKTaskStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8CA7A821A506D300E4BBEA /* FKTaskStorage.m */; };
+		3DA41CD821A1AA3100B48D03 /* FKHashHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41CD621A1AA3100B48D03 /* FKHashHelper.h */; };
+		3DA41CD921A1AA3100B48D03 /* FKHashHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41CD721A1AA3100B48D03 /* FKHashHelper.m */; };
+		3DA41CDA21A1AB5000B48D03 /* FKHashHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41CD721A1AA3100B48D03 /* FKHashHelper.m */; };
 		3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41D0321A2AAEC00B48D03 /* NSData+FKDownload.h */; };
 		3DA41D0621A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */; };
 		3DA41D0721A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */; };
@@ -55,8 +61,12 @@
 		3D7156392196B805008F91A7 /* TaskListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TaskListController.m; sourceTree = "<group>"; };
 		3D71563B2196B81B008F91A7 /* TaskViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TaskViewCell.h; sourceTree = "<group>"; };
 		3D71563C2196B81B008F91A7 /* TaskViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TaskViewCell.m; sourceTree = "<group>"; };
-		3DA41CD621A1AA3100B48D03 /* FKChecksum.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKChecksum.h; sourceTree = "<group>"; };
-		3DA41CD721A1AA3100B48D03 /* FKChecksum.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKChecksum.m; sourceTree = "<group>"; };
+		3D8CA7A121A5027F00E4BBEA /* FKSystemHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSystemHelper.h; sourceTree = "<group>"; };
+		3D8CA7A221A5027F00E4BBEA /* FKSystemHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSystemHelper.m; sourceTree = "<group>"; };
+		3D8CA7A721A506D300E4BBEA /* FKTaskStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKTaskStorage.h; sourceTree = "<group>"; };
+		3D8CA7A821A506D300E4BBEA /* FKTaskStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKTaskStorage.m; sourceTree = "<group>"; };
+		3DA41CD621A1AA3100B48D03 /* FKHashHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKHashHelper.h; sourceTree = "<group>"; };
+		3DA41CD721A1AA3100B48D03 /* FKHashHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKHashHelper.m; sourceTree = "<group>"; };
 		3DA41D0321A2AAEC00B48D03 /* NSData+FKDownload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+FKDownload.h"; sourceTree = "<group>"; };
 		3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+FKDownload.m"; sourceTree = "<group>"; };
 		3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKResumeHelper.h; sourceTree = "<group>"; };
@@ -162,10 +172,14 @@
 				3DD308D2218C403C00BDF330 /* FKDownloadExecutor.m */,
 				3DD308C8218BEE3300BDF330 /* FKTask.h */,
 				3DD308CD218BEE3300BDF330 /* FKTask.m */,
-				3DA41CD621A1AA3100B48D03 /* FKChecksum.h */,
-				3DA41CD721A1AA3100B48D03 /* FKChecksum.m */,
+				3D8CA7A721A506D300E4BBEA /* FKTaskStorage.h */,
+				3D8CA7A821A506D300E4BBEA /* FKTaskStorage.m */,
+				3DA41CD621A1AA3100B48D03 /* FKHashHelper.h */,
+				3DA41CD721A1AA3100B48D03 /* FKHashHelper.m */,
 				3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */,
 				3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */,
+				3D8CA7A121A5027F00E4BBEA /* FKSystemHelper.h */,
+				3D8CA7A221A5027F00E4BBEA /* FKSystemHelper.m */,
 				3DD308F6218C4E8D00BDF330 /* NSString+FKDownload.h */,
 				3DD308F7218C4E8D00BDF330 /* NSString+FKDownload.m */,
 				3D35875C2192BD43000BD0E1 /* NSArray+FKDownload.h */,
@@ -184,6 +198,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D0C622921996B560041BA82 /* FKConfigure.h in Headers */,
+				3D8CA7A321A5027F00E4BBEA /* FKSystemHelper.h in Headers */,
 				3D0C622A21996B560041BA82 /* FKDownloadManager.h in Headers */,
 				3D0C622B21996B560041BA82 /* FKDownloadExecutor.h in Headers */,
 				3D0C622C21996B560041BA82 /* FKTask.h in Headers */,
@@ -191,7 +206,8 @@
 				3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */,
 				3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */,
 				3D0C622E21996B560041BA82 /* NSArray+FKDownload.h in Headers */,
-				3DA41CD821A1AA3100B48D03 /* FKChecksum.h in Headers */,
+				3DA41CD821A1AA3100B48D03 /* FKHashHelper.h in Headers */,
+				3D8CA7A921A506D300E4BBEA /* FKTaskStorage.h in Headers */,
 				3D0C622521996AF60041BA82 /* FKDownloader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -296,13 +312,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DA41D0C21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */,
+				3D8CA7A521A5027F00E4BBEA /* FKSystemHelper.m in Sources */,
+				3D8CA7AB21A506D300E4BBEA /* FKTaskStorage.m in Sources */,
 				3D0C622F21996B630041BA82 /* FKConfigure.m in Sources */,
 				3D0C623021996B630041BA82 /* FKDownloadManager.m in Sources */,
 				3D0C623121996B630041BA82 /* FKDownloadExecutor.m in Sources */,
 				3D0C623221996B630041BA82 /* FKTask.m in Sources */,
 				3D0C623321996B630041BA82 /* NSString+FKDownload.m in Sources */,
 				3DA41D0721A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */,
-				3DA41CD921A1AA3100B48D03 /* FKChecksum.m in Sources */,
+				3DA41CD921A1AA3100B48D03 /* FKHashHelper.m in Sources */,
 				3D0C623421996B630041BA82 /* NSArray+FKDownload.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -314,14 +332,16 @@
 				3DD308B3218BEDBA00BDF330 /* ViewController.m in Sources */,
 				3DA41D0B21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */,
 				3DD308D0218BEE3300BDF330 /* FKTask.m in Sources */,
+				3D8CA7AA21A506D300E4BBEA /* FKTaskStorage.m in Sources */,
 				3DD308BE218BEDBB00BDF330 /* main.m in Sources */,
 				3DA41D0621A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */,
-				3DA41CDA21A1AB5000B48D03 /* FKChecksum.m in Sources */,
+				3DA41CDA21A1AB5000B48D03 /* FKHashHelper.m in Sources */,
 				3DD308CF218BEE3300BDF330 /* FKDownloadManager.m in Sources */,
 				3DD308F8218C4E8D00BDF330 /* NSString+FKDownload.m in Sources */,
 				3DD308D3218C403C00BDF330 /* FKDownloadExecutor.m in Sources */,
 				3D71563D2196B81B008F91A7 /* TaskViewCell.m in Sources */,
 				3DD308B0218BEDBA00BDF330 /* AppDelegate.m in Sources */,
+				3D8CA7A421A5027F00E4BBEA /* FKSystemHelper.m in Sources */,
 				3DD308CE218BEE3300BDF330 /* FKConfigure.m in Sources */,
 				3D71563A2196B805008F91A7 /* TaskListController.m in Sources */,
 				3D35875E2192BD43000BD0E1 /* NSArray+FKDownload.m in Sources */,

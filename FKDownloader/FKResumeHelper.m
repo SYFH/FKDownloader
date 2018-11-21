@@ -7,12 +7,12 @@
 //
 
 #import "FKResumeHelper.h"
-#import <UIKit/UIKit.h>
+#import "FKSystemHelper.h"
 
 @implementation FKResumeHelper
 
 + (NSDictionary *)readResumeData:(NSData *)resumeData {
-    if ([UIDevice currentDevice].systemVersion.floatValue < 12) {
+    if ([FKSystemHelper currentSystemVersion].floatValue < 12) {
         NSDictionary *dic = [NSPropertyListSerialization propertyListWithData:resumeData
                                                                       options:0
                                                                        format:NULL
@@ -26,7 +26,7 @@
 }
 
 + (NSData *)packetResumeData:(NSDictionary *)packet {
-    if ([UIDevice currentDevice].systemVersion.floatValue <= 11) {
+    if ([FKSystemHelper currentSystemVersion].floatValue <= 11) {
         return [NSPropertyListSerialization dataWithPropertyList:packet
                                                           format:NSPropertyListXMLFormat_v1_0
                                                          options:0
@@ -118,8 +118,8 @@
 }
 
 + (NSData *)correctResumeData:(NSData *)data {
-    if ([[UIDevice currentDevice].systemVersion isEqualToString:@"10.0"] ||
-        [[UIDevice currentDevice].systemVersion isEqualToString:@"10.1"]) {
+    if ([[FKSystemHelper currentSystemVersion] isEqualToString:@"10.0"] ||
+        [[FKSystemHelper currentSystemVersion] isEqualToString:@"10.1"]) {
         
         NSString *kResumeCurrentRequest = @"NSURLSessionResumeCurrentRequest";
         NSString *kResumeOriginalRequest = @"NSURLSessionResumeOriginalRequest";

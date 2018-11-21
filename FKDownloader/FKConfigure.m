@@ -29,4 +29,14 @@
 }
 
 
+#pragma mark - Setter/Getter
+- (void)setSpeedRefreshInterval:(NSTimeInterval)speedRefreshInterval {
+    if (speedRefreshInterval > 0) {
+        _speedRefreshInterval = speedRefreshInterval;
+    } else {
+        _speedRefreshInterval = 1;
+    }
+}
+
+
 @end

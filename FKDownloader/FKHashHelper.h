@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface FKChecksum : NSObject
+@interface FKHashHelper : NSObject
 
 + (NSString *)MD5:(NSString *)path;
 + (NSString *)SHA1:(NSString *)path;

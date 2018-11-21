@@ -6,10 +6,10 @@
 //  Copyright © 2018 Norld. All rights reserved.
 //
 
-#import "FKChecksum.h"
+#import "FKHashHelper.h"
 #import "NSData+FKDownload.h"
 
-@implementation FKChecksum
+@implementation FKHashHelper
 
 + (NSString *)MD5:(NSString *)path {
     NSData *data = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:nil];

@@ -10,21 +10,22 @@
 #import "FKConfigure.h"
 #import "FKTask.h"
 #import "FKDownloadExecutor.h"
+#import "FKSystemHelper.h"
 #import "NSString+FKDownload.h"
 #import "NSArray+FKDownload.h"
-#import <sys/utsname.h>
-#import <UIKit/UIKit.h>
 
-typedef NS_OPTIONS(NSInteger, DeviceModel) {
-    DeviceModelAirPods,
-    DeviceModelAppleTV,
-    DeviceModelAppleWatch,
-    DeviceModelHomePod,
-    DeviceModeliPad,
-    DeviceModeliPadMini,
-    DeviceModeliPhone,
-    DeviceModeliPodTouch,
-};
+void checkURL(NSString *address) {
+    if (address.length == 0) {
+        NSCAssert(NO, @"URL 地址不合法, 请填写正确的 URL!");
+    }
+    
+    NSURL *url = [NSURL URLWithString:address];
+    if ([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"]) {
+        NSCAssert(url != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    } else {
+        NSCAssert(NO, @"不支持的 URL");
+    }
+}
 
 @interface FKDownloadManager ()
 
@@ -129,7 +130,7 @@ static FKDownloadManager *_instance = nil;
 #pragma mark - Operation
 - (FKTask *)acquire:(NSString *)url {
     FKLog(@"获取 FKTask: %@", url)
-    NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    checkURL(url);
     
     NSString *identifier = [url SHA256];
     return self.tasksMap[identifier];
@@ -167,7 +168,7 @@ static FKDownloadManager *_instance = nil;
 // TODO: 状态切换: 在添加任务时是 none, 直接开始任务时是 idle/executing, 暂停时是 suspend, 取消时是 del?/idle?/none?
 - (FKTask *)add:(NSString *)url {
     FKLog(@"添加任务: %@", url)
-    NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    checkURL(url);
     
     if ([self acquire:url]) {
         return [self acquire:url];
@@ -182,7 +183,7 @@ static FKDownloadManager *_instance = nil;
     if ([info.allKeys containsObject:FKTaskInfoURL]) {
         NSString *url = info[FKTaskInfoURL];
         FKLog(@"添加任务: %@", url)
-        NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+        checkURL(url);
         
         if ([self acquire:url]) {
             FKTask *task = [self acquire:url];
@@ -196,14 +197,14 @@ static FKDownloadManager *_instance = nil;
         [self saveTasks];
         return task;
     } else {
-        NSAssert([NSURL URLWithString:@""] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+        checkURL(@"");
         return nil;
     }
 }
 
 - (FKTask *)start:(NSString *)url {
     FKLog(@"开始任务: %@", url)
-    NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    checkURL(url);
     
     if ([self acquire:url]) {
         FKTask *task = [self acquire:url];
@@ -239,7 +240,7 @@ static FKDownloadManager *_instance = nil;
 
 - (void)cancel:(NSString *)url {
     FKLog(@"取消任务: %@", url)
-    NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    checkURL(url);
     
     FKTask *task = [self acquire:url];
     if (!task) { return; }
@@ -249,7 +250,7 @@ static FKDownloadManager *_instance = nil;
 
 - (void)suspend:(NSString *)url {
     FKLog(@"暂停任务: %@", url)
-    NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    checkURL(url);
     
     if (![self acquire:url]) { return; }
     if ([self acquire:url].status == TaskStatusSuspend) { return; }
@@ -260,7 +261,7 @@ static FKDownloadManager *_instance = nil;
 
 - (void)resume:(NSString *)url {
     FKLog(@"恢复任务: %@", url)
-    NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    checkURL(url);
     
     if (![self acquire:url]) { return; }
     if ([self acquire:url].status == TaskStatusExecuting) { return; }
@@ -271,7 +272,7 @@ static FKDownloadManager *_instance = nil;
 
 - (void)remove:(NSString *)url {
     FKLog(@"移除任务: %@", url)
-    NSAssert([NSURL URLWithString:url] != nil, @"URL 地址不合法, 请填写正确的 URL!");
+    checkURL(url);
     
     if (![self acquire:url]) { return; }
     
@@ -332,9 +333,9 @@ static FKDownloadManager *_instance = nil;
 // !!!: 问题根源在于 countOfBytesReceived/countOfBytesExpectedToReceive 没有改变, 导致代理, KVO 和 NSTimer 失效, 需要寻找新的方法来获取进度
 // !!!: 目前使用带有恢复数据的取消后再次继续执行可解决问题, 但必须在 -[AppDelegate applicationDidBecomeActive] 内执行, 在`applicationWillEnterForeground` 内执行失败, 且必须在写入恢复数据后继续才有效, 否则出现 load error.
 - (void)fixProgressNotChanage {
-    if (([[[UIDevice currentDevice] systemVersion] isEqualToString:@"12.0"] ||
-         [[[UIDevice currentDevice] systemVersion] isEqualToString:@"12.1"]) &&
-        [self currentDeviceModelVersion:DeviceModeliPhone] < 10) {
+    if (([[FKSystemHelper currentSystemVersion] isEqualToString:@"12.0"] ||
+         [[FKSystemHelper currentSystemVersion] isEqualToString:@"12.1"]) &&
+        [FKSystemHelper currentDeviceModelVersion:DeviceModeliPhone] < 10) {
         
         FKLog(@"开始解决进度监听失效")
         [self.tasks forEach:^(FKTask *task, NSUInteger idx) {
@@ -356,74 +357,6 @@ static FKDownloadManager *_instance = nil;
 
 
 #pragma mark - Private Methode
-// !!!: https://www.theiphonewiki.com/wiki/Models 可根据版本号和子版本号确定设备, NSNotFound 为暂时无法识别
-- (NSInteger)currentDeviceModelVersion:(DeviceModel)model {
-    NSInteger version = NSNotFound;
-    if ([self currentDeviceSimulator]) {
-        return version;
-    }
-    
-    switch (model) {
-        case DeviceModelAirPods: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AirPods".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModelAppleTV: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AppleTV".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModelAppleWatch: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"Watch".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModelHomePod: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"AudioAccessory".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModeliPad: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPad".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModeliPadMini: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPad".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModeliPhone: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPhone".length, 1)] integerValue];
-        } break;
-            
-        case DeviceModeliPodTouch: {
-            version = [[[self currentDeviceName] substringWithRange:NSMakeRange(@"iPod".length, 1)] integerValue];
-        } break;
-    }
-    return version;
-}
-
-- (NSInteger)currentDeviceModelSubversion:(DeviceModel)model {
-    NSInteger version = NSNotFound;
-    if ([self currentDeviceSimulator]) {
-        return version;
-    }
-    
-    version = [[[self currentDeviceName] substringWithRange:NSMakeRange([self currentDeviceName].length - 1, 1)] integerValue];
-    return version;
-}
-
-- (BOOL)currentDeviceSimulator {
-    if ([[self currentDeviceName] isEqualToString:@"i386"] ||
-        [[self currentDeviceName] isEqualToString:@"x86_64"]) {
-        
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-- (NSString *)currentDeviceName {
-    struct utsname systemInfo;
-    uname(&systemInfo);
-    return [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
-}
 
 
 #pragma mark - Getter/Setter

@@ -82,7 +82,7 @@ typedef NS_ENUM(NSUInteger, VerifyType) {
 
 @end
 
-@interface FKTask : NSObject
+@interface FKTask : NSObject <NSCoding>
 
 /**
  任务标示, 由 URL 通过 SHA256 计算得出
