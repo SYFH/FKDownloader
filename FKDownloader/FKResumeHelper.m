@@ -12,7 +12,7 @@
 @implementation FKResumeHelper
 
 + (NSDictionary *)readResumeData:(NSData *)resumeData {
-    if ([UIDevice currentDevice].systemVersion.floatValue <= 11) {
+    if ([UIDevice currentDevice].systemVersion.floatValue < 12) {
         NSDictionary *dic = [NSPropertyListSerialization propertyListWithData:resumeData
                                                                       options:0
                                                                        format:NULL

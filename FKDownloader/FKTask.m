@@ -35,6 +35,7 @@ FKTaskInfoName const FKTaskInfoURL              = @"FKTaskInfoURL";
 FKTaskInfoName const FKTaskInfoFileName         = @"FKTaskInfoFileName";
 FKTaskInfoName const FKTaskInfoVerificationType = @"FKTaskInfoVerificationType";
 FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
+FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 
 @interface FKTask ()
 
@@ -120,6 +121,10 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
     if ([info.allKeys containsObject:FKTaskInfoVerification]) {
         self.verification = info[FKTaskInfoVerification];
     }
+    
+    if ([info.allKeys containsObject:FKTaskInfoRequestHeader]) {
+        self.requestHeader = info[FKTaskInfoRequestHeader];
+    }
 }
 
 - (void)reday {
@@ -127,6 +132,9 @@ FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
     [self sendPrepareInfo];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
+    [self.requestHeader enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [request setValue:value forHTTPHeaderField:key];
+    }];
     if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
         [self removeProgressObserver];
         self.downloadTask = [self.manager.session downloadTaskWithResumeData:[self resumeData]];

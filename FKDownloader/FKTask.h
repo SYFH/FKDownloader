@@ -33,6 +33,7 @@ extern FKTaskInfoName const FKTaskInfoURL;
 extern FKTaskInfoName const FKTaskInfoFileName;
 extern FKTaskInfoName const FKTaskInfoVerificationType;
 extern FKTaskInfoName const FKTaskInfoVerification;
+extern FKTaskInfoName const FKTaskInfoRequestHeader;
 
 typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
 typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
@@ -107,6 +108,11 @@ typedef NS_ENUM(NSUInteger, VerifyType) {
  文件校验码类型
  */
 @property (nonatomic, assign) VerifyType            verificationType;
+
+/**
+ 自定义请求头
+ */
+@property (nonatomic, strong) NSDictionary          *requestHeader;
 
 /**
  父管理器
