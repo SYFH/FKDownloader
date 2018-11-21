@@ -11,6 +11,7 @@
 #import "FKTask.h"
 #import "FKDownloadExecutor.h"
 #import "FKSystemHelper.h"
+#import "FKTaskStorage.h"
 #import "NSString+FKDownload.h"
 #import "NSArray+FKDownload.h"
 
@@ -306,18 +307,16 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)saveTasks {
-    NSArray<NSString *> *urls = [self.tasks map:^id(FKTask *obj, NSUInteger idx) { return obj.url; }];
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:urls format:NSPropertyListBinaryFormat_v1_0 options:0 error:nil];
-    [data writeToFile:self.configure.restorePath atomically:YES];
+    [FKTaskStorage saveObject:self.tasks toPath:self.configure.restorePath];
 }
 
 - (void)loadTasks {
     if ([self.fileManager fileExistsAtPath:self.configure.restorePath]) {
-        NSData *data = [NSData dataWithContentsOfFile:self.configure.restorePath options:NSDataReadingMappedIfSafe error:nil];
-        NSArray<NSString *> *tasks = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:nil];
-        [tasks forEach:^(NSString *url, NSUInteger idx) {
-            if (![self acquire:url]) {
-                FKTask *task = [self createPreserveTask:url];
+        NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restorePath];
+        [tasks forEach:^(FKTask *task, NSUInteger idx) {
+            if (![self acquire:task.url]) {
+                [self.tasks addObject:task];
+                self.tasksMap[task.identifier] = task;
                 if (self.configure.isAutoStart) {
                     if (task.status != TaskStatusUnknowError) {
                         [self executeTask:task];

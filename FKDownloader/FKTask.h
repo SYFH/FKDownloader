@@ -39,7 +39,7 @@ typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
 typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
 typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
 
-typedef NS_ENUM(NSUInteger, TaskStatus) {
+typedef NS_ENUM(NSInteger, TaskStatus) {
     TaskStatusNone,         // 无状态, 仅表示已加入队列
     TaskStatusPrepare,      // 预处理
     TaskStatusIdle,         // 等待中
@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, TaskStatus) {
     TaskStatusUnknowError   // 未知错误
 };
 
-typedef NS_ENUM(NSUInteger, VerifyType) {
+typedef NS_ENUM(NSInteger, VerifyType) {
     VerifyTypeMD5,
     VerifyTypeSHA1,
     VerifyTypeSHA256,
@@ -95,7 +95,7 @@ typedef NS_ENUM(NSUInteger, VerifyType) {
 @property (nonatomic, strong) NSString              *url;
 
 /**
- 保存时的文件名, 注意: 使用时不必添加后缀名
+ 保存时的文件名, 注意: 设置时不必添加后缀名
  */
 @property (nonatomic, strong) NSString              *fileName;
 

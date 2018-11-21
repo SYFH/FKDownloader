@@ -61,12 +61,45 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
-                                             target:self
-                                           selector:@selector(refreshSpeed)
-                                           userInfo:nil
-                                            repeats:YES];
-        [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+        [self setupTimer];
+    }
+    return self;
+}
+
+- (void)setupTimer {
+    self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
+                                         target:self
+                                       selector:@selector(refreshSpeed)
+                                       userInfo:nil
+                                        repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+}
+
+
+#pragma mark - Coding
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    // url, fileName, verification, verificationType, requestHeader, status, progress
+    [aCoder encodeObject:self.url               forKey:@"url"];
+    [aCoder encodeObject:self.fileName          forKey:@"fileName"];
+    [aCoder encodeObject:self.verification      forKey:@"verification"];
+    [aCoder encodeInteger:self.verificationType forKey:@"verificationType"];
+    [aCoder encodeObject:self.requestHeader     forKey:@"requestHeader"];
+    [aCoder encodeInteger:self.status           forKey:@"status"];
+    [aCoder encodeInt64:self.progress.totalUnitCount        forKey:@"totalUnitCount"];
+    [aCoder encodeInt64:self.progress.completedUnitCount    forKey:@"completedUnitCount"];
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    self = [super init];
+    if (self) {
+        self.url                = [aDecoder decodeObjectForKey:@"url"];
+        self.fileName           = [aDecoder decodeObjectForKey:@"fileName"];
+        self.verification       = [aDecoder decodeObjectForKey:@"verification"];
+        self.verificationType   = [aDecoder decodeIntegerForKey:@"verificationType"];
+        self.requestHeader      = [aDecoder decodeObjectForKey:@"requestHeader"];
+        self.status             = [aDecoder decodeIntegerForKey:@"status"];
+        self.progress.totalUnitCount        = [aDecoder decodeInt64ForKey:@"totalUnitCount"];
+        self.progress.completedUnitCount    = [aDecoder decodeInt64ForKey:@"completedUnitCount"];
     }
     return self;
 }
@@ -641,20 +674,6 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
         self.progress.totalUnitCount = self.downloadTask.countOfBytesExpectedToReceive;
     }
     [self sendProgressInfo];
-}
-
-
-#pragma mark - Coding
-- (void)encodeWithCoder:(NSCoder *)aCoder {
-    // url, status, progress
-}
-
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    self = [super init];
-    if (self) {
-        
-    }
-    return self;
 }
 
 

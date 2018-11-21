@@ -23,19 +23,19 @@
 		3D35875E2192BD43000BD0E1 /* NSArray+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */; };
 		3D71563A2196B805008F91A7 /* TaskListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7156392196B805008F91A7 /* TaskListController.m */; };
 		3D71563D2196B81B008F91A7 /* TaskViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D71563C2196B81B008F91A7 /* TaskViewCell.m */; };
-		3D8CA7A321A5027F00E4BBEA /* FKSystemHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D8CA7A121A5027F00E4BBEA /* FKSystemHelper.h */; };
+		3D8CA7A321A5027F00E4BBEA /* FKSystemHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D8CA7A121A5027F00E4BBEA /* FKSystemHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D8CA7A421A5027F00E4BBEA /* FKSystemHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8CA7A221A5027F00E4BBEA /* FKSystemHelper.m */; };
 		3D8CA7A521A5027F00E4BBEA /* FKSystemHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8CA7A221A5027F00E4BBEA /* FKSystemHelper.m */; };
-		3D8CA7A921A506D300E4BBEA /* FKTaskStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D8CA7A721A506D300E4BBEA /* FKTaskStorage.h */; };
+		3D8CA7A921A506D300E4BBEA /* FKTaskStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D8CA7A721A506D300E4BBEA /* FKTaskStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D8CA7AA21A506D300E4BBEA /* FKTaskStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8CA7A821A506D300E4BBEA /* FKTaskStorage.m */; };
 		3D8CA7AB21A506D300E4BBEA /* FKTaskStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8CA7A821A506D300E4BBEA /* FKTaskStorage.m */; };
-		3DA41CD821A1AA3100B48D03 /* FKHashHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41CD621A1AA3100B48D03 /* FKHashHelper.h */; };
+		3DA41CD821A1AA3100B48D03 /* FKHashHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41CD621A1AA3100B48D03 /* FKHashHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3DA41CD921A1AA3100B48D03 /* FKHashHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41CD721A1AA3100B48D03 /* FKHashHelper.m */; };
 		3DA41CDA21A1AB5000B48D03 /* FKHashHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41CD721A1AA3100B48D03 /* FKHashHelper.m */; };
-		3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41D0321A2AAEC00B48D03 /* NSData+FKDownload.h */; };
+		3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41D0321A2AAEC00B48D03 /* NSData+FKDownload.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3DA41D0621A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */; };
 		3DA41D0721A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */; };
-		3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */; };
+		3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3DA41D0B21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */; };
 		3DA41D0C21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */; };
 		3DD308B0218BEDBA00BDF330 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308AF218BEDBA00BDF330 /* AppDelegate.m */; };
@@ -197,17 +197,17 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D0C622921996B560041BA82 /* FKConfigure.h in Headers */,
 				3D8CA7A321A5027F00E4BBEA /* FKSystemHelper.h in Headers */,
+				3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */,
+				3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */,
+				3DA41CD821A1AA3100B48D03 /* FKHashHelper.h in Headers */,
+				3D8CA7A921A506D300E4BBEA /* FKTaskStorage.h in Headers */,
+				3D0C622921996B560041BA82 /* FKConfigure.h in Headers */,
 				3D0C622A21996B560041BA82 /* FKDownloadManager.h in Headers */,
 				3D0C622B21996B560041BA82 /* FKDownloadExecutor.h in Headers */,
 				3D0C622C21996B560041BA82 /* FKTask.h in Headers */,
 				3D0C622D21996B560041BA82 /* NSString+FKDownload.h in Headers */,
-				3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */,
-				3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */,
 				3D0C622E21996B560041BA82 /* NSArray+FKDownload.h in Headers */,
-				3DA41CD821A1AA3100B48D03 /* FKHashHelper.h in Headers */,
-				3D8CA7A921A506D300E4BBEA /* FKTaskStorage.h in Headers */,
 				3D0C622521996AF60041BA82 /* FKDownloader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
