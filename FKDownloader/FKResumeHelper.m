@@ -26,7 +26,7 @@
 }
 
 + (NSData *)packetResumeData:(NSDictionary *)packet {
-    if ([FKSystemHelper currentSystemVersion].floatValue <= 11) {
+    if ([FKSystemHelper currentSystemVersion].floatValue < 12) {
         return [NSPropertyListSerialization dataWithPropertyList:packet
                                                           format:NSPropertyListXMLFormat_v1_0
                                                          options:0
@@ -118,6 +118,7 @@
 }
 
 + (NSData *)correctResumeData:(NSData *)data {
+    // !!!:https://stackoverflow.com/questions/39346231/resume-nsurlsession-on-ios10/39347461#39347461
     if ([[FKSystemHelper currentSystemVersion] isEqualToString:@"10.0"] ||
         [[FKSystemHelper currentSystemVersion] isEqualToString:@"10.1"]) {
         
@@ -136,6 +137,16 @@
                                                                     format:NSPropertyListXMLFormat_v1_0
                                                                    options:0
                                                                      error:nil];
+        return result;
+    } else if ([[FKSystemHelper currentSystemVersion] hasPrefix:@"11."]) {
+        NSMutableDictionary *resumeDictionary = [[self readResumeData:data] mutableCopy];
+        if (resumeDictionary == nil) {
+            return data;
+        }
+        if ([resumeDictionary.allKeys containsObject:@"NSURLSessionResumeByteRange"]) {
+            [resumeDictionary removeObjectForKey:@"NSURLSessionResumeByteRange"];
+        }
+        NSData *result = [self packetResumeData:[NSDictionary dictionaryWithDictionary:resumeDictionary]];
         return result;
     } else {
         return data;

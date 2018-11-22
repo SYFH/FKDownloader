@@ -201,6 +201,10 @@ static FKDownloadManager *_instance = nil;
     FKLog(@"开始任务: %@", url)
     checkURL(url);
     
+    if ([self acquire:url].status == TaskStatusExecuting) {
+        return [self acquire:url];
+    }
+    
     if ([self acquire:url]) {
         FKTask *task = [self acquire:url];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

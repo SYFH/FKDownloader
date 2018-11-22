@@ -29,7 +29,8 @@
             [[FKDownloadManager manager] addInfo:@{FKTaskInfoURL: url,
                                                    FKTaskInfoFileName: @"123",
                                                    FKTaskInfoVerificationType: @(VerifyTypeMD5),
-                                                   FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c" }];
+                                                   FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
+                                                   FKTaskInfoRequestHeader: @{} }];
         } else {
             [[FKDownloadManager manager] add:url];
         }

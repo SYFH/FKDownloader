@@ -12,7 +12,7 @@
 
 + (NSDictionary *)readResumeData:(NSData *)resumeData;
 + (NSData *)packetResumeData:(NSDictionary *)packet;
-
+// TODO: 更新ResumeData 的 URL
 + (NSData *)correctResumeData:(NSData *)data;
 
 @end

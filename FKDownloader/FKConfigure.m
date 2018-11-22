@@ -38,5 +38,13 @@
     }
 }
 
+- (void)setTimeoutInterval:(NSInteger)timeoutInterval {
+    if (timeoutInterval > 0) {
+        _timeoutInterval = timeoutInterval;
+    } else {
+        _timeoutInterval = 30;
+    }
+}
+
 
 @end

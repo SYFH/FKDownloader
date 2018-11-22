@@ -10,7 +10,6 @@
 
 typedef void(^handler)(void);
 
-// TODO: 任务速度更新间隔, 是否进行文件校验
 @interface FKConfigure : NSObject
 
 /**
