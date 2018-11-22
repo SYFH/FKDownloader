@@ -38,6 +38,9 @@
 		3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3DA41D0B21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */; };
 		3DA41D0C21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */; };
+		3DC0789C21A686E30066CB2C /* FKDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DC0789A21A686E30066CB2C /* FKDefine.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3DC0789D21A686E30066CB2C /* FKDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0789B21A686E30066CB2C /* FKDefine.m */; };
+		3DC0789E21A686E30066CB2C /* FKDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0789B21A686E30066CB2C /* FKDefine.m */; };
 		3DD308B0218BEDBA00BDF330 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308AF218BEDBA00BDF330 /* AppDelegate.m */; };
 		3DD308B3218BEDBA00BDF330 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308B2218BEDBA00BDF330 /* ViewController.m */; };
 		3DD308B6218BEDBA00BDF330 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3DD308B4218BEDBA00BDF330 /* Main.storyboard */; };
@@ -71,6 +74,8 @@
 		3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+FKDownload.m"; sourceTree = "<group>"; };
 		3DA41D0821A2E1CD00B48D03 /* FKResumeHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKResumeHelper.h; sourceTree = "<group>"; };
 		3DA41D0921A2E1CD00B48D03 /* FKResumeHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKResumeHelper.m; sourceTree = "<group>"; };
+		3DC0789A21A686E30066CB2C /* FKDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKDefine.h; sourceTree = "<group>"; };
+		3DC0789B21A686E30066CB2C /* FKDefine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKDefine.m; sourceTree = "<group>"; };
 		3DD308AB218BEDBA00BDF330 /* FKDownloaderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKDownloaderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DD308AE218BEDBA00BDF330 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3DD308AF218BEDBA00BDF330 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -166,6 +171,8 @@
 				3DD308CA218BEE3300BDF330 /* FKDownloader.h */,
 				3DD308CB218BEE3300BDF330 /* FKConfigure.h */,
 				3DD308C7218BEE3300BDF330 /* FKConfigure.m */,
+				3DC0789A21A686E30066CB2C /* FKDefine.h */,
+				3DC0789B21A686E30066CB2C /* FKDefine.m */,
 				3DD308C9218BEE3300BDF330 /* FKDownloadManager.h */,
 				3DD308CC218BEE3300BDF330 /* FKDownloadManager.m */,
 				3DD308D1218C403C00BDF330 /* FKDownloadExecutor.h */,
@@ -197,6 +204,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DC0789C21A686E30066CB2C /* FKDefine.h in Headers */,
 				3D8CA7A321A5027F00E4BBEA /* FKSystemHelper.h in Headers */,
 				3DA41D0521A2AAEC00B48D03 /* NSData+FKDownload.h in Headers */,
 				3DA41D0A21A2E1CD00B48D03 /* FKResumeHelper.h in Headers */,
@@ -320,6 +328,7 @@
 				3D0C623221996B630041BA82 /* FKTask.m in Sources */,
 				3D0C623321996B630041BA82 /* NSString+FKDownload.m in Sources */,
 				3DA41D0721A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */,
+				3DC0789E21A686E30066CB2C /* FKDefine.m in Sources */,
 				3DA41CD921A1AA3100B48D03 /* FKHashHelper.m in Sources */,
 				3D0C623421996B630041BA82 /* NSArray+FKDownload.m in Sources */,
 			);
@@ -336,6 +345,7 @@
 				3DD308BE218BEDBB00BDF330 /* main.m in Sources */,
 				3DA41D0621A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */,
 				3DA41CDA21A1AB5000B48D03 /* FKHashHelper.m in Sources */,
+				3DC0789D21A686E30066CB2C /* FKDefine.m in Sources */,
 				3DD308CF218BEE3300BDF330 /* FKDownloadManager.m in Sources */,
 				3DD308F8218C4E8D00BDF330 /* NSString+FKDownload.m in Sources */,
 				3DD308D3218C403C00BDF330 /* FKDownloadExecutor.m in Sources */,

@@ -14,28 +14,15 @@
 #import "FKTaskStorage.h"
 #import "NSString+FKDownload.h"
 #import "NSArray+FKDownload.h"
-
-void checkURL(NSString *address) {
-    if (address.length == 0) {
-        NSCAssert(NO, @"URL 地址不合法, 请填写正确的 URL!");
-    }
-    
-    NSURL *url = [NSURL URLWithString:address];
-    if ([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"]) {
-        NSCAssert(url != nil, @"URL 地址不合法, 请填写正确的 URL!");
-    } else {
-        NSCAssert(NO, @"不支持的 URL");
-    }
-}
+#import "FKDefine.h"
 
 @interface FKDownloadManager ()
 
-@property (nonatomic, strong) NSURLSession          *session;
-@property (nonatomic, strong) FKDownloadExecutor    *executor;
-@property (nonatomic, copy  ) NSMutableArray<FKTask *> *tasks;
-@property (nonatomic, copy  ) NSMutableDictionary   *tasksMap;
-
-@property (nonatomic, strong) NSProgress            *progress;
+@property (nonatomic, strong) NSURLSession              *session;
+@property (nonatomic, strong) FKDownloadExecutor        *executor;
+@property (nonatomic, strong) NSProgress                *progress;
+@property (nonatomic, copy  ) NSMutableArray<FKTask *>  *tasks;
+@property (nonatomic, copy  ) NSMutableDictionary       *tasksMap;
 
 @end
 
@@ -72,6 +59,7 @@ static FKDownloadManager *_instance = nil;
         [self setupSession];
         [self setupPath];
         [self setupProperty];
+        [self setupNotification];
     }
     return self;
 }
@@ -125,6 +113,12 @@ static FKDownloadManager *_instance = nil;
 
 - (void)setupProperty {
     self.progress = [[NSProgress alloc] init];
+}
+
+- (void)setupNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveTasks) name:FKTaskDidExecuteNotication object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveTasks) name:FKTaskDidSuspendNotication object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveTasks) name:FKTaskDidCancelldNotication object:nil];
 }
 
 
@@ -225,7 +219,6 @@ static FKDownloadManager *_instance = nil;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self executeTask:task];
     });
-    
     return task;
 }
 
@@ -315,6 +308,7 @@ static FKDownloadManager *_instance = nil;
         NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restorePath];
         [tasks forEach:^(FKTask *task, NSUInteger idx) {
             if (![self acquire:task.url]) {
+                task.manager = self;
                 [self.tasks addObject:task];
                 self.tasksMap[task.identifier] = task;
                 if (self.configure.isAutoStart) {

@@ -7,17 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-typedef NS_OPTIONS(NSInteger, DeviceModel) {
-    DeviceModelAirPods,
-    DeviceModelAppleTV,
-    DeviceModelAppleWatch,
-    DeviceModelHomePod,
-    DeviceModeliPad,
-    DeviceModeliPadMini,
-    DeviceModeliPhone,
-    DeviceModeliPodTouch,
-};
+#import "FKDefine.h"
 
 @interface FKSystemHelper : NSObject
 

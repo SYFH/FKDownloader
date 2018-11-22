@@ -13,36 +13,14 @@
 #import "FKResumeHelper.h"
 #import "NSString+FKDownload.h"
 
-FKNotificationName const FKTaskPrepareNotification      = @"FKTaskPrepareNotification";
-FKNotificationName const FKTaskDidIdleNotification      = @"FKTaskDidIdleNotification";
-FKNotificationName const FKTaskWillExecuteNotification  = @"FKTaskWillExecuteNotification";
-FKNotificationName const FKTaskDidExecuteNotication     = @"FKTaskDidExecuteNotication";
-FKNotificationName const FKTaskProgressNotication       = @"FKTaskProgressNotication";
-FKNotificationName const FKTaskDidResumingNotification  = @"FKTaskDidResumingNotification";
-FKNotificationName const FKTaskWillChecksumNotification = @"FKTaskWillChecksumNotification";
-FKNotificationName const FKTaskDidChecksumNotification  = @"FKTaskDidChecksumNotification";
-FKNotificationName const FKTaskDidFinishNotication      = @"FKTaskDidFinishNotication";
-FKNotificationName const FKTaskErrorNotication          = @"FKTaskErrorNotication";
-FKNotificationName const FKTaskWillSuspendNotication    = @"FKTaskWillSuspendNotication";
-FKNotificationName const FKTaskDidSuspendNotication     = @"FKTaskDidSuspendNotication";
-FKNotificationName const FKTaskWillCancelldNotication   = @"FKTaskWillCancelldNotication";
-FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNotication";
-FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotication";
-
-FKTaskInfoName const FKTaskInfoURL              = @"FKTaskInfoURL";
-FKTaskInfoName const FKTaskInfoFileName         = @"FKTaskInfoFileName";
-FKTaskInfoName const FKTaskInfoVerificationType = @"FKTaskInfoVerificationType";
-FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
-FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
-
 @interface FKTask ()
 
 @property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
-@property (nonatomic, strong) NSString    *identifier;
-@property (nonatomic, strong) NSProgress  *progress;
-@property (nonatomic, strong) NSData      *resumeData;
+@property (nonatomic, strong) NSString          *identifier;
+@property (nonatomic, strong) NSProgress        *progress;
+@property (nonatomic, strong) NSData            *resumeData;
 
-@property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, strong) NSTimer           *timer;
 
 @property (nonatomic, assign) NSTimeInterval    prevTime;
 @property (nonatomic, assign) int64_t           prevReceivedBytes;
@@ -67,12 +45,14 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 }
 
 - (void)setupTimer {
-    self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
-                                         target:self
-                                       selector:@selector(refreshSpeed)
-                                       userInfo:nil
-                                        repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    if (!self.timer.isValid) {
+        self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
+                                             target:self
+                                           selector:@selector(refreshSpeed)
+                                           userInfo:nil
+                                            repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    }
 }
 
 
@@ -100,6 +80,8 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
         self.status             = [aDecoder decodeIntegerForKey:@"status"];
         self.progress.totalUnitCount        = [aDecoder decodeInt64ForKey:@"totalUnitCount"];
         self.progress.completedUnitCount    = [aDecoder decodeInt64ForKey:@"completedUnitCount"];
+        
+        [self setupTimer];
     }
     return self;
 }
@@ -229,6 +211,7 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
         strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
         strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
         strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+        FKLog(@"%@", [FKResumeHelper readResumeData:resumeData]);
         if (complete) {
             // !!!: 此处使用 dispatch_after 是为了唤醒下载线程和防止写入恢复数据/读取回复数据冲突导致 fix 后台下载进度失败
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -253,9 +236,11 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 - (void)cancel {
     [self sendWillCancelldInfo];
     
-    if (self.status == TaskStatusCancelld) {
+    if (self.status == TaskStatusCancelld ||
+        self.status == TaskStatusNone ||
+        self.status == TaskStatusIdle) {
+        
         [self sendCancelldInfo];
-        return;
     }
     // !!!: 带有恢复数据的系统任务暂停后, 状态为已完成, 需手动做取消通知和数据清理
     if (self.status == TaskStatusSuspend) {
@@ -686,7 +671,7 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p> <URL: %@, status: %@>", NSStringFromClass([self class]), &self, self.url, [self statusDescription:self.status]];
+    return [NSString stringWithFormat:@"<%@: %p> <URL: %@, status: %@>", NSStringFromClass([self class]), self, self.url, [self statusDescription:self.status]];
 }
 
 - (void)refreshSpeed {
@@ -769,13 +754,15 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
         default:
             break;
     }
+    
+    [self sendProgressInfo];
 }
 
 - (NSData *)resumeData {
     NSError *error;
     NSData *resumeData = [NSData dataWithContentsOfFile:[self resumeFilePath] options:NSDataReadingMappedIfSafe error:&error];
     if (error) {
-        NSLog(@"%@", error);
+        FKLog(@"读取恢复数据失败: %@", error)
         return nil;
     } else {
         return resumeData;
@@ -822,7 +809,7 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 }
 
 - (NSString *)bytesPerSecondSpeedDescription {
-    return [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:self.bytesPerSecondSpeed.longLongValue countStyle:NSByteCountFormatterCountStyleBinary]];
+    return [NSString stringWithFormat:@"%@/s", [NSByteCountFormatter stringFromByteCount:(self.bytesPerSecondSpeed ?: 0).longLongValue countStyle:NSByteCountFormatterCountStyleBinary]];
 }
 
 @end
