@@ -651,8 +651,26 @@
 }
 
 - (BOOL)isHasResumeData {
-    // TODO: 还需要判断缓存文件是否还存在, 当开始下载时缓存文件位置为 Library/Caches/com.apple.nsurlsessiond/Downloads/“Bundle ID”/“NSURLSessionResumeInfoTempFileName”, 当暂停时缓存文件为 temp/“NSURLSessionResumeInfoTempFileName”
-    return [self.manager.fileManager fileExistsAtPath:[self resumeFilePath]];
+    // !!!: 判断缓存文件是否还存在, 当开始下载时缓存文件位置为 Library/Caches/com.apple.nsurlsessiond/Downloads/“Bundle ID”/“NSURLSessionResumeInfoTempFileName”, 当暂停时缓存文件为 temp/“NSURLSessionResumeInfoTempFileName”
+    if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
+        NSDictionary *resumeDictionary = [FKResumeHelper readResumeData:[NSData dataWithContentsOfFile:self.resumeFilePath options:NSDataReadingMappedIfSafe error:nil]];
+        NSString *tempFilePath = @"";
+        if ([resumeDictionary[@"NSURLSessionResumeInfoVersion"] integerValue] == 1 ||
+            [resumeDictionary.allKeys containsObject:@"NSURLSessionResumeInfoLocalPath"]) {
+            
+            tempFilePath = resumeDictionary[@"NSURLSessionResumeInfoLocalPath"];
+        } else {
+            tempFilePath = [[self tempPath] stringByAppendingPathComponent:resumeDictionary[@"NSURLSessionResumeInfoTempFileName"]];
+        }
+        
+        if ([self.manager.fileManager fileExistsAtPath:tempFilePath]) {
+            return YES;
+        } else {
+            return NO;
+        }
+    } else {
+        return NO;
+    }
 }
 
 - (BOOL)isFinish {
@@ -707,6 +725,10 @@
         [self.timer invalidate];
         self.timer = nil;
     }
+}
+
+- (NSString *)tempPath {
+    return [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES).lastObject stringByAppendingPathComponent:@"tmp"];
 }
 
 

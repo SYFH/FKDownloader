@@ -169,8 +169,4 @@
     }
 }
 
-+ (NSString *)tempPath {
-    return [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES).lastObject stringByAppendingPathComponent:@"tmp"];
-}
-
 @end
