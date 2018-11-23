@@ -127,7 +127,8 @@ static FKDownloadManager *_instance = nil;
     FKLog(@"获取 FKTask: %@", url)
     checkURL(url);
     
-    NSString *identifier = [url SHA256];
+    NSURL *u = [NSURL URLWithString:url];
+    NSString *identifier = [[NSString stringWithFormat:@"%@://%@%@", u.scheme, u.host, u.path] SHA256];
     return self.tasksMap[identifier];
 }
 

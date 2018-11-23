@@ -37,7 +37,7 @@
 @interface FKTask : NSObject <NSCoding>
 
 /**
- 任务标示, 由 URL 通过 SHA256 计算得出
+ 任务标示, 由 URL 部分参数通过 SHA256 计算得出, 忽略 URL 参数
  */
 @property (nonatomic, strong, readonly) NSString    *identifier;
 
@@ -202,6 +202,14 @@
  清除任务, 从管理器中排除, 并解除持久化
  */
 - (void)clear;
+
+/**
+ 更新恢复数据中的 URL, 任务开始前操作有效
+ 仅在有恢复数据时做更新 URL, 否则只更新属性值
+
+ @param url 更新后的 URL
+ */
+- (void)updateURL:(NSString *)url;
 
 
 #pragma mark - Send Info

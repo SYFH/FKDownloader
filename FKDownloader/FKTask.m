@@ -285,6 +285,22 @@
     }
 }
 
+- (void)clear {
+    [self removeProgressObserver];
+    [self clearResumeData];
+    [self clearSpeedTimer];
+}
+
+- (void)updateURL:(NSString *)url {
+    if (self.status != TaskStatusExecuting) {
+        if (self.isHasResumeData) {
+            NSData *resumeData = [NSData dataWithContentsOfFile:self.resumeFilePath options:NSDataReadingMappedIfSafe error:nil];
+            self.resumeData = [FKResumeHelper updateResumeData:resumeData url:url];
+        }
+        self.url = url;
+    }
+}
+
 
 #pragma mark - Send Info
 - (void)sendIdleInfo {
@@ -643,12 +659,6 @@
     return [self.manager.fileManager fileExistsAtPath:[self filePath]];
 }
 
-- (void)clear {
-    [self removeProgressObserver];
-    [self clearResumeData];
-    [self clearSpeedTimer];
-}
-
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -703,7 +713,7 @@
 #pragma mark - Getter/Setter
 - (void)setUrl:(NSString *)url {
     _url = url;
-    // !!!: 需要兼容可过期地址, 一般为附带参数需要改变, 可以只使用文件网络路径计算标识符
+    
     NSURL *u = [NSURL URLWithString:url];
     self.identifier = [[NSString stringWithFormat:@"%@://%@%@", u.scheme, u.host, u.path] SHA256];
 }
@@ -773,6 +783,27 @@
 - (void)setResumeData:(NSData *)resumeData {
     _resumeData = resumeData;
     [resumeData writeToFile:[self resumeFilePath] atomically:YES];
+}
+
+- (NSString *)fileName {
+    if (!_fileName) {
+        _fileName = @"";
+    }
+    return _fileName;
+}
+
+- (NSString *)verification {
+    if (!_verification) {
+        _verification = @"";
+    }
+    return _verification;
+}
+
+- (NSDictionary *)requestHeader {
+    if (!_requestHeader) {
+        _requestHeader = [NSDictionary dictionary];
+    }
+    return _requestHeader;
 }
 
 - (NSProgress *)progress {

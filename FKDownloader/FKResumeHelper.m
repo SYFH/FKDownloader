@@ -10,7 +10,7 @@
 #import "FKSystemHelper.h"
 
 @implementation FKResumeHelper
-
+//TODO: 可以继续解包 NSURLSessionResumeCurrentRequest 和 NSURLSessionResumeOriginalRequest 字段
 + (NSDictionary *)readResumeData:(NSData *)resumeData {
     if ([FKSystemHelper currentSystemVersion].floatValue < 12) {
         NSDictionary *dic = [NSPropertyListSerialization propertyListWithData:resumeData
@@ -34,6 +34,22 @@
     } else {
         return [NSKeyedArchiver archivedDataWithRootObject:packet];
     }
+}
+
++ (NSData *)updateResumeData:(NSData *)resumeData url:(NSString *)url {
+    NSMutableDictionary *resumeDictionary = [[self readResumeData:resumeData] mutableCopy];
+    if ([resumeDictionary.allKeys containsObject:@"NSURLSessionResumeByteRange"]) {
+        [resumeDictionary removeObjectForKey:@"NSURLSessionResumeByteRange"];
+    }
+    
+    NSString *range = [NSString stringWithFormat:@"bytes=%@-", resumeDictionary[@"NSURLSessionResumeBytesReceived"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+    [request setValue:range forHTTPHeaderField:@"Range"];
+    
+    resumeDictionary[@"NSURLSessionResumeCurrentRequest"] = [NSKeyedArchiver archivedDataWithRootObject:request];
+    resumeDictionary[@"NSURLSessionDownloadURL"] = url;
+    
+    return [self packetResumeData:resumeDictionary];
 }
 
 + (NSData *)correctRequestData:(NSData *)data {
@@ -151,6 +167,10 @@
     } else {
         return data;
     }
+}
+
++ (NSString *)tempPath {
+    return [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES).lastObject stringByAppendingPathComponent:@"tmp"];
 }
 
 @end
