@@ -1,9 +1,6 @@
 # FKDonwloader 
 👍🏻📥也许是最好的文件下载器.
 
-# 介绍
-[一个系统BUG引发的血案](https://www.jianshu.com/p/72b5fe043141)
-
 # Features
 * [x] 后台下载
 * [x] 恢复所有后台任务和进度
@@ -43,9 +40,11 @@
 　　解决思路: 手动暂停再继续, 简单直接, 但要注意: 暂停无效, 需要使用带有恢复数据的取消方法, 并且该方法在 `-[AppDelegate applicationWillEnterForeground:]` 中无效.  
 　　解决方法: 在 `-[AppDelegate applicationDidBecomeActive:]` 方法中调用 `+[FKDownloadManager fixProgressNotChanage]` 即可.  
 
+# 初衷与动机
+[一个系统BUG引发的血案](https://www.jianshu.com/p/72b5fe043141)
 
-# 示例
-　　直接运行 Demo 即可.
+# 示例/最佳实践
+　　请直接运行 Demo.
 　　
 # 安装
 - CocoaPods  
