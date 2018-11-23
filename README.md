@@ -1,6 +1,9 @@
 # FKDonwloader 
 👍🏻📥也许是最好的文件下载器.
 
+# 介绍
+[一个系统BUG引发的血案](https://www.jianshu.com/p/72b5fe043141)
+
 # Features
 * [x] 后台下载
 * [x] 恢复所有后台任务和进度
