@@ -41,7 +41,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [self setupTimer];
+        
     }
     return self;
 }
@@ -82,8 +82,6 @@
         self.status             = [aDecoder decodeIntegerForKey:@"status"];
         self.progress.totalUnitCount        = [aDecoder decodeInt64ForKey:@"totalUnitCount"];
         self.progress.completedUnitCount    = [aDecoder decodeInt64ForKey:@"completedUnitCount"];
-        
-        [self setupTimer];
     }
     return self;
 }
@@ -199,9 +197,11 @@
         [self sendFinishInfo];
     } else if (self.isHasResumeData) {
         FKLog(@"检测到恢复数据: %@", self)
+        [self setupTimer];
         [self resume];
     } else {
         FKLog(@"没有恢复数据: %@", self)
+        [self setupTimer];
         [self.downloadTask resume];
         [self sendExecutingInfo];
     }
@@ -273,6 +273,7 @@
     self.progress.completedUnitCount = 0;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+    [self clearSpeedTimer];
 }
 
 - (BOOL)checksum {
@@ -748,7 +749,7 @@
 }
 
 - (NSString *)tempPath {
-    return [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES).lastObject stringByAppendingPathComponent:@"tmp"];
+    return NSTemporaryDirectory();
 }
 
 

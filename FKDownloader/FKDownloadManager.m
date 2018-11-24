@@ -25,7 +25,9 @@
 @property (nonatomic, copy  ) NSMutableArray<FKTask *>  *tasks;
 @property (nonatomic, copy  ) NSMutableDictionary       *tasksMap;
 
-@property (nonatomic, strong) FKReachability *reachability;
+@property (nonatomic, strong) FKReachability            *reachability;
+
+@property (nonatomic, assign) BOOL                      isDidEnterBackground;
 
 @end
 
@@ -135,6 +137,11 @@ static FKDownloadManager *_instance = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(saveTasks)
                                                  name:FKTaskDidFinishNotication
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
 }
 
@@ -359,6 +366,9 @@ static FKDownloadManager *_instance = nil;
 // !!!: 问题根源在于 countOfBytesReceived/countOfBytesExpectedToReceive 没有改变, 导致代理, KVO 和 NSTimer 失效, 需要寻找新的方法来获取进度
 // !!!: 目前使用带有恢复数据的取消后再次继续执行可解决问题, 但必须在 -[AppDelegate applicationDidBecomeActive] 内执行, 在`applicationWillEnterForeground` 内执行失败, 且必须在写入恢复数据后继续才有效, 否则出现 load error.
 - (void)fixProgressNotChanage {
+    if (self.isDidEnterBackground == NO) {
+        return;
+    }
     if (([[FKSystemHelper currentSystemVersion] isEqualToString:@"12.0"] ||
          [[FKSystemHelper currentSystemVersion] isEqualToString:@"12.1"]) &&
         [FKSystemHelper currentDeviceModelVersion:DeviceModeliPhone] < 10) {
@@ -371,6 +381,7 @@ static FKDownloadManager *_instance = nil;
                 }];
             }
         }];
+        self.isDidEnterBackground = NO;
     }
 }
 
@@ -416,6 +427,10 @@ static FKDownloadManager *_instance = nil;
             }];
         } break;
     }
+}
+
+- (void)didEnterBackground:(NSNotification *)notify {
+    self.isDidEnterBackground = YES;
 }
 
 
