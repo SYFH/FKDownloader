@@ -537,6 +537,7 @@
 - (void)sendErrorInfo:(NSError *)error {
     self.error = error;
     self.status = TaskStatusUnknowError;
+    [self clearResumeData];
     
     if ([self.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
