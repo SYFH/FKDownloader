@@ -7,18 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-
-typedef NS_ENUM(NSInteger, NetworkStatus) {
-    NotReachable = 0,
-    ReachableViaWiFi,
-    ReachableViaWWAN
-};
-
-extern NSString *kReachabilityChangedNotification;
+#import "FKDefine.h"
 
 @interface FKReachability : NSObject
-
-
 /*!
  * Use to check the reachability of a given host name.
  */

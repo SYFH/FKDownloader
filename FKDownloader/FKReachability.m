@@ -17,14 +17,12 @@
 #import <netinet/in.h>
 #import <CoreFoundation/CoreFoundation.h>
 
-NSString *kReachabilityChangedNotification = @"kNetworkReachabilityChangedNotification";
-
 #define kShouldPrintReachabilityFlags 1
 
 static void PrintReachabilityFlags(SCNetworkReachabilityFlags flags, const char *comment) {
 #if kShouldPrintReachabilityFlags
-    NSLog(@"Reachability Flag Status: %c%c %c%c%c%c%c%c%c %s\n",
-          (flags & kSCNetworkReachabilityFlagsIsWWAN)                ? 'W' : '-',
+    FKLog(@"Reachability Flag Status: %c%c %c%c%c%c%c%c%c %s\n",
+          (flags & kSCNetworkReachabilityFlagsIsWWAN)               ? 'W' : '-',
           (flags & kSCNetworkReachabilityFlagsReachable)            ? 'R' : '-',
           
           (flags & kSCNetworkReachabilityFlagsTransientConnection)  ? 't' : '-',
@@ -34,8 +32,7 @@ static void PrintReachabilityFlags(SCNetworkReachabilityFlags flags, const char 
           (flags & kSCNetworkReachabilityFlagsConnectionOnDemand)   ? 'D' : '-',
           (flags & kSCNetworkReachabilityFlagsIsLocalAddress)       ? 'l' : '-',
           (flags & kSCNetworkReachabilityFlagsIsDirect)             ? 'd' : '-',
-          comment
-          );
+          comment);
 #endif
 }
 
@@ -43,11 +40,11 @@ static void PrintReachabilityFlags(SCNetworkReachabilityFlags flags, const char 
 static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info) {
 #pragma unused (target, flags)
     NSCAssert(info != NULL, @"info was NULL in ReachabilityCallback");
-    NSCAssert([(__bridge NSObject*) info isKindOfClass: [FKReachability class]], @"info was wrong class in ReachabilityCallback");
+    NSCAssert([(__bridge NSObject*) info isKindOfClass:[FKReachability class]], @"info was wrong class in ReachabilityCallback");
     
     FKReachability *noteObject = (__bridge FKReachability *)info;
     // Post a notification to notify the client that the network reachability changed.
-    [[NSNotificationCenter defaultCenter] postNotificationName: kReachabilityChangedNotification object: noteObject];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FKReachabilityChangedNotification object:noteObject];
 }
 
 @interface FKReachability ()

@@ -42,6 +42,9 @@ extern FKTaskInfoName const FKTaskInfoVerificationType;
 extern FKTaskInfoName const FKTaskInfoVerification;
 extern FKTaskInfoName const FKTaskInfoRequestHeader;
 
+typedef NSString * FKReachabilityNotificationName;
+extern FKReachabilityNotificationName const FKReachabilityChangedNotification;
+
 typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
 typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
 typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
@@ -76,4 +79,10 @@ typedef NS_OPTIONS(NSInteger, DeviceModel) {
     DeviceModeliPadMini,
     DeviceModeliPhone,
     DeviceModeliPodTouch,
+};
+
+typedef NS_ENUM(NSInteger, NetworkStatus) {
+    NotReachable = 0,
+    ReachableViaWiFi,
+    ReachableViaWWAN
 };

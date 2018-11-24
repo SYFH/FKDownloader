@@ -43,3 +43,4 @@ FKTaskInfoName const FKTaskInfoVerificationType = @"FKTaskInfoVerificationType";
 FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 
+FKReachabilityNotificationName const FKReachabilityChangedNotification = @"FKReachabilityChangedNotification";
