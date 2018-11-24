@@ -160,8 +160,6 @@
     self.prevTime = 1;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
-    
-    [self sendWillExecutingInfo];
 }
 
 - (void)addProgressObserver {
@@ -180,6 +178,7 @@
 }
 
 - (void)execute {
+    [self sendWillExecutingInfo];
     FKLog(@"执行: %@", self)
     if (self.isFinish) {
         FKLog(@"文件早已下载完成: %@", self)
@@ -208,10 +207,12 @@
     __weak typeof(self) weak = self;
     [self.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
         __strong typeof(weak) strong = weak;
-        strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
-        strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
-        strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
-        FKLog(@"%@", [FKResumeHelper readResumeData:resumeData]);
+        if (resumeData) {
+            strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
+            strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+            strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+            FKLog(@"%@", [FKResumeHelper readResumeData:resumeData]);
+        }
         if (complete) {
             // !!!: 此处使用 dispatch_after 是为了唤醒下载线程和防止写入恢复数据/读取回复数据冲突导致 fix 后台下载进度失败
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -235,6 +236,12 @@
 
 - (void)cancel {
     [self sendWillCancelldInfo];
+    
+    // 已完成下载的忽略停止操作
+    if (self.isFinish) {
+        [self sendCancelldInfo];
+        return;
+    }
     
     if (self.status == TaskStatusCancelld ||
         self.status == TaskStatusNone ||
