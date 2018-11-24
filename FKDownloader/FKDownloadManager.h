@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 @class FKConfigure;
 @class FKTask;
+@class FKReachability;
 
 __attribute__((objc_subclassing_restricted))
 @interface FKDownloadManager : NSObject
@@ -37,6 +38,11 @@ __attribute__((objc_subclassing_restricted))
  总任务进度
  */
 @property (nonatomic, strong, readonly) NSProgress *progress;
+
+/**
+ 网络状态检测
+ */
+@property (nonatomic, strong, readonly) FKReachability *reachability;
 
 /**
  初始化下载管理器

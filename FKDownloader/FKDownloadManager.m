@@ -15,6 +15,7 @@
 #import "NSString+FKDownload.h"
 #import "NSArray+FKDownload.h"
 #import "FKDefine.h"
+#import "FKReachability.h"
 
 @interface FKDownloadManager ()
 
@@ -23,6 +24,8 @@
 @property (nonatomic, strong) NSProgress                *progress;
 @property (nonatomic, copy  ) NSMutableArray<FKTask *>  *tasks;
 @property (nonatomic, copy  ) NSMutableDictionary       *tasksMap;
+
+@property (nonatomic, strong) FKReachability *reachability;
 
 @end
 
@@ -60,6 +63,7 @@ static FKDownloadManager *_instance = nil;
         [self setupPath];
         [self setupProperty];
         [self setupNotification];
+        [self setupReachability];
     }
     return self;
 }
@@ -84,7 +88,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)setupPath {
-    FKLog(@"配置文件路径")
+    FKLog(@"配置所需文件夹")
     BOOL isDirectory = NO;
     BOOL isFileExist = NO;
     
@@ -116,9 +120,31 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)setupNotification {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveTasks) name:FKTaskDidExecuteNotication object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveTasks) name:FKTaskDidSuspendNotication object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveTasks) name:FKTaskDidCancelldNotication object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(saveTasks)
+                                                 name:FKTaskDidExecuteNotication
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(saveTasks)
+                                                 name:FKTaskDidSuspendNotication
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(saveTasks)
+                                                 name:FKTaskDidCancelldNotication
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(saveTasks)
+                                                 name:FKTaskDidFinishNotication
+                                               object:nil];
+}
+
+- (void)setupReachability {
+    self.reachability = [FKReachability reachabilityWithHostName:@"www.baidu.com"];
+    [self.reachability startNotifier];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reachabilityChanged:)
+                                                 name:FKReachabilityChangedNotification
+                                               object:nil];
 }
 
 
@@ -305,10 +331,12 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)saveTasks {
+    FKLog(@"归档所有任务")
     [FKTaskStorage saveObject:self.tasks toPath:self.configure.restorePath];
 }
 
 - (void)loadTasks {
+    FKLog(@"解档所有任务")
     if ([self.fileManager fileExistsAtPath:self.configure.restorePath]) {
         NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restorePath];
         [tasks forEach:^(FKTask *task, NSUInteger idx) {
@@ -355,6 +383,40 @@ static FKDownloadManager *_instance = nil;
 
 
 #pragma mark - Private Methode
+- (void)reachabilityChanged:(NSNotification *)note {
+    switch (self.reachability.currentReachabilityStatus) {
+        case NotReachable: {
+            [self.tasks forEach:^(FKTask *task, NSUInteger idx) {
+                if (task.status == TaskStatusExecuting) {
+                    task.error = [NSError errorWithDomain:NSURLErrorDomain
+                                                     code:NSURLErrorNotConnectedToInternet
+                                                 userInfo:@{NSFilePathErrorKey: task.url,
+                                                            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Network Unavailable"]}];
+                    [task suspend];
+                }
+                if (task.status == TaskStatusIdle) {
+                    [task cancel];
+                }
+            }];
+        } break;
+            
+        case ReachableViaWiFi: {
+            [self.tasks forEach:^(FKTask *task, NSUInteger idx) {
+                if (task.error.code == NSURLErrorNotConnectedToInternet) {
+                    [task execute];
+                }
+            }];
+        } break;
+            
+        case ReachableViaWWAN: {
+            [self.tasks forEach:^(FKTask *task, NSUInteger idx) {
+                if (task.error.code == NSURLErrorNotConnectedToInternet) {
+                    [task execute];
+                }
+            }];
+        } break;
+    }
+}
 
 
 #pragma mark - Getter/Setter

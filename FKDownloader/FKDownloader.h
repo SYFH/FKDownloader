@@ -16,6 +16,7 @@ FOUNDATION_EXPORT const unsigned char FKDownloaderVersionString[];
 
 #import "FKConfigure.h"
 #import "FKDefine.h"
+#import "FKReachability.h"
 #import "FKDownloadManager.h"
 #import "FKTask.h"
 #import "FKTaskStorage.h"

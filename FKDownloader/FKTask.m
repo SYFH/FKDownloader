@@ -12,6 +12,7 @@
 #import "FKHashHelper.h"
 #import "FKResumeHelper.h"
 #import "NSString+FKDownload.h"
+#import "FKReachability.h"
 
 @interface FKTask ()
 
@@ -20,6 +21,7 @@
 @property (nonatomic, strong) NSProgress        *progress;
 @property (nonatomic, strong) NSData            *resumeData;
 
+// TODO: 只在任务运行期间进行计时
 @property (nonatomic, strong) NSTimer           *timer;
 
 @property (nonatomic, assign) NSTimeInterval    prevTime;
@@ -178,8 +180,18 @@
 }
 
 - (void)execute {
-    [self sendWillExecutingInfo];
     FKLog(@"执行: %@", self)
+    if (self.manager.reachability.currentReachabilityStatus == NotReachable) {
+        self.error = [NSError errorWithDomain:NSURLErrorDomain
+                                         code:NSURLErrorNotConnectedToInternet
+                                     userInfo:@{NSFilePathErrorKey: self.url,
+                                                NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Network Unavailable"]}];
+        [self sendIdleInfo];
+        return;
+    }
+    
+    [self sendWillExecutingInfo];
+    
     if (self.isFinish) {
         FKLog(@"文件早已下载完成: %@", self)
         self.progress.totalUnitCount = 1;
@@ -207,10 +219,10 @@
     __weak typeof(self) weak = self;
     [self.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
         __strong typeof(weak) strong = weak;
+        strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+        strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
         if (resumeData) {
             strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
-            strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
-            strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
             FKLog(@"%@", [FKResumeHelper readResumeData:resumeData]);
         }
         if (complete) {
