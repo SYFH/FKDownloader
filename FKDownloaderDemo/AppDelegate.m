@@ -24,6 +24,7 @@
     config.isAutoClearTask = NO;
     config.isAutoStart = NO;
     config.isFileChecksum = YES;
+    config.maximumExecutionTask = 1;
     config.speedRefreshInterval = 1;
     [FKDownloadManager manager].configure = config;
     [[FKDownloadManager manager] restory];

@@ -111,6 +111,11 @@
     [self.operationButton setTitle:@"暂停" forState:UIControlStateNormal];
 }
 
+- (void)downloader:(FKDownloadManager *)downloader didIdleTask:(FKTask *)task {
+    NSLog(@"开始等待: %@", task.url);
+    [self.operationButton setTitle:@"等待中" forState:UIControlStateNormal];
+}
+
 - (void)downloader:(FKDownloadManager *)downloader progressingTask:(FKTask *)task {
     self.progress.progress = task.progress.fractionCompleted;
 }
