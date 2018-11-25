@@ -28,9 +28,14 @@ typedef void(^handler)(void);
 @property (nonatomic, assign) BOOL isAutoClearTask;
 
 /**
- 是否进行文件校验
+ 是否进行文件校验, 默认为 No
  */
 @property (nonatomic, assign) BOOL isFileChecksum;
+
+/**
+ 是否允许蜂窝网络进行下载, 默认为 NO
+ */
+@property (nonatomic, assign) BOOL isAllowCellular;
 
 /**
  最大并行任务数量. 默认为 3
@@ -73,7 +78,7 @@ typedef void(^handler)(void);
 @property (nonatomic, strong) NSString  *sessionIdentifier;
 
 /**
- 任务速度/预计完成时间更新间隔
+ 任务速度/预计完成时间更新间隔, 默认为 1s, 其值必须大于 0
  */
 @property (nonatomic, assign) NSTimeInterval speedRefreshInterval;
 

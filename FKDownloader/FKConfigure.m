@@ -17,6 +17,7 @@
     config.isAutoClearTask      = NO;
     config.isBackgroudExecute   = YES;
     config.isFileChecksum       = NO;
+    config.isAllowCellular      = NO;
     config.timeoutInterval      = 30;
     config.sessionIdentifier    = @"com.fk.downloader";
     config.maximumExecutionTask = 3;

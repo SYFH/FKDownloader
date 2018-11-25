@@ -179,7 +179,9 @@
 
 - (void)execute {
     FKLog(@"执行: %@", self)
-    if (self.manager.reachability.currentReachabilityStatus == NotReachable) {
+    if (self.manager.reachability.currentReachabilityStatus == NotReachable ||
+        (!self.manager.configure.isAllowCellular && (self.manager.reachability.currentReachabilityStatus == ReachableViaWWAN))) {
+        
         self.error = [NSError errorWithDomain:NSURLErrorDomain
                                          code:NSURLErrorNotConnectedToInternet
                                      userInfo:@{NSFilePathErrorKey: self.url,
@@ -236,6 +238,17 @@
 
 - (void)resume {
     [self sendResumingInfo];
+    
+    if (self.manager.reachability.currentReachabilityStatus == NotReachable ||
+        (!self.manager.configure.isAllowCellular && (self.manager.reachability.currentReachabilityStatus == ReachableViaWWAN))) {
+        
+        self.error = [NSError errorWithDomain:NSURLErrorDomain
+                                         code:NSURLErrorNotConnectedToInternet
+                                     userInfo:@{NSFilePathErrorKey: self.url,
+                                                NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Network Unavailable"]}];
+        [self sendIdleInfo];
+        return;
+    }
     
     [self removeProgressObserver];
     self.downloadTask = [self.manager.session downloadTaskWithResumeData:self.resumeData];

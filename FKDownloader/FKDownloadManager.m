@@ -420,11 +420,13 @@ static FKDownloadManager *_instance = nil;
         } break;
             
         case ReachableViaWWAN: {
-            [self.tasks forEach:^(FKTask *task, NSUInteger idx) {
-                if (task.error.code == NSURLErrorNotConnectedToInternet) {
-                    [task execute];
-                }
-            }];
+            if (self.configure.isAllowCellular) {
+                [self.tasks forEach:^(FKTask *task, NSUInteger idx) {
+                    if (task.error.code == NSURLErrorNotConnectedToInternet) {
+                        [task execute];
+                    }
+                }];
+            }
         } break;
     }
 }
