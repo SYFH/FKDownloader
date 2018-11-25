@@ -46,6 +46,17 @@ extern FKTaskInfoName const FKTaskInfoRequestHeader;
 typedef NSString * FKReachabilityNotificationName;
 extern FKReachabilityNotificationName const FKReachabilityChangedNotification;
 
+typedef NSString * FKResumeDataKey;
+extern FKResumeDataKey const FKResumeDataDownloaderURL;
+extern FKResumeDataKey const FKResumeDataByteRange;
+extern FKResumeDataKey const FKResumeDataBytesReceived;
+extern FKResumeDataKey const FKResumeDataCurrentRequest;
+extern FKResumeDataKey const FKResumeDataInfoLocalPath;
+extern FKResumeDataKey const FKResumeDataInfoTempFileName;
+extern FKResumeDataKey const FKResumeDataInfoVersion;
+extern FKResumeDataKey const FKResumeDataOriginalRequest;
+extern FKResumeDataKey const FKResumeDataServerDownloadDate;
+
 typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
 typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
 typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block

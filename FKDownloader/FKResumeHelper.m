@@ -8,6 +8,7 @@
 
 #import "FKResumeHelper.h"
 #import "FKSystemHelper.h"
+#import "FKDefine.h"
 
 @implementation FKResumeHelper
 //TODO: 可以继续解包 NSURLSessionResumeCurrentRequest 和 NSURLSessionResumeOriginalRequest 字段
@@ -38,16 +39,16 @@
 
 + (NSData *)updateResumeData:(NSData *)resumeData url:(NSString *)url {
     NSMutableDictionary *resumeDictionary = [[self readResumeData:resumeData] mutableCopy];
-    if ([resumeDictionary.allKeys containsObject:@"NSURLSessionResumeByteRange"]) {
-        [resumeDictionary removeObjectForKey:@"NSURLSessionResumeByteRange"];
+    if ([resumeDictionary.allKeys containsObject:FKResumeDataByteRange]) {
+        [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
     }
     
-    NSString *range = [NSString stringWithFormat:@"bytes=%@-", resumeDictionary[@"NSURLSessionResumeBytesReceived"]];
+    NSString *range = [NSString stringWithFormat:@"bytes=%@-", resumeDictionary[FKResumeDataBytesReceived]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
     [request setValue:range forHTTPHeaderField:@"Range"];
     
-    resumeDictionary[@"NSURLSessionResumeCurrentRequest"] = [NSKeyedArchiver archivedDataWithRootObject:request];
-    resumeDictionary[@"NSURLSessionDownloadURL"] = url;
+    resumeDictionary[FKResumeDataCurrentRequest] = [NSKeyedArchiver archivedDataWithRootObject:request];
+    resumeDictionary[FKResumeDataDownloaderURL] = url;
     
     return [self packetResumeData:resumeDictionary];
 }
@@ -110,7 +111,7 @@
 + (NSMutableDictionary *)getResumeDictionary:(NSData *)data {
     NSMutableDictionary *iresumeDictionary = nil;
     id root = nil;
-    id  keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+    id keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
     @try {
         if (@available(iOS 9.0, *)) {
             root = [keyedUnarchiver decodeTopLevelObjectForKey:@"NSKeyedArchiveRootObjectKey" error:nil];
@@ -138,17 +139,13 @@
     if ([[FKSystemHelper currentSystemVersion] isEqualToString:@"10.0"] ||
         [[FKSystemHelper currentSystemVersion] isEqualToString:@"10.1"]) {
         
-        NSString *kResumeCurrentRequest = @"NSURLSessionResumeCurrentRequest";
-        NSString *kResumeOriginalRequest = @"NSURLSessionResumeOriginalRequest";
-        if (data == nil) {
-            return  nil;
-        }
+        if (data == nil) { return  nil; }
         NSMutableDictionary *resumeDictionary = [self getResumeDictionary:data];
         if (resumeDictionary == nil) {
             return nil;
         }
-        resumeDictionary[kResumeCurrentRequest] = [self correctRequestData:resumeDictionary[kResumeCurrentRequest]];
-        resumeDictionary[kResumeOriginalRequest] = [self correctRequestData:resumeDictionary[kResumeOriginalRequest]];
+        resumeDictionary[FKResumeDataCurrentRequest] = [self correctRequestData:resumeDictionary[FKResumeDataCurrentRequest]];
+        resumeDictionary[FKResumeDataOriginalRequest] = [self correctRequestData:resumeDictionary[FKResumeDataOriginalRequest]];
         NSData *result = [NSPropertyListSerialization dataWithPropertyList:resumeDictionary
                                                                     format:NSPropertyListXMLFormat_v1_0
                                                                    options:0
@@ -159,8 +156,8 @@
         if (resumeDictionary == nil) {
             return data;
         }
-        if ([resumeDictionary.allKeys containsObject:@"NSURLSessionResumeByteRange"]) {
-            [resumeDictionary removeObjectForKey:@"NSURLSessionResumeByteRange"];
+        if ([resumeDictionary.allKeys containsObject:FKResumeDataByteRange]) {
+            [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
         }
         NSData *result = [self packetResumeData:[NSDictionary dictionaryWithDictionary:resumeDictionary]];
         return result;
