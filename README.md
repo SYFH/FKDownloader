@@ -1,5 +1,6 @@
 # FKDonwloader 
 
+[![Support](https://img.shields.io/badge/support-iOS%208%2B%20-blue.svg?style=flat)](https://www.apple.com/nl/ios/)
 [![](https://img.shields.io/cocoapods/v/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloader)
 [![](https://img.shields.io/cocoapods/p/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloader)
 [![](https://img.shields.io/badge/language-Objective--C-orange.svg?style=flat-square)]()
