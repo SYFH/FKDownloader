@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FKDefine.h"
 
+NS_ASSUME_NONNULL_BEGIN
 @interface FKSystemHelper : NSObject
 
 /**
@@ -54,3 +55,4 @@
 + (NSString *)currentSystemVersion;
 
 @end
+NS_ASSUME_NONNULL_END

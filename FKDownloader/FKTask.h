@@ -12,6 +12,7 @@
 @class FKDownloadManager;
 @class FKTask;
 
+NS_ASSUME_NONNULL_BEGIN
 @protocol FKTaskDelegate<NSObject>
 
 // 与通知等价
@@ -34,6 +35,7 @@
 
 @end
 
+NS_SWIFT_NAME(Task)
 @interface FKTask : NSObject <NSCoding>
 
 /**
@@ -44,27 +46,30 @@
 /**
  任务的下载链接, 只支持 http 和 https, 不合法 URL 会造成断言不通过
  */
-@property (nonatomic, strong) NSString              *url;
+@property (nonatomic, strong) NSString  *url;
 
 /**
  保存时的文件名, 注意: 设置时不必添加后缀名
  */
-@property (nonatomic, strong) NSString              *fileName;
+@property (nonatomic, strong, nullable) NSString    *fileName;
 
 /**
  文件校验码, 支持 MD5, SHA1, SHA256
+ 全局配置中 isFileChecksum 为 Yes 并且校验码长度不为零时进行文件校验, 如果想
+ 设置为每个任务单独进行判断是否进行文件校验, 可以将 isFileChecksum 设置为 Yes, 然后
+ 将想要进行文件校验的 task.verification 进行赋值即可
  */
-@property (nonatomic, strong) NSString              *verification;
+@property (nonatomic, strong, nullable) NSString    *verification;
 
 /**
  文件校验码类型
  */
-@property (nonatomic, assign) VerifyType            verificationType;
+@property (nonatomic, assign) VerifyType    verificationType;
 
 /**
  自定义请求头
  */
-@property (nonatomic, strong) NSDictionary          *requestHeader;
+@property (nonatomic, strong, nullable) NSDictionary    *requestHeader;
 
 /**
  父管理器
@@ -95,7 +100,7 @@
 /**
  进行下载任务的 task
  */
-@property (nonatomic, strong, readonly) NSURLSessionDownloadTask *downloadTask;
+@property (nonatomic, strong, readonly) NSURLSessionDownloadTask    *downloadTask;
 
 /**
  预期下载完成需要的时间
@@ -125,23 +130,23 @@
 /**
  任务进度监听 Blok
  */
-@property (nonatomic, copy  ) FKProgress            progressBlock;
+@property (nonatomic, copy  , nullable) FKProgress  progressBlock;
 
 /**
  任务状态监听 Block
  */
-@property (nonatomic, copy  ) FKStatus              statusBlock;
+@property (nonatomic, copy  , nullable) FKStatus    statusBlock;
 
 /**
  任务速度监听 Block
  */
-@property (nonatomic, copy  ) FKSpeed               speedBlock;
+@property (nonatomic, copy  , nullable) FKSpeed     speedBlock;
 
 
 /**
  任务状态与进度监听 Delegate, 推荐使用此方式接受任务状态和进度
  */
-@property (nonatomic, weak  ) id<FKTaskDelegate>    delegate;
+@property (nonatomic, weak  , nullable) id<FKTaskDelegate>  delegate;
 
 
 #pragma mark - Operation
@@ -296,3 +301,5 @@
 - (BOOL)isFinish;
 
 @end
+
+NS_ASSUME_NONNULL_END

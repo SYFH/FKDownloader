@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 @interface FKHashHelper : NSObject
 
 + (NSString *)MD5:(NSString *)path;
@@ -16,3 +17,4 @@
 + (NSString *)SHA512:(NSString *)path;
 
 @end
+NS_ASSUME_NONNULL_END

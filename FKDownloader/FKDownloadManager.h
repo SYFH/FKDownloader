@@ -11,7 +11,10 @@
 @class FKTask;
 @class FKReachability;
 
+NS_ASSUME_NONNULL_BEGIN
+
 __attribute__((objc_subclassing_restricted))
+NS_SWIFT_NAME(Downloader)
 @interface FKDownloadManager : NSObject
 
 /**
@@ -32,24 +35,24 @@ __attribute__((objc_subclassing_restricted))
 /**
  所有任务集合, 可通过 -[NSArray forEach:] 遍历任务, 执行自定义处理
  */
-@property (nonatomic, copy  , readonly) NSMutableArray<FKTask *> *tasks;
+@property (nonatomic, copy  , readonly) NSMutableArray<FKTask *>    *tasks;
 
 /**
  总任务进度
  */
-@property (nonatomic, strong, readonly) NSProgress *progress;
+@property (nonatomic, strong, readonly) NSProgress  *progress;
 
 /**
  网络状态检测
  */
-@property (nonatomic, strong, readonly) FKReachability *reachability;
+@property (nonatomic, strong, readonly) FKReachability  *reachability;
 
 /**
  初始化下载管理器
 
  @return 单例模式
  */
-+ (instancetype)manager;
++ (instancetype)manager NS_SWIFT_NAME(shared());
 
 /**
  配置基础路径, 以防止文件夹不存在
@@ -63,7 +66,7 @@ __attribute__((objc_subclassing_restricted))
  @param url 下载地址
  @return 任务实例
  */
-- (FKTask *)acquire:(NSString *)url;
+- (nullable FKTask *)acquire:(NSString *)url;
 
 
 /**
@@ -163,3 +166,5 @@ __attribute__((objc_subclassing_restricted))
 + (id)mutableCopyWithZone:(struct _NSZone *)zone        OBJC_DEPRECATED("use +[FKDownloadManager manager];");
 
 @end
+
+NS_ASSUME_NONNULL_END

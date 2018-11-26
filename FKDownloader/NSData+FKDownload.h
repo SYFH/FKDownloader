@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 @interface NSData (FKDownload)
 
-- (nonnull NSString *)MD5;
-- (nonnull NSString *)SHA1;
-- (nonnull NSString *)SHA256;
-- (nonnull NSString *)SHA512;
+- (NSString *)MD5;
+- (NSString *)SHA1;
+- (NSString *)SHA256;
+- (NSString *)SHA512;
 
 @end
+NS_ASSUME_NONNULL_END

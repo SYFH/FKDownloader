@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 @interface NSArray<ObjectType> (FKDownload)
 
 - (NSArray *)map:(id (^)(ObjectType obj, NSUInteger idx))block;
 - (void)forEach:(void (^)(ObjectType obj, NSUInteger idx))block;
 
 @end
+NS_ASSUME_NONNULL_END

@@ -10,7 +10,7 @@
 
 @implementation FKConfigure
 
-+ (instancetype)defaultConfigure {
++ (nonnull instancetype)defaultConfigure {
     NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
     FKConfigure *config = [[FKConfigure alloc] init];
     config.isAutoStart          = NO;

@@ -17,6 +17,8 @@
 #import "FKDefine.h"
 #import "FKReachability.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface FKDownloadManager ()
 
 @property (nonatomic, strong) NSURLSession              *session;
@@ -30,6 +32,8 @@
 @property (nonatomic, assign) BOOL                      isDidEnterBackground;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wincomplete-implementation"
@@ -156,7 +160,7 @@ static FKDownloadManager *_instance = nil;
 
 
 #pragma mark - Operation
-- (FKTask *)acquire:(NSString *)url {
+- (nullable FKTask *)acquire:(NSString *)url {
     FKLog(@"获取 FKTask: %@", url)
     checkURL(url);
     

@@ -8,6 +8,7 @@
 
 #import "NSArray+FKDownload.h"
 
+NS_ASSUME_NONNULL_BEGIN
 @implementation NSArray (FKDownload)
 
 - (NSArray *)map:(id (^)(id obj, NSUInteger idx))block {
@@ -25,3 +26,4 @@
 }
 
 @end
+NS_ASSUME_NONNULL_END

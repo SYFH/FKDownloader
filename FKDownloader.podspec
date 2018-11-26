@@ -8,6 +8,6 @@ Pod::Spec.new do |s|
   s.platform      = :ios, "8.0"
   s.source        = { :git => "https://github.com/SYFH/FKDownloader.git", :tag => "#{s.version}" }
   s.source_files  = "FKDownloader", "FKDownloader/*.{h,m}"
-  s.exclude_files = ""
+  s.exclude_files = "FKDownloader/*.plist"
   s.requires_arc  = true
 end

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FKDefine.h"
 
+NS_SWIFT_NAME(Reachability)
 @interface FKReachability : NSObject
 /*!
  * Use to check the reachability of a given host name.

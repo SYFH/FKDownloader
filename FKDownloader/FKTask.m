@@ -14,15 +14,17 @@
 #import "NSString+FKDownload.h"
 #import "FKReachability.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface FKTask ()
 
 @property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
 @property (nonatomic, strong) NSString          *identifier;
 @property (nonatomic, strong) NSProgress        *progress;
-@property (nonatomic, strong) NSData            *resumeData;
+@property (nonatomic, strong, nullable) NSData            *resumeData;
 
 // TODO: 只在任务运行期间进行计时
-@property (nonatomic, strong) NSTimer           *timer;
+@property (nonatomic, strong, nullable) NSTimer           *timer;
 
 @property (nonatomic, assign) NSTimeInterval    prevTime;
 @property (nonatomic, assign) int64_t           prevReceivedBytes;
@@ -32,6 +34,8 @@
 @property (nonatomic, assign) BOOL              isPassChecksum;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 @implementation FKTask
 @synthesize resumeData = _resumeData;
@@ -210,7 +214,7 @@
 }
 
 - (void)suspend {
-    [self suspendWithComplete:nil];
+    [self suspendWithComplete:^{ }];
 }
 
 - (void)suspendWithComplete:(void (^)(void))complete {

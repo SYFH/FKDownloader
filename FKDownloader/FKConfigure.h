@@ -10,6 +10,9 @@
 
 typedef void(^handler)(void);
 
+NS_ASSUME_NONNULL_BEGIN
+
+NS_SWIFT_NAME(Configure)
 @interface FKConfigure : NSObject
 
 /**
@@ -65,7 +68,7 @@ typedef void(^handler)(void);
 /**
  后台下载句柄
  */
-@property (nonatomic, copy  ) handler   backgroundHandler;
+@property (nonatomic, copy  , nullable) handler   backgroundHandler;
 
 /**
  任务超时时间. 默认为 30s
@@ -87,6 +90,8 @@ typedef void(^handler)(void);
 
  @return 默认配置实例
  */
-+ (instancetype)defaultConfigure;
++ (nonnull instancetype)defaultConfigure;
 
 @end
+
+NS_ASSUME_NONNULL_END
