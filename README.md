@@ -1,9 +1,8 @@
 # FKDonwloader 
 
-[![Support](https://img.shields.io/badge/support-iOS%208%2B%20-blue.svg?style=flat)](https://www.apple.com/nl/ios/)
-[![](https://img.shields.io/cocoapods/v/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloader)
-[![](https://img.shields.io/cocoapods/p/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloader)
-[![](https://img.shields.io/badge/language-Objective--C-orange.svg?style=flat-square)]()
+[![Support](https://img.shields.io/badge/support-iOS%208%2B%20-blue.svg?style=flat-square)](https://www.apple.com/nl/ios/)
+[![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloade)
 [![](https://img.shields.io/cocoapods/l/FKDownloader.svg?style=flat-square)](https://github.com/SYFH/FKDownloader/blob/master/LICENSE)
 
 👍🏻📥也许是最好的文件下载器.
