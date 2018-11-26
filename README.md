@@ -1,4 +1,12 @@
 # FKDonwloader 
+
+[![](https://img.shields.io/cocoapods/dt/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloader)
+[![](https://img.shields.io/cocoapods/v/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloader)
+[![](https://img.shields.io/cocoapods/p/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloader)
+[![](https://img.shields.io/badge/platform-ios-lightgrey.svg?style=flat-square)]()
+[![](https://img.shields.io/badge/language-Objective--C-orange.svg?style=flat-square)]()
+[![](https://img.shields.io/cocoapods/l/FKDownloader.svg?style=flat-square)](https://github.com/SYFH/FKDownloader/blob/master/LICENSE)
+
 👍🏻📥也许是最好的文件下载器.
 
 # Features
