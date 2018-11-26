@@ -22,30 +22,15 @@
 * [x] 状态与进度数据可通过代理/通知/Block任意获取
 * [x] 网络状态检测, 恢复网络时自动开始被中断的任务
 * [x] 没有使用任何第三方
+* [x] 兼容 Swift
 * [x] 更简单的调用
 * [x] 更详细的任务状态: 无/预处理/等待/进行中/完成/取消/暂停/恢复/校验/错误
-
-# TODO
-* [ ] 兼容 Swift
-
-# 针对 iOS 系统 BUG 方案
-- 后台任务无效
-
-　　在 iOS 12/12.1, iPhone 8 以下的机型中会出现, 退出应用后, 后台任务会被取消, 但带有恢复数据.  
-　　解决思路: 将带有恢复数据的已取消任务手动开始.  
-　　解决方法: 在 `-[AppDelegate didFinishLaunchingWithOptions:]` 中进行 `FKDownloadManager` 自定义配置后, 调用 `-[FKDownloadManager restory]` 即可.  
-
-- 进入后台, 再进入前台后, 任务不能获取进度
-
-　　在 iOS 12/12.1, iPhone 8 以下的机型中会出现进入后台一段时间后, 所有后台任务会获取不到进度, 但下载仍在继续, 而 `NSURLSessionDownloadDelegate` 的进度回调没有被调用, `KVO` 监听 `NSURLSessionDownloadTask` 的 `countOfBytesReceived` 属性也没有变动, 初步认为是系统 BUG, 已接收字节在回到前台后就不再变动, 只在暂停/取消时会变动几次.  
-　　解决思路: 手动暂停再继续, 简单直接, 但要注意: 暂停无效, 需要使用带有恢复数据的取消方法, 并且该方法在 `-[AppDelegate applicationWillEnterForeground:]` 中无效.  
-　　解决方法: 在 `-[AppDelegate applicationDidBecomeActive:]` 方法中调用 `+[FKDownloadManager fixProgressNotChanage]` 即可.  
 
 # 初衷与动机
 [一个系统BUG引发的血案](https://www.jianshu.com/p/72b5fe043141)
 
 # 示例/最佳实践
-　　请直接运行 Demo.
+请直接运行 Demo.
 　　
 # 安装
 - CocoaPods  
