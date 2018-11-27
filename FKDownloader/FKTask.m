@@ -423,7 +423,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidExecuteNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidExecuteNotification object:nil];
     });
 }
 
@@ -440,7 +440,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillSuspendNotification object:nil];
     });
 }
 
@@ -459,7 +459,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidSuspendNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidSuspendNotification object:nil];
     });
 }
 
@@ -476,7 +476,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillCancelldNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillCancelldNotification object:nil];
     });
 }
 
@@ -495,7 +495,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidCancelldNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidCancelldNotification object:nil];
     });
     
     if (self.manager.configure.isAutoClearTask) {
@@ -556,7 +556,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidFinishNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidFinishNotification object:nil];
     });
     
     if (self.manager.configure.isAutoClearTask) {
@@ -581,7 +581,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskErrorNotification object:nil];
     });
 }
 
@@ -598,7 +598,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskProgressNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskProgressNotification object:nil];
     });
 }
 
@@ -615,7 +615,7 @@ NS_ASSUME_NONNULL_END
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskSpeedInfoNotication object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskSpeedInfoNotification object:nil];
     });
 }
 

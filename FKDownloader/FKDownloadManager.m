@@ -128,19 +128,19 @@ static FKDownloadManager *_instance = nil;
 - (void)setupNotification {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(saveTasks)
-                                                 name:FKTaskDidExecuteNotication
+                                                 name:FKTaskDidExecuteNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(saveTasks)
-                                                 name:FKTaskDidSuspendNotication
+                                                 name:FKTaskDidSuspendNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(saveTasks)
-                                                 name:FKTaskDidCancelldNotication
+                                                 name:FKTaskDidCancelldNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(saveTasks)
-                                                 name:FKTaskDidFinishNotication
+                                                 name:FKTaskDidFinishNotification
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self

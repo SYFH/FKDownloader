@@ -24,18 +24,18 @@ void checkURL(NSString *address) {
 FKNotificationName const FKTaskPrepareNotification      = @"FKTaskPrepareNotification";
 FKNotificationName const FKTaskDidIdleNotification      = @"FKTaskDidIdleNotification";
 FKNotificationName const FKTaskWillExecuteNotification  = @"FKTaskWillExecuteNotification";
-FKNotificationName const FKTaskDidExecuteNotication     = @"FKTaskDidExecuteNotication";
-FKNotificationName const FKTaskProgressNotication       = @"FKTaskProgressNotication";
+FKNotificationName const FKTaskDidExecuteNotification   = @"FKTaskDidExecuteNotication";
+FKNotificationName const FKTaskProgressNotification     = @"FKTaskProgressNotification";
 FKNotificationName const FKTaskDidResumingNotification  = @"FKTaskDidResumingNotification";
 FKNotificationName const FKTaskWillChecksumNotification = @"FKTaskWillChecksumNotification";
 FKNotificationName const FKTaskDidChecksumNotification  = @"FKTaskDidChecksumNotification";
-FKNotificationName const FKTaskDidFinishNotication      = @"FKTaskDidFinishNotication";
-FKNotificationName const FKTaskErrorNotication          = @"FKTaskErrorNotication";
-FKNotificationName const FKTaskWillSuspendNotication    = @"FKTaskWillSuspendNotication";
-FKNotificationName const FKTaskDidSuspendNotication     = @"FKTaskDidSuspendNotication";
-FKNotificationName const FKTaskWillCancelldNotication   = @"FKTaskWillCancelldNotication";
-FKNotificationName const FKTaskDidCancelldNotication    = @"FKTaskDidCancelldNotication";
-FKNotificationName const FKTaskSpeedInfoNotication      = @"FKTaskSpeedInfoNotication";
+FKNotificationName const FKTaskDidFinishNotification    = @"FKTaskDidFinishNotification";
+FKNotificationName const FKTaskErrorNotification        = @"FKTaskErrorNotification";
+FKNotificationName const FKTaskWillSuspendNotification  = @"FKTaskWillSuspendNotification";
+FKNotificationName const FKTaskDidSuspendNotification   = @"FKTaskDidSuspendNotification";
+FKNotificationName const FKTaskWillCancelldNotification = @"FKTaskWillCancelldNotification";
+FKNotificationName const FKTaskDidCancelldNotification  = @"FKTaskDidCancelldNotification";
+FKNotificationName const FKTaskSpeedInfoNotification    = @"FKTaskSpeedInfoNotification";
 
 FKTaskInfoName const FKTaskInfoURL              = @"FKTaskInfoURL";
 FKTaskInfoName const FKTaskInfoFileName         = @"FKTaskInfoFileName";

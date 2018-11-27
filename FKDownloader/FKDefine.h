@@ -23,18 +23,18 @@ typedef NSString * FKNotificationName;
 extern FKNotificationName const FKTaskPrepareNotification;
 extern FKNotificationName const FKTaskDidIdleNotification;
 extern FKNotificationName const FKTaskWillExecuteNotification;
-extern FKNotificationName const FKTaskDidExecuteNotication;
-extern FKNotificationName const FKTaskProgressNotication;
+extern FKNotificationName const FKTaskDidExecuteNotification;
+extern FKNotificationName const FKTaskProgressNotification;
 extern FKNotificationName const FKTaskDidResumingNotification;
 extern FKNotificationName const FKTaskWillChecksumNotification;
 extern FKNotificationName const FKTaskDidChecksumNotification;
-extern FKNotificationName const FKTaskDidFinishNotication;
-extern FKNotificationName const FKTaskErrorNotication;
-extern FKNotificationName const FKTaskWillSuspendNotication;
-extern FKNotificationName const FKTaskDidSuspendNotication;
-extern FKNotificationName const FKTaskWillCancelldNotication;
-extern FKNotificationName const FKTaskDidCancelldNotication;
-extern FKNotificationName const FKTaskSpeedInfoNotication;
+extern FKNotificationName const FKTaskDidFinishNotification;
+extern FKNotificationName const FKTaskErrorNotification;
+extern FKNotificationName const FKTaskWillSuspendNotification;
+extern FKNotificationName const FKTaskDidSuspendNotification;
+extern FKNotificationName const FKTaskWillCancelldNotification;
+extern FKNotificationName const FKTaskDidCancelldNotification;
+extern FKNotificationName const FKTaskSpeedInfoNotification;
 
 typedef NSString * FKTaskInfoName;
 extern FKTaskInfoName const FKTaskInfoURL;
@@ -56,10 +56,6 @@ extern FKResumeDataKey const FKResumeDataInfoTempFileName;
 extern FKResumeDataKey const FKResumeDataInfoVersion;
 extern FKResumeDataKey const FKResumeDataOriginalRequest;
 extern FKResumeDataKey const FKResumeDataServerDownloadDate;
-
-typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
-typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
-typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
 
 typedef NS_ENUM(NSInteger, TaskStatus) {
     TaskStatusNone,         // 无状态, 仅表示已加入队列
@@ -98,3 +94,9 @@ typedef NS_ENUM(NSInteger, NetworkStatus) {
     ReachableViaWiFi,
     ReachableViaWWAN
 };
+
+NS_ASSUME_NONNULL_BEGIN
+typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
+typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
+typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
+NS_ASSUME_NONNULL_END
