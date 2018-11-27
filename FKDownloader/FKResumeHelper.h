@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
 @interface FKResumeHelper : NSObject
 
 /**
@@ -17,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param resumeData 恢复数据
  @return 解包数据
  */
-+ (NSDictionary *)readResumeData:(NSData *)resumeData;
++ (nullable NSDictionary *)readResumeData:(nonnull NSData *)resumeData;
 
 /**
  封包恢复数据
@@ -25,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param packet Dictionary 数据
  @return 恢复数据
  */
-+ (NSData *)packetResumeData:(NSDictionary *)packet;
++ (nullable NSData *)packetResumeData:(nonnull NSDictionary *)packet;
 
 /**
  更新恢复数据中的 URL
@@ -34,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param url 要更新的 URL
  @return 恢复数据
  */
-+ (NSData *)updateResumeData:(NSData *)resumeData url:(NSString *)url;
++ (nullable NSData *)updateResumeData:(nonnull NSData *)resumeData url:(nonnull NSString *)url;
 
 /**
  根据系统版本修复恢复数据
@@ -42,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
  @param data 恢复数据
  @return 修复好的恢复数据
  */
-+ (NSData *)correctResumeData:(NSData *)data;
++ (nullable NSData *)correctResumeData:(nonnull NSData *)data;
 
 @end
-NS_ASSUME_NONNULL_END
