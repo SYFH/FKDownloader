@@ -169,9 +169,6 @@ Downloader.shared().resume("URL")
 Downloader.shared().cancel("URL")
 
 // 移除任务
-// ObjC
-[[FKDownloadManager manager] remove:@"URL"];
-// Swift
 Downloader.shared().remove("URL")
 
 // 设置任务代理
