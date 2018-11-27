@@ -41,6 +41,8 @@ static FKDownloadManager *_instance = nil;
 @implementation FKDownloadManager
 @synthesize configure = _configure;
 
++ (void)load { [FKDownloadManager manager]; }
+
 + (instancetype)allocWithZone:(struct _NSZone *)zone {
     static dispatch_once_t downloadManagerToken;
     dispatch_once(&downloadManagerToken, ^{
@@ -143,6 +145,14 @@ static FKDownloadManager *_instance = nil;
                                                  name:FKTaskDidFinishNotification
                                                object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(restory)
+                                                 name:UIApplicationDidFinishLaunchingNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(fixProgressNotChanage)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didEnterBackground:)
                                                  name:UIApplicationDidEnterBackgroundNotification

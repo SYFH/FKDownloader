@@ -18,17 +18,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    
-    FKConfigure *config = [FKConfigure defaultConfigure];
-    config.isBackgroudExecute = YES;
-    config.isAutoClearTask = NO;
-    config.isAutoStart = NO;
-    config.isFileChecksum = YES;
-    config.maximumExecutionTask = 1;
-    config.speedRefreshInterval = 1;
-    [FKDownloadManager manager].configure = config;
-    [[FKDownloadManager manager] restory];
-    
     return YES;
 }
 
@@ -51,7 +40,6 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    [[FKDownloadManager manager] fixProgressNotChanage];
 }
 
 
