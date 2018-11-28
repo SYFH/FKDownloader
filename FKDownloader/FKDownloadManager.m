@@ -144,6 +144,10 @@ static FKDownloadManager *_instance = nil;
                                              selector:@selector(saveTasks)
                                                  name:FKTaskDidFinishNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(saveTasks)
+                                                 name:FKTaskErrorNotification
+                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(restory)
@@ -204,7 +208,27 @@ static FKDownloadManager *_instance = nil;
         [task execute];
     } else {
         FKLog(@"当前执行数量 %ld 已超过 %ld", (unsigned long)[self filterTaskWithStatus:TaskStatusExecuting].count, (unsigned long)self.configure.maximumExecutionTask)
-        [task sendIdleInfo];
+        
+        if (task.isFinish) {
+            [task sendFinishInfo];
+            [self startNextIdleTask];
+        } else {
+            switch (task.status) {
+                case TaskStatusNone:
+                    [task sendIdleInfo];
+                    break;
+                case TaskStatusPrepare:
+                    [task sendIdleInfo];
+                    break;
+                case TaskStatusSuspend:
+                    [task sendIdleInfo];
+                    break;
+                case TaskStatusCancelld:
+                    [task sendIdleInfo];
+                    break;
+                default: break;
+            }
+        }
     }
 }
 

@@ -10,6 +10,7 @@
 #import "FKDownloadManager.h"
 #import "FKConfigure.h"
 #import "FKTask.h"
+#import "FKResumeHelper.h"
 
 @implementation FKDownloadExecutor
 
@@ -26,6 +27,10 @@
     }
     
     FKTask *downloadTask = [[FKDownloadManager manager] acquire:task.currentRequest.URL.absoluteString];
+    if (downloadTask == nil) {
+        return;
+    }
+    
     if ([task.response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
         NSInteger statusCode = httpResponse.statusCode;
@@ -44,7 +49,13 @@
             NSData *resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData];
             if (resumeData) {
                 // 取消, 带恢复数据
-                [resumeData writeToFile:[downloadTask resumeFilePath] atomically:YES];
+                if ([[FKResumeHelper readResumeData:resumeData] objectForKey:@"$objects"] != nil) {
+                    if ([[FKResumeHelper readResumeData:resumeData][@"$objects"] count] > 1) {
+                        [downloadTask setValue:[FKResumeHelper correctResumeData:resumeData] forKey:@"resumeData"];
+                    }
+                } else if ([[FKResumeHelper readResumeData:resumeData] objectForKey:FKResumeDataDownloaderURL] != nil) {
+                    [downloadTask setValue:[FKResumeHelper correctResumeData:resumeData] forKey:@"resumeData"];
+                }
                 [downloadTask sendSuspendInfo];
             } else {
                 // 取消
@@ -64,6 +75,10 @@
     
     [[FKDownloadManager manager] setupPath];
     FKTask *task = [[FKDownloadManager manager] acquire:downloadTask.currentRequest.URL.absoluteString];
+    if (task == nil) {
+        return;
+    }
+    
     if ([downloadTask.response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)downloadTask.response;
         NSInteger statusCode = httpResponse.statusCode;

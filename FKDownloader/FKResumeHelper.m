@@ -20,9 +20,7 @@
                                                                         error:nil];
         return dic;
     } else {
-        NSData *data = [self correctRequestData:resumeData];
-        NSDictionary *dic = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-        return dic;
+        return [self getResumeDictionary:resumeData];
     }
 }
 
@@ -33,7 +31,11 @@
                                                          options:0
                                                            error:nil];
     } else {
-        return [NSKeyedArchiver archivedDataWithRootObject:packet];
+        NSMutableData *data = [NSMutableData data];
+        NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+        [archiver encodeObject:packet forKey:@"NSKeyedArchiveRootObjectKey"];
+        [archiver finishEncoding];
+        return [data copy];
     }
 }
 
@@ -102,7 +104,7 @@
     // Rectify weird "NSKeyedArchiveRootObjectKey" top key to NSKeyedArchiveRootObjectKey = "root"
     if ([archive objectForKey:@"$top"] != nil) {
         if ([archive[@"$top"] objectForKey:@"NSKeyedArchiveRootObjectKey"] != nil) {
-            [archive[@"$top"] setObject:archive[@"$top"][@"NSKeyedArchiveRootObjectKey"] forKey: NSKeyedArchiveRootObjectKey];
+            [archive[@"$top"] setObject:archive[@"$top"][@"NSKeyedArchiveRootObjectKey"] forKey:NSKeyedArchiveRootObjectKey];
             [archive[@"$top"] removeObjectForKey:@"NSKeyedArchiveRootObjectKey"];
         }
     }
@@ -168,7 +170,15 @@
         NSData *result = [self packetResumeData:[NSDictionary dictionaryWithDictionary:resumeDictionary]];
         return result;
     } else {
-        return data;
+        NSMutableDictionary *resumeDictionary = [[self readResumeData:data] mutableCopy];
+        if (resumeDictionary == nil) {
+            return data;
+        }
+        if ([resumeDictionary.allKeys containsObject:FKResumeDataByteRange]) {
+            [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
+        }
+        NSData *result = [[self packetResumeData:[NSDictionary dictionaryWithDictionary:resumeDictionary]] copy];
+        return result;
     }
 }
 

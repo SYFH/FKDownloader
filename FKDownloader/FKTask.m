@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
 @property (nonatomic, strong) NSString          *identifier;
 @property (nonatomic, strong) NSProgress        *progress;
-@property (nonatomic, strong, nullable) NSData            *resumeData;
+@property (nonatomic, strong, nullable) NSData  *resumeData;
 
 // TODO: 只在任务运行期间进行计时
-@property (nonatomic, strong, nullable) NSTimer           *timer;
+@property (nonatomic, strong, nullable) NSTimer *timer;
 
 @property (nonatomic, assign) NSTimeInterval    prevTime;
 @property (nonatomic, assign) int64_t           prevReceivedBytes;
@@ -45,13 +45,13 @@ NS_ASSUME_NONNULL_END
 - (instancetype)init {
     self = [super init];
     if (self) {
-        
+        [self setupTimer];
     }
     return self;
 }
 
 - (void)setupTimer {
-    if (!self.timer.isValid) {
+    if (self.timer == nil || !self.timer.isValid) {
         self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
                                              target:self
                                            selector:@selector(refreshSpeed)
@@ -86,6 +86,8 @@ NS_ASSUME_NONNULL_END
         self.status             = [aDecoder decodeIntegerForKey:@"status"];
         self.progress.totalUnitCount        = [aDecoder decodeInt64ForKey:@"totalUnitCount"];
         self.progress.completedUnitCount    = [aDecoder decodeInt64ForKey:@"completedUnitCount"];
+        
+        [self setupTimer];
     }
     return self;
 }
@@ -194,6 +196,7 @@ NS_ASSUME_NONNULL_END
         return;
     }
     
+    [self setupTimer];
     [self sendWillExecutingInfo];
     
     if (self.isFinish) {
@@ -203,18 +206,26 @@ NS_ASSUME_NONNULL_END
         [self sendFinishInfo];
     } else if (self.isHasResumeData) {
         FKLog(@"检测到恢复数据: %@", self)
-        [self setupTimer];
         [self resume];
     } else {
         FKLog(@"没有恢复数据: %@", self)
-        [self setupTimer];
         [self.downloadTask resume];
         [self sendExecutingInfo];
     }
 }
 
 - (void)suspend {
-    [self suspendWithComplete:^{ }];
+    if (self.isFinish) {
+        [self sendFinishInfo];
+        return;
+    }
+    
+    if (self.status == TaskStatusResuming || self.status == TaskStatusCancelld) {
+        return;
+    }
+    
+    [self suspendWithComplete:^{}];
+    [self clearSpeedTimer];
 }
 
 - (void)suspendWithComplete:(void (^)(void))complete {
@@ -228,8 +239,15 @@ NS_ASSUME_NONNULL_END
         strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
         strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
         if (resumeData) {
-            strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
-            FKLog(@"%@", [FKResumeHelper readResumeData:resumeData]);
+            // !!!: iOS 12 在取消时会出现空信息的恢复数据, 理论上这的 resumeData 应该为 nil
+            if ([[FKResumeHelper readResumeData:resumeData] objectForKey:@"$objects"] != nil) {
+                if ([[FKResumeHelper readResumeData:resumeData][@"$objects"] count] > 1) {
+                    strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
+                    FKLog(@"%@", [FKResumeHelper readResumeData:resumeData]);
+                }
+            } else if ([[FKResumeHelper readResumeData:resumeData] objectForKey:FKResumeDataDownloaderURL] != nil) {
+                strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
+            }
         }
         if (complete) {
             // !!!: 此处使用 dispatch_after 是为了唤醒下载线程和防止写入恢复数据/读取回复数据冲突导致 fix 后台下载进度失败
@@ -241,6 +259,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)resume {
+    [self setupTimer];
     [self sendResumingInfo];
     
     if (self.manager.reachability.currentReachabilityStatus == NotReachable ||
@@ -264,11 +283,12 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)cancel {
+    [self clearSpeedTimer];
     [self sendWillCancelldInfo];
     
     // 已完成下载的忽略停止操作
     if (self.isFinish) {
-        [self sendCancelldInfo];
+        [self sendFinishInfo];
         return;
     }
     
@@ -286,11 +306,18 @@ NS_ASSUME_NONNULL_END
         [self sendCancelldInfo];
     }
     
+    if (self.status == TaskStatusUnknowError) {
+        self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+        self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+        [self clearResumeData];
+        [self sendCancelldInfo];
+        return;
+    }
+    
     [self.downloadTask cancel];
     self.progress.completedUnitCount = 0;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
-    [self clearSpeedTimer];
 }
 
 - (BOOL)checksum {
@@ -542,7 +569,12 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendFinishInfo {
+    self.progress.totalUnitCount = 1;
+    self.progress.completedUnitCount = 1;
+    self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+    self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     self.status = TaskStatusFinish;
+    [self clearSpeedTimer];
     
     if ([self.delegate respondsToSelector:@selector(downloader:didFinishTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -795,7 +827,12 @@ NS_ASSUME_NONNULL_END
         } break;
             
         case TaskStatusFinish: {
-            [self sendFinishInfo];
+            if (self.isFinish) {
+                [self sendFinishInfo];
+            } else {
+                self.progress.completedUnitCount = 0;
+                self.progress.totalUnitCount = 0;
+            }
         } break;
             
         case TaskStatusSuspend: {
@@ -830,13 +867,17 @@ NS_ASSUME_NONNULL_END
 }
 
 - (NSData *)resumeData {
-    NSError *error;
-    NSData *resumeData = [NSData dataWithContentsOfFile:[self resumeFilePath] options:NSDataReadingMappedIfSafe error:&error];
-    if (error) {
-        FKLog(@"读取恢复数据失败: %@", error)
-        return nil;
+    if (_resumeData) {
+        return _resumeData;
     } else {
-        return resumeData;
+        NSError *error;
+        NSData *resumeData = [NSData dataWithContentsOfFile:[self resumeFilePath] options:NSDataReadingMappedIfSafe error:&error];
+        if (error) {
+            FKLog(@"读取恢复数据失败: %@", error)
+            return nil;
+        } else {
+            return resumeData;
+        }
     }
 }
 

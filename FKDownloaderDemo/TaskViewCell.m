@@ -49,7 +49,7 @@
         [self.contentView addSubview:self.operationButton];
         
         self.stopButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [self.stopButton setTitle:@"停止" forState:UIControlStateNormal];
+        [self.stopButton setTitle:@"取消" forState:UIControlStateNormal];
         [self.stopButton addTarget:self action:@selector(stopDidTap:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:self.stopButton];
     }
@@ -122,7 +122,7 @@
 
 - (void)downloader:(FKDownloadManager *)downloader didFinishTask:(FKTask *)task {
     NSLog(@"已完成: %@", task.url);
-    [self.operationButton setTitle:@"开始" forState:UIControlStateNormal];
+    [self.operationButton setTitle:@"完成" forState:UIControlStateNormal];
     self.operationButton.enabled = NO;
 }
 
