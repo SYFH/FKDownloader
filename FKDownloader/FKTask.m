@@ -756,7 +756,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Private Method
 - (void)clearResumeData {
     self.resumeData = nil;
-    if (self.isHasResumeData) {
+    if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
         [self.manager.fileManager removeItemAtPath:[self resumeFilePath] error:nil];
     }
 }
@@ -868,14 +868,23 @@ NS_ASSUME_NONNULL_END
             FKLog(@"读取恢复数据失败: %@", error)
             return nil;
         } else {
-            return resumeData;
+            if ([FKResumeHelper checkUsable:resumeData]) {
+                return resumeData;
+            } else {
+                [self clearResumeData];
+                return nil;
+            }
         }
     }
 }
 
 - (void)setResumeData:(NSData *)resumeData {
-    _resumeData = resumeData;
-    [resumeData writeToFile:[self resumeFilePath] atomically:YES];
+    if ([FKResumeHelper checkUsable:resumeData]) {
+        _resumeData = resumeData;
+        [resumeData writeToFile:[self resumeFilePath] atomically:YES];
+    } else {
+        _resumeData = nil;
+    }
 }
 
 - (NSString *)fileName {
