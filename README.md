@@ -108,28 +108,6 @@ extern FKNotificationName const FKTaskSpeedInfoNotication;
 - 需要在 AppDelegate 中调用的
 
 ```
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
-    // 初始化统一配置, 最好在 App 最开始配置好, 如果不进行设置将直接使用默认配置
-    FKConfigure *config = [FKConfigure defaultConfigure];
-    config.isBackgroudExecute = YES;
-    config.isAutoClearTask = NO;
-    config.isAutoStart = NO;
-    config.isFileChecksum = YES;
-    config.speedRefreshInterval = 1;
-    [FKDownloadManager manager].configure = config;
-    
-    // 恢复持久化的任务与状态, 并获取正在进行的后台任务的进度
-    [[FKDownloadManager manager] restory];
-    
-    return YES;
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    // 修复特定设备与版本出现的进度无法改变的 BUG
-    [[FKDownloadManager manager] fixProgressNotChanage];
-}
-
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler {
     
     // 保存后台下载所需的系统 Block, 区别 identifier 以防止与其他第三方冲突
@@ -227,26 +205,7 @@ extension NSNotification.Name {
 
 - 需要在 AppDelegate 中调用的
 
-``` Swift
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
-    let config = Configure.default()
-    config.isBackgroudExecute = true
-    config.isAutoClearTask = false
-    config.isAutoStart = false
-    config.isFileChecksum = true
-    config.speedRefreshInterval = 1
-    Downloader.shared().configure = config
-        
-    Downloader.shared().restory()
-        
-    return true
-}
-
-func applicationDidBecomeActive(_ application: UIApplication) {
-    Downloader.shared().fixProgressNotChanage()
-}
-    
+``` Swift 
 func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         
     if identifier == Downloader.shared().configure.sessionIdentifier {
