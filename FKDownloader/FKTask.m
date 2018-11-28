@@ -238,16 +238,8 @@ NS_ASSUME_NONNULL_END
         __strong typeof(weak) strong = weak;
         strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
         strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
-        if (resumeData) {
-            // !!!: iOS 12 在取消时会出现空信息的恢复数据, 理论上这的 resumeData 应该为 nil
-            if ([[FKResumeHelper readResumeData:resumeData] objectForKey:@"$objects"] != nil) {
-                if ([[FKResumeHelper readResumeData:resumeData][@"$objects"] count] > 1) {
-                    strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
-                    FKLog(@"%@", [FKResumeHelper readResumeData:resumeData]);
-                }
-            } else if ([[FKResumeHelper readResumeData:resumeData] objectForKey:FKResumeDataDownloaderURL] != nil) {
-                strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
-            }
+        if ([FKResumeHelper checkUsable:resumeData]) {
+            strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
         }
         if (complete) {
             // !!!: 此处使用 dispatch_after 是为了唤醒下载线程和防止写入恢复数据/读取回复数据冲突导致 fix 后台下载进度失败
@@ -774,7 +766,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)refreshSpeed {
-    if (self.status != TaskStatusExecuting || self.downloadTask.state != NSURLSessionTaskStateRunning) {
+    if (self.status != TaskStatusExecuting) {
         return;
     }
     

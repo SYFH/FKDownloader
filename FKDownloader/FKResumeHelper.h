@@ -43,4 +43,13 @@
  */
 + (nullable NSData *)correctResumeData:(nonnull NSData *)data;
 
+/**
+ 校验恢复数据是否可用
+ 针对 iOS 12 中信息为空的恢复数据
+
+ @param resumeData 恢复数据
+ @return 是否可用
+ */
++ (BOOL)checkUsable:(nonnull NSData *)resumeData;
+
 @end

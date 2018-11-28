@@ -116,8 +116,8 @@
     return result;
 }
 
-+ (NSMutableDictionary *)getResumeDictionary:(NSData *)data {
-    NSMutableDictionary *iresumeDictionary = nil;
++ (NSDictionary *)getResumeDictionary:(NSData *)data {
+    NSDictionary *iresumeDictionary = nil;
     id root = nil;
     id keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
     @try {
@@ -131,7 +131,7 @@
         }
     } @catch(NSException *exception) { }
     [keyedUnarchiver finishDecoding];
-    iresumeDictionary = [root mutableCopy];
+    iresumeDictionary = [NSDictionary dictionaryWithDictionary:root];
     
     if (iresumeDictionary == nil) {
         iresumeDictionary = [NSPropertyListSerialization propertyListWithData:data
@@ -148,7 +148,7 @@
         [[FKSystemHelper currentSystemVersion] isEqualToString:@"10.1"]) {
         
         if (data == nil) { return  nil; }
-        NSMutableDictionary *resumeDictionary = [self getResumeDictionary:data];
+        NSMutableDictionary *resumeDictionary = [[self getResumeDictionary:data] mutableCopy];
         if (resumeDictionary == nil) {
             return nil;
         }
@@ -159,7 +159,7 @@
                                                                    options:0
                                                                      error:nil];
         return result;
-    } else if ([[FKSystemHelper currentSystemVersion] hasPrefix:@"11."]) {
+    } else {
         NSMutableDictionary *resumeDictionary = [[self readResumeData:data] mutableCopy];
         if (resumeDictionary == nil) {
             return data;
@@ -169,16 +169,23 @@
         }
         NSData *result = [self packetResumeData:[NSDictionary dictionaryWithDictionary:resumeDictionary]];
         return result;
+    }
+}
+
++ (BOOL)checkUsable:(NSData *)resumeData {
+    if (resumeData == nil) { return NO; }
+    
+    NSDictionary *resumeDictionary = [self readResumeData:resumeData];
+    if ([resumeDictionary objectForKey:@"$objects"] != nil) {
+        if ([resumeDictionary[@"$objects"] count] > 1) {
+            return YES;
+        } else {
+            return NO;
+        }
+    } else if ([resumeDictionary objectForKey:FKResumeDataDownloaderURL] != nil) {
+        return YES;
     } else {
-        NSMutableDictionary *resumeDictionary = [[self readResumeData:data] mutableCopy];
-        if (resumeDictionary == nil) {
-            return data;
-        }
-        if ([resumeDictionary.allKeys containsObject:FKResumeDataByteRange]) {
-            [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
-        }
-        NSData *result = [[self packetResumeData:[NSDictionary dictionaryWithDictionary:resumeDictionary]] copy];
-        return result;
+        return NO;
     }
 }
 

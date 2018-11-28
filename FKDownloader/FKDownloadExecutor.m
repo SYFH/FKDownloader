@@ -49,11 +49,7 @@
             NSData *resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData];
             if (resumeData) {
                 // 取消, 带恢复数据
-                if ([[FKResumeHelper readResumeData:resumeData] objectForKey:@"$objects"] != nil) {
-                    if ([[FKResumeHelper readResumeData:resumeData][@"$objects"] count] > 1) {
-                        [downloadTask setValue:[FKResumeHelper correctResumeData:resumeData] forKey:@"resumeData"];
-                    }
-                } else if ([[FKResumeHelper readResumeData:resumeData] objectForKey:FKResumeDataDownloaderURL] != nil) {
+                if ([FKResumeHelper checkUsable:resumeData]) {
                     [downloadTask setValue:[FKResumeHelper correctResumeData:resumeData] forKey:@"resumeData"];
                 }
                 [downloadTask sendSuspendInfo];
