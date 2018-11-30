@@ -148,13 +148,19 @@ NS_ASSUME_NONNULL_END
 
 - (void)reday {
     FKLog(@"开始准备: %@", self)
+    
+    if (self.isFinish) {
+        [self sendFinishInfo];
+        return;
+    }
+    
     [self sendPrepareInfo];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
     [self.requestHeader enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [request setValue:value forHTTPHeaderField:key];
     }];
-    if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
+    if (self.isHasResumeData) {
         [self removeProgressObserver];
         self.downloadTask = [self.manager.session downloadTaskWithResumeData:[self resumeData]];
         [self clearResumeData];
@@ -728,6 +734,7 @@ NS_ASSUME_NONNULL_END
         if ([self.manager.fileManager fileExistsAtPath:tempFilePath]) {
             return YES;
         } else {
+            [self clearResumeData];
             return NO;
         }
     } else {

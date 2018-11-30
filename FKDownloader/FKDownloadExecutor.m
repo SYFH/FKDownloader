@@ -18,6 +18,7 @@
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
     if (self.manager.configure.backgroundHandler) {
         self.manager.configure.backgroundHandler();
+        self.manager.configure.backgroundHandler = nil;
     }
 }
 

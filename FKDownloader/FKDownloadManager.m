@@ -195,6 +195,8 @@ static FKDownloadManager *_instance = nil;
     } else {
         [task setValue:@(TaskStatusNone) forKey:@"status"];
     }
+    // !!!: 提前进行预处理, 以防止任务延迟: https://forums.developer.apple.com/thread/14854
+    [task reday];
     [self.tasks addObject:task];
     self.tasksMap[task.identifier] = task;
     return task;
@@ -202,7 +204,6 @@ static FKDownloadManager *_instance = nil;
 
 - (void)executeTask:(FKTask *)task {
     FKLog(@"开始执行 FKTask: %@", task)
-    [task reday];
     if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
         FKLog(@"当前执行数量 %lu 小于 %ld", (unsigned long)[self filterTaskWithStatus:TaskStatusExecuting].count, (unsigned long)self.configure.maximumExecutionTask)
         [task execute];
