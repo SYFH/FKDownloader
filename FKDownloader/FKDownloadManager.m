@@ -67,11 +67,11 @@ static FKDownloadManager *_instance = nil;
 - (instancetype)initWithSetup {
     self = [super init];
     if (self) {
+        [self setupReachability];
         [self setupSession];
         [self setupPath];
         [self setupProperty];
         [self setupNotification];
-        [self setupReachability];
     }
     return self;
 }
@@ -376,20 +376,23 @@ static FKDownloadManager *_instance = nil;
         FKTask *task = [self acquire:url];
         if (task) {
             [task restore:downloadTask];
+        } else {
+            // TODO: 没有归档时会来这里, 可以获取恢复数据后取消, 以便后期使用
+            [downloadTask cancel];
         }
     }];
 }
 
 - (void)saveTasks {
-    FKLog(@"归档所有任务")
     if (self.configure.isAutoCoding) {
+        FKLog(@"归档所有任务")
         [FKTaskStorage saveObject:self.tasks toPath:self.configure.restorePath];
     }
 }
 
 - (void)loadTasks {
-    FKLog(@"解档所有任务")
     if ([self.fileManager fileExistsAtPath:self.configure.restorePath] && self.configure.isAutoCoding) {
+        FKLog(@"解档所有任务")
         NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restorePath];
         [tasks forEach:^(FKTask *task, NSUInteger idx) {
             if (![self acquire:task.url]) {
