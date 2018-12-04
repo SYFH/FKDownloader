@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_SWIFT_NAME(Configure)
 @interface FKConfigure : NSObject
-// TODO: 可以自行保护 tmp 文件
+// TODO: 可选自行保护 tmp 文件
 /**
  是否设置为后台下载. 默认为 Yes
  */
@@ -22,32 +22,40 @@ NS_SWIFT_NAME(Configure)
 
 /**
  是否自动开始, 当载入本地归档任务时起效. 默认为 No
+ 此值只作用于暂停中归档任务
  */
 @property (nonatomic, assign) BOOL isAutoStart;
 
 /**
  是否自动清理, 当任务失败或完成时起效. 默认为 No
+ 注意, 此值仅清除 FKTask, 相关 UI 操作请自行更改
  */
 @property (nonatomic, assign) BOOL isAutoClearTask;
 
 /**
  是否进行文件校验, 默认为 No
+ 注意, 大文件(1GB~)计算 Hash 值会严重消耗 CPU, 请谨慎开启
  */
 @property (nonatomic, assign) BOOL isFileChecksum;
 
 /**
  是否允许蜂窝网络进行下载, 默认为 NO
+ 注意, 为了保证上层的 FKTask 能保证此选项可用, 根 NSURLSeesion 初始化时会直接标记可使用蜂窝网络, 所以此值仅
+ 作用于上层的 FKTask 是否可以使用蜂窝网络, 不代表 NSURLSessionDownloadTask 是否可以使用蜂窝网络
  */
 @property (nonatomic, assign) BOOL isAllowCellular;
 
 /**
  是否自动归档任务, 默认为 Yes
+ 注意, 一旦确定是否开启, 则不要轻易变更, 否则归档任务会和手动添加任务起冲突, 如 `全部开始` 操作, 会造成 UI 上
+ 显示的任务为等待中, 而下载中任务为非 UI 显示的归档任务.
+ 可以根据 FKTask.isCodingAdd 判断, 也可直接清除 restorePath, 但可能会出现其他莫名其妙的问题
  */
 @property (nonatomic, assign) BOOL isAutoCoding;
 
 /**
  最大并行任务数量. 默认为 3, 最大为 3
- 最大并行数量受限于 NSURLSession 的 HTTPMaximumConnectionsPerHost 属性
+ 最大并行数量受限于 NSURLSession 的 HTTPMaximumConnectionsPerHost 属性, 系统默认 macOS 为 6, iOS 为 4
  */
 @property (nonatomic, assign) NSInteger maximumExecutionTask;
 
@@ -68,14 +76,13 @@ NS_SWIFT_NAME(Configure)
 
 /**
  持久化任务文档路径. 默认为 Library/Caches/com.fk.downloader/downloader.restore
- // TODO: 将持久化变为可选, 将手动添加的任务和持久化恢复的任务作区分
  */
 @property (nonatomic, strong) NSString  *restorePath;
 
 /**
  后台下载句柄
  */
-@property (nonatomic, copy  , nullable) handler   backgroundHandler;
+@property (nonatomic, copy  , nullable) handler backgroundHandler;
 
 /**
  任务超时时间. 默认为 30s
