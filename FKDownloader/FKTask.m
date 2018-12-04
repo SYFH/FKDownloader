@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setupTimer {
-    if (self.timer == nil || !self.timer.isValid) {
+    if (self.timer == nil || (self.timer.isValid == NO)) {
         FKLog(@"开始计时")
         self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
                                              target:self
@@ -96,13 +96,12 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - Operation
 - (void)restore:(NSURLSessionDownloadTask *)task {
-    [self clear];
+    [self removeProgressObserver];
     self.downloadTask = task;
     [self addProgressObserver];
     
     switch (task.state) {
         case NSURLSessionTaskStateRunning:
-            // TODO: 恢复后 timer 没有调用, 没有更新速度和预期时间
             self.status = TaskStatusExecuting;
             break;
             
@@ -804,7 +803,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)clearSpeedTimer {
-    if (self.timer || !self.timer.isValid) {
+    if (self.timer || (self.timer.isValid == YES)) {
+        FKLog(@"清除定时器")
         [self.timer invalidate];
         self.timer = nil;
     }
