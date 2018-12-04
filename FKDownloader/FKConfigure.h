@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_SWIFT_NAME(Configure)
 @interface FKConfigure : NSObject
-
+// TODO: 可以自行保护 tmp 文件
 /**
  是否设置为后台下载. 默认为 Yes
  */
