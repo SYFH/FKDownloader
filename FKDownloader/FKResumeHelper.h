@@ -11,6 +11,14 @@
 @interface FKResumeHelper : NSObject
 
 /**
+ 查看恢复数据的具体信息, 此方法只用来测试输出
+ 
+ @param resumeData 恢复数据
+ @return 解包数据
+ */
++ (nullable NSDictionary *)pockResumeData:(nonnull NSData *)resumeData;
+
+/**
  解包恢复数据为字典
 
  @param resumeData 恢复数据

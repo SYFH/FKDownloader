@@ -11,7 +11,26 @@
 #import "FKDefine.h"
 
 @implementation FKResumeHelper
-//TODO: 可以继续解包 NSURLSessionResumeCurrentRequest 和 NSURLSessionResumeOriginalRequest 字段
++ (NSDictionary *)pockResumeData:(NSData *)resumeData {
+#ifdef DEBUG
+    if ([FKSystemHelper currentSystemVersion].floatValue < 12) {
+        NSMutableDictionary *dic = [NSPropertyListSerialization propertyListWithData:resumeData
+                                                                             options:0
+                                                                              format:NULL
+                                                                               error:nil];
+        dic[FKResumeDataCurrentRequest] = [NSKeyedUnarchiver unarchiveObjectWithData:[self correctRequestData:dic[FKResumeDataCurrentRequest]]];
+        dic[FKResumeDataOriginalRequest] = [NSKeyedUnarchiver unarchiveObjectWithData:[self correctRequestData:dic[FKResumeDataOriginalRequest]]];
+        return [dic copy];
+    } else {
+        NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:[self getResumeDictionary:resumeData]];
+        dic[FKResumeDataCurrentRequest] = [NSKeyedUnarchiver unarchiveObjectWithData:[self correctRequestData:dic[FKResumeDataCurrentRequest]]];
+        dic[FKResumeDataOriginalRequest] = [NSKeyedUnarchiver unarchiveObjectWithData:[self correctRequestData:dic[FKResumeDataOriginalRequest]]];
+        return [dic copy];
+    }
+#endif
+    return [NSDictionary dictionary];
+}
+
 + (NSDictionary *)readResumeData:(NSData *)resumeData {
     if ([FKSystemHelper currentSystemVersion].floatValue < 12) {
         NSDictionary *dic = [NSPropertyListSerialization propertyListWithData:resumeData
@@ -45,7 +64,23 @@
         [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
     }
     
-    NSString *range = [NSString stringWithFormat:@"bytes=%@-", resumeDictionary[FKResumeDataBytesReceived]];
+    NSString *tempFilePath = @"";
+    if ([resumeDictionary.allKeys containsObject:FKResumeDataInfoTempFileName]) {
+        tempFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:resumeDictionary[FKResumeDataInfoTempFileName]];
+    } else if ([resumeDictionary.allKeys containsObject:FKResumeDataInfoLocalPath]) {
+        tempFilePath = resumeDictionary[FKResumeDataInfoLocalPath];
+    } else {
+        return resumeData;
+    }
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:tempFilePath] == NO) {
+        return resumeData;
+    }
+    
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:tempFilePath error:nil];
+    NSUInteger tempFileLength = [attributes[NSFileSize] unsignedIntegerValue];
+    
+    NSString *range = [NSString stringWithFormat:@"bytes=%lu-", tempFileLength];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
     [request setValue:range forHTTPHeaderField:@"Range"];
     
