@@ -41,7 +41,13 @@ NS_SWIFT_NAME(Configure)
 @property (nonatomic, assign) BOOL isAllowCellular;
 
 /**
- 最大并行任务数量. 默认为 3
+ 是否自动归档任务, 默认为 Yes
+ */
+@property (nonatomic, assign) BOOL isAutoCoding;
+
+/**
+ 最大并行任务数量. 默认为 3, 最大为 3
+ 最大并行数量受限于 NSURLSession 的 HTTPMaximumConnectionsPerHost 属性
  */
 @property (nonatomic, assign) NSInteger maximumExecutionTask;
 
@@ -62,6 +68,7 @@ NS_SWIFT_NAME(Configure)
 
 /**
  持久化任务文档路径. 默认为 Library/Caches/com.fk.downloader/downloader.restore
+ // TODO: 将持久化变为可选, 将手动添加的任务和持久化恢复的任务作区分
  */
 @property (nonatomic, strong) NSString  *restorePath;
 

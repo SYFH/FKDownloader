@@ -18,6 +18,7 @@
     config.isBackgroudExecute   = YES;
     config.isFileChecksum       = NO;
     config.isAllowCellular      = NO;
+    config.isAutoCoding         = YES;
     config.timeoutInterval      = 30;
     config.sessionIdentifier    = @"com.fk.downloader";
     config.maximumExecutionTask = 3;
@@ -44,6 +45,16 @@
         _timeoutInterval = timeoutInterval;
     } else {
         _timeoutInterval = 30;
+    }
+}
+
+- (void)setMaximumExecutionTask:(NSInteger)maximumExecutionTask {
+    if (maximumExecutionTask > 3) {
+        _maximumExecutionTask = 3;
+    } else if (maximumExecutionTask < 0) {
+        _maximumExecutionTask = 1;
+    } else {
+        _maximumExecutionTask = maximumExecutionTask;
     }
 }
 
