@@ -237,13 +237,15 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
-// TODO: 状态切换: 在添加任务时是 none, 直接开始任务时是 idle/executing, 暂停时是 suspend, 取消时是 del?/idle?/none?
 - (FKTask *)add:(NSString *)url {
     FKLog(@"添加任务: %@", url)
     checkURL(url);
     
-    if ([self acquire:url]) {
-        return [self acquire:url];
+    FKTask *existedTask = [self acquire:url];
+    if (existedTask) {
+        // !!!: 手动添加以标记为归档加载的任务, 则重制标记为非归档加载
+        existedTask.isCodingAdd = NO;
+        return existedTask;
     }
     
     FKTask *task = [self createPreserveTask:url];
@@ -257,10 +259,11 @@ static FKDownloadManager *_instance = nil;
         FKLog(@"添加任务: %@", url)
         checkURL(url);
         
-        if ([self acquire:url]) {
-            FKTask *task = [self acquire:url];
-            [task settingInfo:info];
-            return [self acquire:url];
+        FKTask *existedTask = [self acquire:url];
+        if (existedTask) {
+            existedTask.isCodingAdd = NO;
+            [existedTask settingInfo:info];
+            return existedTask;
         }
         
         FKTask *task = [self createPreserveTask:url];
@@ -282,12 +285,12 @@ static FKDownloadManager *_instance = nil;
         return [self acquire:url];
     }
     
-    if ([self acquire:url]) {
-        FKTask *task = [self acquire:url];
+    FKTask *existedTask = [self acquire:url];
+    if (existedTask) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self executeTask:task];
+            [self executeTask:existedTask];
         });
-        return task;
+        return existedTask;
     }
     
     FKTask *task = [self createPreserveTask:url];
@@ -327,35 +330,35 @@ static FKDownloadManager *_instance = nil;
     FKLog(@"暂停任务: %@", url)
     checkURL(url);
     
-    if (![self acquire:url]) { return; }
-    if ([self acquire:url].status == TaskStatusSuspend) { return; }
+    FKTask *existedTask = [self acquire:url];
+    if (!existedTask) { return; }
+    if (existedTask.status == TaskStatusSuspend) { return; }
     
-    FKTask *task = [self acquire:url];
-    [task suspend];
+    [existedTask suspend];
 }
 
 - (void)resume:(NSString *)url {
     FKLog(@"恢复任务: %@", url)
     checkURL(url);
     
-    if (![self acquire:url]) { return; }
-    if ([self acquire:url].status == TaskStatusExecuting) { return; }
+    FKTask *existedTask = [self acquire:url];
+    if (!existedTask) { return; }
+    if (existedTask.status == TaskStatusExecuting) { return; }
     
-    FKTask *task = [self acquire:url];
-    [task resume];
+    [existedTask resume];
 }
 
 - (void)remove:(NSString *)url {
     FKLog(@"移除任务: %@", url)
     checkURL(url);
     
-    if (![self acquire:url]) { return; }
+    FKTask *existedTask = [self acquire:url];
+    if (!existedTask) { return; }
     
-    FKTask *task = [self acquire:url];
-    if (task.status == TaskStatusExecuting) { [task cancel]; }
-    [task clear];
-    [self.tasks removeObject:task];
-    [self.tasksMap removeObjectForKey:[url SHA256]];
+    if (existedTask.status == TaskStatusExecuting) { [existedTask cancel]; }
+    [existedTask clear];
+    [self.tasks removeObject:existedTask];
+    [self.tasksMap removeObjectForKey:existedTask.identifier];
     
     [self saveTasks];
 }
@@ -397,6 +400,7 @@ static FKDownloadManager *_instance = nil;
         [tasks forEach:^(FKTask *task, NSUInteger idx) {
             if (![self acquire:task.url]) {
                 task.manager = self;
+                task.isCodingAdd = YES;
                 [self.tasks addObject:task];
                 self.tasksMap[task.identifier] = task;
                 if (self.configure.isAutoStart) {
