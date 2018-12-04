@@ -128,6 +128,11 @@ NS_SWIFT_NAME(Task)
 @property (nonatomic, assign, readonly) BOOL        isPassChecksum;
 
 /**
+ 是否为归档加载任务, 和手动添加作区分
+ */
+@property (nonatomic, assign) BOOL isCodingAdd;
+
+/**
  任务进度监听 Block
  */
 @property (nonatomic, copy  , nullable) FKProgress  progressBlock;

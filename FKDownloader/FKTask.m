@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSProgress        *progress;
 @property (nonatomic, strong, nullable) NSData  *resumeData;
 
-// TODO: 只在任务运行期间进行计时
 @property (nonatomic, strong, nullable) NSTimer *timer;
 
 @property (nonatomic, assign) NSTimeInterval    prevTime;
