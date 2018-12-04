@@ -85,11 +85,13 @@ static FKDownloadManager *_instance = nil;
             NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.configure.sessionIdentifier];
             config.timeoutIntervalForRequest = self.configure.timeoutInterval;
             config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+            config.allowsCellularAccess = YES;
             self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
         } else {
             NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
             config.timeoutIntervalForRequest = self.configure.timeoutInterval;
             config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+            config.allowsCellularAccess = YES;
             self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
         }
     }
@@ -196,7 +198,7 @@ static FKDownloadManager *_instance = nil;
         [task setValue:@(TaskStatusNone) forKey:@"status"];
     }
     // !!!: 提前进行预处理, 以防止任务延迟: https://forums.developer.apple.com/thread/14854
-    [task reday];
+    // [task reday];
     [self.tasks addObject:task];
     self.tasksMap[task.identifier] = task;
     return task;
@@ -204,6 +206,8 @@ static FKDownloadManager *_instance = nil;
 
 - (void)executeTask:(FKTask *)task {
     FKLog(@"开始执行 FKTask: %@", task)
+    // !!!: 会出现 kill app 后, 任务自动进行的情况, 暂时回退
+    [task reday];
     if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
         FKLog(@"当前执行数量 %lu 小于 %ld", (unsigned long)[self filterTaskWithStatus:TaskStatusExecuting].count, (unsigned long)self.configure.maximumExecutionTask)
         [task execute];
@@ -378,12 +382,14 @@ static FKDownloadManager *_instance = nil;
 
 - (void)saveTasks {
     FKLog(@"归档所有任务")
-    [FKTaskStorage saveObject:self.tasks toPath:self.configure.restorePath];
+    if (self.configure.isAutoCoding) {
+        [FKTaskStorage saveObject:self.tasks toPath:self.configure.restorePath];
+    }
 }
 
 - (void)loadTasks {
     FKLog(@"解档所有任务")
-    if ([self.fileManager fileExistsAtPath:self.configure.restorePath]) {
+    if ([self.fileManager fileExistsAtPath:self.configure.restorePath] && self.configure.isAutoCoding) {
         NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restorePath];
         [tasks forEach:^(FKTask *task, NSUInteger idx) {
             if (![self acquire:task.url]) {
@@ -391,7 +397,7 @@ static FKDownloadManager *_instance = nil;
                 [self.tasks addObject:task];
                 self.tasksMap[task.identifier] = task;
                 if (self.configure.isAutoStart) {
-                    if (task.status != TaskStatusUnknowError) {
+                    if (task.status == TaskStatusSuspend) {
                         [self executeTask:task];
                     }
                 }
