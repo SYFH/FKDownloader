@@ -20,7 +20,6 @@
     // Override point for customization after application launch.
     [FKDownloadManager manager].configure.maximumExecutionTask = 1;
     [FKDownloadManager manager].configure.isAllowCellular = YES;
-    [FKDownloadManager manager].configure.isAutoCoding = NO;
     return YES;
 }
 
