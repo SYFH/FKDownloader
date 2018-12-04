@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_END
 
 - (void)setupTimer {
     if (self.timer == nil || !self.timer.isValid) {
+        FKLog(@"开始计时")
         self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
                                              target:self
                                            selector:@selector(refreshSpeed)
@@ -101,6 +102,7 @@ NS_ASSUME_NONNULL_END
     
     switch (task.state) {
         case NSURLSessionTaskStateRunning:
+            // TODO: 恢复后 timer 没有调用, 没有更新速度和预期时间
             self.status = TaskStatusExecuting;
             break;
             
@@ -245,6 +247,7 @@ NS_ASSUME_NONNULL_END
         strong.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
         strong.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
         if ([FKResumeHelper checkUsable:resumeData]) {
+            FKLog(@"%@", [FKResumeHelper pockResumeData:resumeData])
             strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
         }
         if (complete) {
@@ -298,16 +301,10 @@ NS_ASSUME_NONNULL_END
     }
     // !!!: 带有恢复数据的系统任务暂停后, 状态为已完成, 需手动做取消通知和数据清理
     if (self.status == TaskStatusSuspend) {
-        self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
-        self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
-        [self clearResumeData];
         [self sendCancelldInfo];
     }
     
     if (self.status == TaskStatusUnknowError) {
-        self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
-        self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
-        [self clearResumeData];
         [self sendCancelldInfo];
         return;
     }
@@ -316,6 +313,7 @@ NS_ASSUME_NONNULL_END
     self.progress.completedUnitCount = 0;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+    [self clearResumeData];
 }
 
 - (BOOL)checksum {
@@ -507,6 +505,10 @@ NS_ASSUME_NONNULL_END
 
 - (void)sendCancelldInfo {
     self.status = TaskStatusCancelld;
+    self.progress.completedUnitCount = 0;
+    self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+    self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+    [self clearResumeData];
     
     if ([self.delegate respondsToSelector:@selector(downloader:didCancelldTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -723,12 +725,12 @@ NS_ASSUME_NONNULL_END
     if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
         NSDictionary *resumeDictionary = [FKResumeHelper readResumeData:[NSData dataWithContentsOfFile:self.resumeFilePath options:NSDataReadingMappedIfSafe error:nil]];
         NSString *tempFilePath = @"";
-        if ([resumeDictionary[@"NSURLSessionResumeInfoVersion"] integerValue] == 1 ||
-            [resumeDictionary.allKeys containsObject:@"NSURLSessionResumeInfoLocalPath"]) {
+        if ([resumeDictionary[FKResumeDataInfoVersion] integerValue] == 1 ||
+            [resumeDictionary.allKeys containsObject:FKResumeDataInfoLocalPath]) {
             
-            tempFilePath = resumeDictionary[@"NSURLSessionResumeInfoLocalPath"];
+            tempFilePath = resumeDictionary[FKResumeDataInfoLocalPath];
         } else {
-            tempFilePath = [[self tempPath] stringByAppendingPathComponent:resumeDictionary[@"NSURLSessionResumeInfoTempFileName"]];
+            tempFilePath = [[self tempPath] stringByAppendingPathComponent:resumeDictionary[FKResumeDataInfoTempFileName]];
         }
         
         if ([self.manager.fileManager fileExistsAtPath:tempFilePath]) {
@@ -764,6 +766,18 @@ NS_ASSUME_NONNULL_END
 - (void)clearResumeData {
     self.resumeData = nil;
     if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
+        NSDictionary *resumeDictionary = [FKResumeHelper readResumeData:[NSData dataWithContentsOfFile:self.resumeFilePath options:NSDataReadingMappedIfSafe error:nil]];
+        NSString *tempFilePath = @"";
+        if ([resumeDictionary[FKResumeDataInfoVersion] integerValue] == 1 ||
+            [resumeDictionary.allKeys containsObject:FKResumeDataInfoLocalPath]) {
+            
+            tempFilePath = resumeDictionary[FKResumeDataInfoLocalPath];
+        } else {
+            tempFilePath = [[self tempPath] stringByAppendingPathComponent:resumeDictionary[FKResumeDataInfoTempFileName]];
+        }
+        if ([self.manager.fileManager fileExistsAtPath:tempFilePath]) {
+            [self.manager.fileManager removeItemAtPath:tempFilePath error:nil];
+        }
         [self.manager.fileManager removeItemAtPath:[self resumeFilePath] error:nil];
     }
 }

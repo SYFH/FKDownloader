@@ -118,7 +118,7 @@ NS_SWIFT_NAME(Task)
 @property (nonatomic, strong, readonly) NSNumber    *bytesPerSecondSpeed;
 
 /**
- 每秒下载字节速度, 格式化: BytesFormatter/s, 自动计算 KB, MB, GB
+ 每秒下载字节速度, 格式化: BytesFormatter/s, 自动转换 KB, MB, GB, PB...
  */
 @property (nonatomic, strong, readonly) NSString    *bytesPerSecondSpeedDescription;
 
@@ -128,7 +128,7 @@ NS_SWIFT_NAME(Task)
 @property (nonatomic, assign, readonly) BOOL        isPassChecksum;
 
 /**
- 任务进度监听 Blok
+ 任务进度监听 Block
  */
 @property (nonatomic, copy  , nullable) FKProgress  progressBlock;
 
