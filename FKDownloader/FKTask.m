@@ -149,6 +149,20 @@ NS_ASSUME_NONNULL_END
 - (void)reday {
     FKLog(@"开始准备: %@", self)
     
+    switch (self.status) {
+        case TaskStatusNone:        break;
+        case TaskStatusPrepare:     return;
+        case TaskStatusIdle:        return;
+        case TaskStatusExecuting:   return;
+        case TaskStatusFinish:      break;
+        case TaskStatusSuspend:     return;
+        case TaskStatusResuming:    return;
+        case TaskStatusChecksumming:return;
+        case TaskStatusChecksummed: return;
+        case TaskStatusCancelld:    return;
+        case TaskStatusUnknowError: return;
+    }
+    
     if (self.isFinish) {
         [self sendFinishInfo];
         return;
@@ -191,6 +205,21 @@ NS_ASSUME_NONNULL_END
 
 - (void)execute {
     FKLog(@"执行: %@", self)
+    
+    switch (self.status) {
+        case TaskStatusNone:        return;
+        case TaskStatusPrepare:     break;
+        case TaskStatusIdle:        break;
+        case TaskStatusExecuting:   return;
+        case TaskStatusFinish:      break;
+        case TaskStatusSuspend:     break;
+        case TaskStatusResuming:    return;
+        case TaskStatusChecksumming:return;
+        case TaskStatusChecksummed: return;
+        case TaskStatusCancelld:    break;
+        case TaskStatusUnknowError: break;
+    }
+    
     if (self.manager.reachability.currentReachabilityStatus == NotReachable ||
         (!self.manager.configure.isAllowCellular && (self.manager.reachability.currentReachabilityStatus == ReachableViaWWAN))) {
         
@@ -221,6 +250,20 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)suspend {
+    switch (self.status) {
+        case TaskStatusNone:        return;
+        case TaskStatusPrepare:     return;
+        case TaskStatusIdle:        return;
+        case TaskStatusExecuting:   break;
+        case TaskStatusFinish:      return;
+        case TaskStatusSuspend:     return;
+        case TaskStatusResuming:    return;
+        case TaskStatusChecksumming:return;
+        case TaskStatusChecksummed: return;
+        case TaskStatusCancelld:    return;
+        case TaskStatusUnknowError: return;
+    }
+    
     if (self.isFinish) {
         [self sendFinishInfo];
         return;
@@ -258,6 +301,20 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)resume {
+    switch (self.status) {
+        case TaskStatusNone:        return;
+        case TaskStatusPrepare:     return;
+        case TaskStatusIdle:        return;
+        case TaskStatusExecuting:   return;
+        case TaskStatusFinish:      return;
+        case TaskStatusSuspend:     break;
+        case TaskStatusResuming:    return;
+        case TaskStatusChecksumming:return;
+        case TaskStatusChecksummed: return;
+        case TaskStatusCancelld:    return;
+        case TaskStatusUnknowError: return;
+    }
+    
     [self setupTimer];
     [self sendResumingInfo];
     
@@ -282,6 +339,20 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)cancel {
+    switch (self.status) {
+        case TaskStatusNone:        return;
+        case TaskStatusPrepare:     return;
+        case TaskStatusIdle:        break;
+        case TaskStatusExecuting:   break;
+        case TaskStatusFinish:      return;
+        case TaskStatusSuspend:     break;
+        case TaskStatusResuming:    break;
+        case TaskStatusChecksumming:return;
+        case TaskStatusChecksummed: return;
+        case TaskStatusCancelld:    return;
+        case TaskStatusUnknowError: break;
+    }
+    
     [self clearSpeedTimer];
     [self sendWillCancelldInfo];
     
@@ -303,6 +374,7 @@ NS_ASSUME_NONNULL_END
     }
     
     if (self.status == TaskStatusUnknowError) {
+        self.error = nil;
         [self sendCancelldInfo];
         return;
     }
@@ -743,7 +815,23 @@ NS_ASSUME_NONNULL_END
 }
 
 - (BOOL)isFinish {
-    return [self.manager.fileManager fileExistsAtPath:[self filePath]];
+    if (self.manager.configure.isFileChecksum && self.verification.length > 0) {
+        switch (self.verificationType) {
+            case VerifyTypeMD5:
+                return [[FKHashHelper MD5:[self filePath]] isEqualToString:self.verification];
+                
+            case VerifyTypeSHA1:
+                return [[FKHashHelper SHA1:[self filePath]] isEqualToString:self.verification];
+                
+            case VerifyTypeSHA256:
+                return [[FKHashHelper SHA256:[self filePath]] isEqualToString:self.verification];
+                
+            case VerifyTypeSHA512:
+                return [[FKHashHelper SHA512:[self filePath]] isEqualToString:self.verification];
+        }
+    } else {
+        return [self.manager.fileManager fileExistsAtPath:[self filePath]];
+    }
 }
 
 

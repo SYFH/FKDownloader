@@ -95,7 +95,7 @@ NS_SWIFT_NAME(Task)
 /**
  发生下载失败等问题时保存的 error
  */
-@property (nonatomic, strong) NSError               *error;
+@property (nonatomic, strong, nullable) NSError               *error;
 
 /**
  进行下载任务的 task
