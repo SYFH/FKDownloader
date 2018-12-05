@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSProgress                *progress;
 @property (nonatomic, copy  ) NSMutableArray<FKTask *>  *tasks;
 @property (nonatomic, copy  ) NSMutableDictionary       *tasksMap;
+@property (nonatomic, strong) NSLock                    *lock;
 
 @property (nonatomic, strong) FKReachability            *reachability;
 
@@ -199,8 +200,11 @@ static FKDownloadManager *_instance = nil;
     }
     // !!!: 提前进行预处理, 以防止任务延迟: https://forums.developer.apple.com/thread/14854
     // [task reday];
+    [self.lock lock];
     [self.tasks addObject:task];
     self.tasksMap[task.identifier] = task;
+    [self.lock unlock];
+    
     return task;
 }
 
@@ -401,8 +405,12 @@ static FKDownloadManager *_instance = nil;
             if (![self acquire:task.url]) {
                 task.manager = self;
                 task.isCodingAdd = YES;
+                
+                [self.lock lock];
                 [self.tasks addObject:task];
                 self.tasksMap[task.identifier] = task;
+                [self.lock unlock];
+                
                 if (self.configure.isAutoStart) {
                     if (task.status == TaskStatusSuspend) {
                         [self executeTask:task];
@@ -507,6 +515,13 @@ static FKDownloadManager *_instance = nil;
         _executor.manager = self;
     }
     return _executor;
+}
+
+- (NSLock *)lock {
+    if (!_lock) {
+        _lock = [[NSLock alloc] init];
+    }
+    return _lock;
 }
 
 - (NSMutableArray<FKTask *> *)tasks {
