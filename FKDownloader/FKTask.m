@@ -153,20 +153,6 @@ NS_ASSUME_NONNULL_END
 - (void)reday {
     FKLog(@"开始准备: %@", self)
     
-    switch (self.status) {
-        case TaskStatusNone:        break;
-        case TaskStatusPrepare:     return;
-        case TaskStatusIdle:        return;
-        case TaskStatusExecuting:   return;
-        case TaskStatusFinish:      break;
-        case TaskStatusSuspend:     return;
-        case TaskStatusResuming:    return;
-        case TaskStatusChecksumming:return;
-        case TaskStatusChecksummed: return;
-        case TaskStatusCancelld:    return;
-        case TaskStatusUnknowError: return;
-    }
-    
     if (self.isFinish) {
         [self sendFinishInfo];
         return;
@@ -248,13 +234,6 @@ NS_ASSUME_NONNULL_END
         [self resume];
     } else {
         FKLog(@"没有恢复数据: %@", self)
-//        [self removeProgressObserver];
-//        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
-//        [self.requestHeader enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-//            [request setValue:value forHTTPHeaderField:key];
-//        }];
-//        self.downloadTask = [self.manager.session downloadTaskWithRequest:request];
-//        [self addProgressObserver];
         [self.downloadTask resume];
         [self sendExecutingInfo];
     }
