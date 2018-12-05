@@ -42,6 +42,7 @@ extern FKTaskInfoName const FKTaskInfoFileName;
 extern FKTaskInfoName const FKTaskInfoVerificationType;
 extern FKTaskInfoName const FKTaskInfoVerification;
 extern FKTaskInfoName const FKTaskInfoRequestHeader;
+extern FKTaskInfoName const FKTaskInfoTags;
 
 typedef NSString * FKReachabilityNotificationName;
 extern FKReachabilityNotificationName const FKReachabilityChangedNotification;

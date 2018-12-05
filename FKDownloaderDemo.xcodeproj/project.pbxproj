@@ -20,6 +20,9 @@
 		3D0C623221996B630041BA82 /* FKTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308CD218BEE3300BDF330 /* FKTask.m */; };
 		3D0C623321996B630041BA82 /* NSString+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD308F7218C4E8D00BDF330 /* NSString+FKDownload.m */; };
 		3D0C623421996B630041BA82 /* NSArray+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */; };
+		3D15CA1221B7AFD50017F136 /* NSMutableSet+FKDownload.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D15CA1021B7AFD50017F136 /* NSMutableSet+FKDownload.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D15CA1321B7AFD50017F136 /* NSMutableSet+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D15CA1121B7AFD50017F136 /* NSMutableSet+FKDownload.m */; };
+		3D15CA1421B7AFD50017F136 /* NSMutableSet+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D15CA1121B7AFD50017F136 /* NSMutableSet+FKDownload.m */; };
 		3D35875E2192BD43000BD0E1 /* NSArray+FKDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */; };
 		3D71563A2196B805008F91A7 /* TaskListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7156392196B805008F91A7 /* TaskListController.m */; };
 		3D71563D2196B81B008F91A7 /* TaskViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D71563C2196B81B008F91A7 /* TaskViewCell.m */; };
@@ -61,6 +64,8 @@
 		3D0C622121996AF60041BA82 /* FKDownloader.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FKDownloader.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D0C622321996AF60041BA82 /* FKDownloader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKDownloader.h; sourceTree = "<group>"; };
 		3D0C622421996AF60041BA82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3D15CA1021B7AFD50017F136 /* NSMutableSet+FKDownload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMutableSet+FKDownload.h"; sourceTree = "<group>"; };
+		3D15CA1121B7AFD50017F136 /* NSMutableSet+FKDownload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSMutableSet+FKDownload.m"; sourceTree = "<group>"; };
 		3D35875C2192BD43000BD0E1 /* NSArray+FKDownload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+FKDownload.h"; sourceTree = "<group>"; };
 		3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+FKDownload.m"; sourceTree = "<group>"; };
 		3D7156382196B805008F91A7 /* TaskListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TaskListController.h; sourceTree = "<group>"; };
@@ -200,6 +205,8 @@
 				3D35875D2192BD43000BD0E1 /* NSArray+FKDownload.m */,
 				3DA41D0321A2AAEC00B48D03 /* NSData+FKDownload.h */,
 				3DA41D0421A2AAEC00B48D03 /* NSData+FKDownload.m */,
+				3D15CA1021B7AFD50017F136 /* NSMutableSet+FKDownload.h */,
+				3D15CA1121B7AFD50017F136 /* NSMutableSet+FKDownload.m */,
 			);
 			path = FKDownloader;
 			sourceTree = "<group>";
@@ -211,6 +218,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D15CA1221B7AFD50017F136 /* NSMutableSet+FKDownload.h in Headers */,
 				3DC078A221A95E0A0066CB2C /* FKReachability.h in Headers */,
 				3DC0789C21A686E30066CB2C /* FKDefine.h in Headers */,
 				3D8CA7A321A5027F00E4BBEA /* FKSystemHelper.h in Headers */,
@@ -336,6 +344,7 @@
 				3D0C623221996B630041BA82 /* FKTask.m in Sources */,
 				3D0C623321996B630041BA82 /* NSString+FKDownload.m in Sources */,
 				3DA41D0721A2AAEC00B48D03 /* NSData+FKDownload.m in Sources */,
+				3D15CA1421B7AFD50017F136 /* NSMutableSet+FKDownload.m in Sources */,
 				3DC0789E21A686E30066CB2C /* FKDefine.m in Sources */,
 				3DC078A421A95E0A0066CB2C /* FKReachability.m in Sources */,
 				3DA41CD921A1AA3100B48D03 /* FKHashHelper.m in Sources */,
@@ -348,6 +357,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DD308B3218BEDBA00BDF330 /* ViewController.m in Sources */,
+				3D15CA1321B7AFD50017F136 /* NSMutableSet+FKDownload.m in Sources */,
 				3DA41D0B21A2E1CD00B48D03 /* FKResumeHelper.m in Sources */,
 				3DD308D0218BEE3300BDF330 /* FKTask.m in Sources */,
 				3D8CA7AA21A506D300E4BBEA /* FKTaskStorage.m in Sources */,

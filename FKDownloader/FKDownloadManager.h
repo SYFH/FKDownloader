@@ -68,6 +68,14 @@ NS_SWIFT_NAME(Downloader)
  */
 - (nullable FKTask *)acquire:(NSString *)url;
 
+/**
+ 根据标签获取任务组
+
+ @param tag 标签
+ @return 任务组, 可能为空数组
+ */
+- (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag;
+
 
 /**
  添加任务, 但不执行, 任务状态为 TaskStatusNone

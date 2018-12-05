@@ -17,3 +17,4 @@
 #import "NSString+FKDownload.h"
 #import "NSArray+FKDownload.h"
 #import "NSData+FKDownload.h"
+#import "NSMutableSet+FKDownload.h"

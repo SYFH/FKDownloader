@@ -186,6 +186,13 @@ static FKDownloadManager *_instance = nil;
     return self.tasksMap[identifier];
 }
 
+- (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag {
+    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(FKTask *task, NSDictionary *bindings) {
+        return [task.tags containsObject:tag];
+    }];
+    return [self.tasks filteredArrayUsingPredicate:predicate];
+}
+
 - (FKTask *)createPreserveTask:(NSString *)url {
     FKLog(@"创建并保存 FKTask:%@", url)
     FKTask *task = [[FKTask alloc] init];
@@ -412,6 +419,7 @@ static FKDownloadManager *_instance = nil;
                 [self.lock unlock];
                 
                 if (self.configure.isAutoStart) {
+                    FKLog(@"自动开始任务: %@", task)
                     if (task.status == TaskStatusSuspend) {
                         [self executeTask:task];
                     }

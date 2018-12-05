@@ -12,6 +12,7 @@
 #import "FKHashHelper.h"
 #import "FKResumeHelper.h"
 #import "NSString+FKDownload.h"
+#import "NSMutableSet+FKDownload.h"
 #import "FKReachability.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -31,6 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSNumber          *bytesPerSecondSpeed;
 
 @property (nonatomic, assign) BOOL              isPassChecksum;
+
+@property (nonatomic, copy  ) NSMutableSet      *tags;
+@property (nonatomic, strong) NSLock            *lock;
 
 @end
 
@@ -244,6 +248,13 @@ NS_ASSUME_NONNULL_END
         [self resume];
     } else {
         FKLog(@"没有恢复数据: %@", self)
+//        [self removeProgressObserver];
+//        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
+//        [self.requestHeader enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+//            [request setValue:value forHTTPHeaderField:key];
+//        }];
+//        self.downloadTask = [self.manager.session downloadTaskWithRequest:request];
+//        [self addProgressObserver];
         [self.downloadTask resume];
         [self sendExecutingInfo];
     }
@@ -429,6 +440,28 @@ NS_ASSUME_NONNULL_END
         }
         self.url = url;
     }
+}
+
+
+#pragma mark - Tags Group
+- (void)addTags:(NSSet *)tags {
+    [self.lock lock];
+    NSMutableSet *subtract = [NSMutableSet setWithSet:self.tags];
+    [subtract subtractSet:tags];
+    if (subtract.count > 0) {
+        [self.tags unionSet:tags];
+    }
+    [self.lock unlock];
+}
+
+- (void)removeTags:(NSSet *)tags {
+    [self.lock lock];
+    NSMutableSet *intersect = [NSMutableSet setWithSet:self.tags];
+    [intersect intersectSet:tags];
+    if (intersect.count > 0) {
+        [self.tags subtractSet:tags];
+    }
+    [self.lock unlock];
 }
 
 
@@ -1024,6 +1057,20 @@ NS_ASSUME_NONNULL_END
         [self.manager.progress resignCurrent];
     }
     return _progress;
+}
+
+- (NSMutableSet *)tags {
+    if (!_tags) {
+        _tags = [NSMutableSet set];
+    }
+    return _tags;
+}
+
+- (NSLock *)lock {
+    if (!_lock) {
+        _lock = [[NSLock alloc] init];
+    }
+    return _lock;
 }
 
 - (void)setStatus:(TaskStatus)status {

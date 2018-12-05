@@ -153,6 +153,12 @@ NS_SWIFT_NAME(Task)
  */
 @property (nonatomic, weak  , nullable) id<FKTaskDelegate>  delegate;
 
+/**
+ 标签组, 以进行 task 分组
+ 一个 FKTask 可以拥有多个 tag, 也就是可以同时属于多个组
+ */
+@property (nonatomic, copy  , readonly) NSMutableSet *tags;
+
 
 #pragma mark - Operation
 /**
@@ -220,6 +226,24 @@ NS_SWIFT_NAME(Task)
  @param url 更新后的 URL
  */
 - (void)updateURL:(NSString *)url;
+
+
+#pragma mark - Tags Group
+/**
+ 添加标签
+ 内部操作会取并集, 忽略重复标签
+
+ @param tags 标签
+ */
+- (void)addTags:(NSSet *)tags;
+
+/**
+ 移除标签
+ 内部操作会做差集, 忽略重复标签
+
+ @param tags 标签
+ */
+- (void)removeTags:(NSSet *)tags;
 
 
 #pragma mark - Send Info
