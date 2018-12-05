@@ -78,9 +78,9 @@
     }
     
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:tempFilePath error:nil];
-    NSInteger tempFileLength = [attributes[NSFileSize] integerValue];
+    unsigned long long tempFileLength = [attributes[NSFileSize] unsignedLongLongValue];
     
-    NSString *range = [NSString stringWithFormat:@"bytes=%ld-", tempFileLength];
+    NSString *range = [NSString stringWithFormat:@"bytes=%llu-", tempFileLength];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
     [request setValue:range forHTTPHeaderField:@"Range"];
     
