@@ -54,6 +54,12 @@ NS_SWIFT_NAME(Configure)
 @property (nonatomic, assign) BOOL isAutoCoding;
 
 /**
+ 是否在删除已完成任务时删除原文件, 默认为 No
+ 注意: 该操作属于破坏性操作, 请小心操作, 如有必要, 可以手动使用 `-[FKTask filePath]` 获取文件保存路径后自行删除
+ */
+@property (nonatomic, assign) BOOL isDeleteFinishFile;
+
+/**
  最大并行任务数量. 默认为 3, 最大为 3
  最大并行数量受限于 NSURLSession 的 HTTPMaximumConnectionsPerHost 属性, 系统默认 macOS 为 6, iOS 为 4
  */

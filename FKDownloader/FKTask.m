@@ -975,6 +975,9 @@ NS_ASSUME_NONNULL_END
             break;
     }
     
+    if (self.isFinish) {
+        [self sendFinishInfo];
+    }
     [self sendProgressInfo];
 }
 

@@ -19,6 +19,7 @@
     config.isFileChecksum       = NO;
     config.isAllowCellular      = NO;
     config.isAutoCoding         = YES;
+    config.isDeleteFinishFile   = NO;
     config.timeoutInterval      = 30;
     config.sessionIdentifier    = @"com.fk.downloader";
     config.maximumExecutionTask = 3;

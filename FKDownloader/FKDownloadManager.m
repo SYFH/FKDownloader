@@ -371,6 +371,17 @@ static FKDownloadManager *_instance = nil;
     [self.tasks removeObject:existedTask];
     [self.tasksMap removeObjectForKey:existedTask.identifier];
     
+    if (self.configure.isDeleteFinishFile) {
+        NSString *filePath = existedTask.filePath;
+        if ([self.fileManager fileExistsAtPath:filePath]) {
+            NSError *error;
+            [self.fileManager removeItemAtPath:filePath error:&error];
+            if (error) {
+                FKLog(@"%@", error);
+            }
+        }
+    }
+    
     [self saveTasks];
 }
 
