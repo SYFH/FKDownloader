@@ -130,23 +130,47 @@ NS_ASSUME_NONNULL_END
 
 - (void)settingInfo:(NSDictionary *)info {
     if ([info.allKeys containsObject:FKTaskInfoURL]) {
-        self.url = info[FKTaskInfoURL];
+        id url = info[FKTaskInfoURL];
+        if ([url isKindOfClass:[NSString class]]) {
+            self.url = url;
+        }
     }
     
     if ([info.allKeys containsObject:FKTaskInfoFileName]) {
-        self.fileName = info[FKTaskInfoFileName];
+        id fileName = info[FKTaskInfoFileName];
+        if ([fileName isKindOfClass:[NSString class]]) {
+            self.fileName = fileName;
+        }
     }
     
     if ([info.allKeys containsObject:FKTaskInfoVerificationType]) {
-        self.verificationType = [info[FKTaskInfoVerificationType] unsignedIntegerValue];
+        id verificationType = info[FKTaskInfoVerificationType];
+        if ([verificationType isKindOfClass:[NSNumber class]]) {
+            self.verificationType = [verificationType integerValue];
+        }
     }
     
     if ([info.allKeys containsObject:FKTaskInfoVerification]) {
-        self.verification = info[FKTaskInfoVerification];
+        id verification = info[FKTaskInfoVerification];
+        if ([verification isKindOfClass:[NSString class]]) {
+            self.verification = verification;
+        }
     }
     
     if ([info.allKeys containsObject:FKTaskInfoRequestHeader]) {
-        self.requestHeader = info[FKTaskInfoRequestHeader];
+        id header = info[FKTaskInfoRequestHeader];
+        if ([header isKindOfClass:[NSDictionary class]]) {
+            self.requestHeader = header;
+        }
+    }
+    
+    if ([info.allKeys containsObject:FKTaskInfoTags]) {
+        id tags = info[FKTaskInfoTags];
+        if ([tags isKindOfClass:[NSArray class]]) {
+            [self addTags:[NSSet setWithArray:tags]];
+        } else if ([tags isKindOfClass:[NSSet class]]) {
+            [self addTags:[NSSet setWithSet:tags]];
+        }
     }
 }
 
