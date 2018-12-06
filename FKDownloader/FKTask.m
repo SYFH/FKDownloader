@@ -985,8 +985,7 @@ NS_ASSUME_NONNULL_END
 - (void)setUrl:(NSString *)url {
     _url = url;
     
-    NSURL *u = [NSURL URLWithString:url];
-    self.identifier = [[NSString stringWithFormat:@"%@://%@%@", u.scheme, u.host, u.path] SHA256];
+    self.identifier = [url identifier];
 }
 
 - (void)setDelegate:(id<FKTaskDelegate>)delegate {

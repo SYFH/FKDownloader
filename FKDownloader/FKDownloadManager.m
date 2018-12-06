@@ -9,6 +9,7 @@
 #import "FKDownloadManager.h"
 #import "FKConfigure.h"
 #import "FKTask.h"
+#import "FKMapHub.h"
 #import "FKDownloadExecutor.h"
 #import "FKSystemHelper.h"
 #import "FKTaskStorage.h"
@@ -24,9 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURLSession              *session;
 @property (nonatomic, strong) FKDownloadExecutor        *executor;
 @property (nonatomic, strong) NSProgress                *progress;
-@property (nonatomic, copy  ) NSMutableArray<FKTask *>  *tasks;
-@property (nonatomic, copy  ) NSMutableDictionary       *tasksMap;
-@property (nonatomic, strong) NSLock                    *lock;
+@property (nonatomic, strong) FKMapHub                  *hub;
+//@property (nonatomic, copy  ) NSMutableArray<FKTask *>  *tasks;
+//@property (nonatomic, copy  ) NSMutableDictionary       *tasksMap;
+//@property (nonatomic, strong) NSLock                    *lock;
 
 @property (nonatomic, strong) FKReachability            *reachability;
 
@@ -204,9 +206,8 @@ static FKDownloadManager *_instance = nil;
     FKLog(@"获取 FKTask: %@", url)
     checkURL(url);
     
-    NSURL *u = [NSURL URLWithString:url];
-    NSString *identifier = [[NSString stringWithFormat:@"%@://%@%@", u.scheme, u.host, u.path] SHA256];
-    return self.tasksMap[identifier];
+    NSString *identifier = [url identifier];
+    return [self.hub taskWithIdentifier:identifier];
 }
 
 - (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag {
@@ -230,10 +231,11 @@ static FKDownloadManager *_instance = nil;
     }
     // !!!: 提前进行预处理, 以防止任务延迟: https://forums.developer.apple.com/thread/14854
     // [task reday];
-    [self.lock lock];
-    [self.tasks addObject:task];
-    self.tasksMap[task.identifier] = task;
-    [self.lock unlock];
+//    [self.lock lock];
+//    [self.tasks addObject:task];
+//    self.tasksMap[task.identifier] = task;
+//    [self.lock unlock];
+    [self.hub addTask:task withTag:nil];
     
     return task;
 }
@@ -409,10 +411,11 @@ static FKDownloadManager *_instance = nil;
         }
     }
     
-    [self.lock lock];
-    [self.tasks removeObject:existedTask];
-    [self.tasksMap removeObjectForKey:existedTask.identifier];
-    [self.lock unlock];
+//    [self.lock lock];
+//    [self.tasks removeObject:existedTask];
+//    [self.tasksMap removeObjectForKey:existedTask.identifier];
+//    [self.lock unlock];
+    [self.hub removeTask:existedTask];
     
     [self saveTasks];
 }
@@ -456,10 +459,11 @@ static FKDownloadManager *_instance = nil;
                 task.manager = self;
                 task.isCodingAdd = YES;
                 
-                [self.lock lock];
-                [self.tasks addObject:task];
-                self.tasksMap[task.identifier] = task;
-                [self.lock unlock];
+//                [self.lock lock];
+//                [self.tasks addObject:task];
+//                self.tasksMap[task.identifier] = task;
+//                [self.lock unlock];
+                [self.hub addTask:task withTag:nil];
                 
                 if (self.configure.isAutoStart) {
                     FKLog(@"自动开始任务: %@", task)
@@ -561,6 +565,13 @@ static FKDownloadManager *_instance = nil;
     [self setupPath];
 }
 
+- (FKMapHub *)hub {
+    if (!_hub) {
+        _hub = [[FKMapHub alloc] init];
+    }
+    return _hub;
+}
+
 - (NSProgress *)progress {
     if (!_progress) {
         _progress = [[NSProgress alloc] init];
@@ -576,25 +587,8 @@ static FKDownloadManager *_instance = nil;
     return _executor;
 }
 
-- (NSLock *)lock {
-    if (!_lock) {
-        _lock = [[NSLock alloc] init];
-    }
-    return _lock;
-}
-
 - (NSMutableArray<FKTask *> *)tasks {
-    if (!_tasks) {
-        _tasks = [NSMutableArray array];
-    }
-    return _tasks;
-}
-
-- (NSMutableDictionary *)tasksMap {
-    if (!_tasksMap) {
-        _tasksMap = [NSMutableDictionary dictionary];
-    }
-    return _tasksMap;
+    return self.hub.tasks;
 }
 
 - (NSFileManager *)fileManager {

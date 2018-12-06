@@ -16,5 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)SHA256;
 - (NSString *)SHA512;
 
+- (NSString *)identifier;
+
 @end
 NS_ASSUME_NONNULL_END

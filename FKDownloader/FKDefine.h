@@ -16,6 +16,22 @@
 #define FKLog(FORMAT, ...)
 #endif
 
+// ReactiveCocoa
+#if DEBUG
+#define rac_keywordify autoreleasepool {}
+#else
+#define rac_keywordify try {} @catch (...) {}
+#endif
+
+#define metamacro_concat(A, B) \
+    metamacro_concat_(A, B)
+
+#define metamacro_concat_(A, B) A ## B
+
+#define onExit \
+    rac_keywordify \
+    __strong rac_cleanupBlock_t metamacro_concat(rac_exitBlock_, __LINE__) __attribute__((cleanup(rac_executeCleanupBlock), unused)) = ^
+
 extern void checkURL(NSString *address);
 
 // 任务状态的细化通知, 与枚举 ·TaskStatus· 等同, will 表示开始处理, did 表示处理完成
@@ -115,3 +131,11 @@ typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
 typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
 typedef void(^FKTotalProgress) (NSProgress *progress);  // 总进度变动 Block
 NS_ASSUME_NONNULL_END
+
+
+// ReactiveCocoa
+typedef void (^rac_cleanupBlock_t)(void);
+
+static inline void rac_executeCleanupBlock (__strong rac_cleanupBlock_t *block) {
+    (*block)();
+}
