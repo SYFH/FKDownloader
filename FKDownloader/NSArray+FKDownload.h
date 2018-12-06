@@ -14,5 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray *)map:(id (^)(ObjectType obj, NSUInteger idx))block;
 - (void)forEach:(void (^)(ObjectType obj, NSUInteger idx))block;
 
+/**
+ 计算一组 FKTask 的进度
+ 注意: 频繁段时间间隔调用可能提高 CPU 占用
+
+ @return 总进度
+ */
+- (NSProgress *)groupProgress;
+
 @end
 NS_ASSUME_NONNULL_END

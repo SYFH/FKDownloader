@@ -7,6 +7,7 @@
 //
 
 #import "NSArray+FKDownload.h"
+#import "FKTask.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation NSArray (FKDownload)
@@ -23,6 +24,22 @@ NS_ASSUME_NONNULL_BEGIN
     [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         block(obj, idx);
     }];
+}
+
+- (NSProgress *)groupProgress {
+    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        return [evaluatedObject isKindOfClass:[FKTask class]];
+    }];
+    if ([self filteredArrayUsingPredicate:predicate].count > 0) {
+        NSProgress *progress = [[NSProgress alloc] init];
+        [self forEach:^(FKTask *task, NSUInteger idx) {
+            progress.totalUnitCount += task.progress.totalUnitCount;
+            progress.completedUnitCount += task.progress.completedUnitCount;
+        }];
+        return progress;
+    } else {
+        return [[NSProgress alloc] init];
+    }
 }
 
 @end
