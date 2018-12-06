@@ -1100,10 +1100,10 @@ NS_ASSUME_NONNULL_END
 
 - (NSProgress *)progress {
     if (!_progress) {
-        self.manager.progress.totalUnitCount += 100;
-        [self.manager.progress becomeCurrentWithPendingUnitCount:100];
+        [FKDownloadManager manager].progress.totalUnitCount += 100;
+        [[FKDownloadManager manager].progress becomeCurrentWithPendingUnitCount:100];
         _progress = [NSProgress progressWithTotalUnitCount:0];
-        [self.manager.progress resignCurrent];
+        [[FKDownloadManager manager].progress resignCurrent];
     }
     return _progress;
 }

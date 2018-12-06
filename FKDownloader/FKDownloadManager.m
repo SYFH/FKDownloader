@@ -71,8 +71,8 @@ static FKDownloadManager *_instance = nil;
         [self setupReachability];
         [self setupSession];
         [self setupPath];
-        [self setupProperty];
         [self setupNotification];
+        [self setupProgress];
     }
     return self;
 }
@@ -136,10 +136,6 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
-- (void)setupProperty {
-    self.progress = [[NSProgress alloc] init];
-}
-
 - (void)setupNotification {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(saveTasks)
@@ -183,6 +179,23 @@ static FKDownloadManager *_instance = nil;
                                              selector:@selector(reachabilityChanged:)
                                                  name:FKReachabilityChangedNotification
                                                object:nil];
+}
+
+- (void)setupProgress {
+    [self.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+
+#pragma mark - KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"fractionCompleted"] && [object isEqual:self.progress]) {
+        if (self.progressBlock) {
+            __weak typeof(self) weak = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weak.progressBlock(weak.progress);
+            });
+        }
+    }
 }
 
 
@@ -546,6 +559,13 @@ static FKDownloadManager *_instance = nil;
     _configure = configure;
     [self setupSession];
     [self setupPath];
+}
+
+- (NSProgress *)progress {
+    if (!_progress) {
+        _progress = [[NSProgress alloc] init];
+    }
+    return _progress;
 }
 
 - (FKDownloadExecutor *)executor {

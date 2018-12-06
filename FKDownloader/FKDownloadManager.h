@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FKDefine.h"
 @class FKConfigure;
 @class FKTask;
 @class FKReachability;
@@ -41,6 +42,11 @@ NS_SWIFT_NAME(Downloader)
  总任务进度
  */
 @property (nonatomic, strong, readonly) NSProgress  *progress;
+
+/**
+ 总任务进度 Block, 总执行在主线程
+ */
+@property (nonatomic, copy  ) FKTotalProgress progressBlock;
 
 /**
  网络状态检测
