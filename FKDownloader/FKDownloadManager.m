@@ -26,12 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) FKDownloadExecutor        *executor;
 @property (nonatomic, strong) NSProgress                *progress;
 @property (nonatomic, strong) FKMapHub                  *hub;
-//@property (nonatomic, copy  ) NSMutableArray<FKTask *>  *tasks;
-//@property (nonatomic, copy  ) NSMutableDictionary       *tasksMap;
-//@property (nonatomic, strong) NSLock                    *lock;
-
 @property (nonatomic, strong) FKReachability            *reachability;
-
 @property (nonatomic, assign) BOOL                      isDidEnterBackground;
 
 @end
@@ -231,10 +226,6 @@ static FKDownloadManager *_instance = nil;
     }
     // !!!: 提前进行预处理, 以防止任务延迟: https://forums.developer.apple.com/thread/14854
     // [task reday];
-//    [self.lock lock];
-//    [self.tasks addObject:task];
-//    self.tasksMap[task.identifier] = task;
-//    [self.lock unlock];
     [self.hub addTask:task withTag:nil];
     
     return task;
@@ -411,10 +402,6 @@ static FKDownloadManager *_instance = nil;
         }
     }
     
-//    [self.lock lock];
-//    [self.tasks removeObject:existedTask];
-//    [self.tasksMap removeObjectForKey:existedTask.identifier];
-//    [self.lock unlock];
     [self.hub removeTask:existedTask];
     
     [self saveTasks];
@@ -459,10 +446,6 @@ static FKDownloadManager *_instance = nil;
                 task.manager = self;
                 task.isCodingAdd = YES;
                 
-//                [self.lock lock];
-//                [self.tasks addObject:task];
-//                self.tasksMap[task.identifier] = task;
-//                [self.lock unlock];
                 [self.hub addTask:task withTag:nil];
                 
                 if (self.configure.isAutoStart) {
