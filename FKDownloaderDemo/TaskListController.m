@@ -44,11 +44,12 @@
                                                    FKTaskInfoVerificationType: @(VerifyTypeMD5),
                                                    FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
                                                    FKTaskInfoRequestHeader: @{},
-                                                   FKTaskInfoTags: @[],
+                                                   FKTaskInfoTags: @[@"group_task_01"],
                                                    FKTaskInfoResumeSavePath: [FKDownloadManager manager].configure.savePath,
                                                    FKTaskInfoSavePath: [FKDownloadManager manager].configure.resumeSavePath }];
         } else {
-            [[FKDownloadManager manager] add:url];
+            FKTask *task = [[FKDownloadManager manager] add:url];
+            [task addTags:[NSSet setWithObjects:@"group_task_02", nil]];
         }
     }];
     
@@ -58,6 +59,8 @@
     [FKDownloadManager manager].progressBlock = ^(NSProgress * _Nonnull progress) {
         __strong typeof(weak) strong = weak;
         strong.totalProgressView.progress = progress.fractionCompleted;
+        FKLog(@"group_task_01 progress: %.4f", [[FKDownloadManager manager] acquireWithTag:@"group_task_01"].groupProgress.fractionCompleted);
+        FKLog(@"group_task_02 progress: %.4f", [[FKDownloadManager manager] acquireWithTag:@"group_task_02"].groupProgress.fractionCompleted);
     };
     
     self.listView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
