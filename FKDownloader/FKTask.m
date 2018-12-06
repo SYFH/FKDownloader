@@ -11,6 +11,7 @@
 #import "FKConfigure.h"
 #import "FKHashHelper.h"
 #import "FKResumeHelper.h"
+#import "FKMapHub.h"
 #import "NSString+FKDownload.h"
 #import "NSMutableSet+FKDownload.h"
 #import "FKReachability.h"
@@ -483,6 +484,9 @@ NS_ASSUME_NONNULL_END
         [self.tags unionSet:tags];
     }
     [self.lock unlock];
+    for (NSString *tag in tags) {
+        [self.manager.hub addTag:tag to:self];
+    }
 }
 
 - (void)removeTags:(NSSet *)tags {
@@ -493,6 +497,9 @@ NS_ASSUME_NONNULL_END
         [self.tags subtractSet:tags];
     }
     [self.lock unlock];
+    for (NSString *tag in tags) {
+        [self.manager.hub removeTag:tag from:self];
+    }
 }
 
 

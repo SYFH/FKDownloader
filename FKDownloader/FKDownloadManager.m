@@ -206,10 +206,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag {
-    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(FKTask *task, NSDictionary *bindings) {
-        return [task.tags containsObject:tag];
-    }];
-    return [self.tasks filteredArrayUsingPredicate:predicate];
+    return [self.hub taskForTag:tag];
 }
 
 - (FKTask *)createPreserveTask:(NSString *)url {

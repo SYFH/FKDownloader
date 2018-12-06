@@ -100,12 +100,12 @@ NS_SWIFT_NAME(Task)
 /**
  下载任务的恢复数据
  */
-@property (nonatomic, strong, readonly) NSData      *resumeData;
+@property (nonatomic, strong, readonly) NSData  *resumeData;
 
 /**
  发生下载失败等问题时保存的 error
  */
-@property (nonatomic, strong, nullable) NSError               *error;
+@property (nonatomic, strong, nullable) NSError *error;
 
 /**
  进行下载任务的 task
@@ -135,7 +135,7 @@ NS_SWIFT_NAME(Task)
 /**
  是否通过校验
  */
-@property (nonatomic, assign, readonly) BOOL        isPassChecksum;
+@property (nonatomic, assign, readonly) BOOL    isPassChecksum;
 
 /**
  是否为归档加载任务, 和手动添加作区分

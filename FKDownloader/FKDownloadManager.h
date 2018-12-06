@@ -10,6 +10,7 @@
 #import "FKDefine.h"
 @class FKConfigure;
 @class FKTask;
+@class FKMapHub;
 @class FKReachability;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,6 +38,11 @@ NS_SWIFT_NAME(Downloader)
  所有任务集合, 可通过 -[NSArray forEach:] 遍历任务, 执行自定义处理
  */
 @property (nonatomic, copy  , readonly) NSMutableArray<FKTask *>    *tasks;
+
+/**
+ 保存 Task/Tag 相关的集合, 可以更快的更方便的添加与查找 Task/Tag 信息
+ */
+@property (nonatomic, strong, readonly) FKMapHub  *hub;
 
 /**
  总任务进度

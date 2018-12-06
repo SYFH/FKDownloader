@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Operation
 - (nullable FKTask *)taskWithIdentifier:(NSString *)identifier;
-- (NSArray<FKTask *> *)tagsForTag:(NSString *)tag;
+- (NSArray<FKTask *> *)taskForTag:(NSString *)tag;
 - (BOOL)containsTask:(FKTask *)task;
 - (NSInteger)countOfTasks;
 - (void)clear;

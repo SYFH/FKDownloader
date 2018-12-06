@@ -80,7 +80,7 @@
     return self.taskMap[identifier];
 }
 
-- (NSArray<FKTask *> *)tagsForTag:(NSString *)tag {
+- (NSArray<FKTask *> *)taskForTag:(NSString *)tag {
     [self.lock lock];
     @onExit {
         [self.lock unlock];
