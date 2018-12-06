@@ -12,6 +12,7 @@
 
 @interface TaskListController ()<UITableViewDataSource, UITableViewDelegate>
 
+@property (nonatomic, strong) UIProgressView *totalProgressView;
 @property (nonatomic, strong) NSArray<NSString *> *urls;
 @property (nonatomic, strong) UITableView *listView;
 
@@ -26,15 +27,38 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self.urls forEach:^(NSString *url, NSUInteger idx) {
         if (idx == 0) {
+            /* 不使用 `-[FKDownloadManager addInfo:]` 的另一种写法
+            FKTask *task = [[FKDownloadManager manager] add:url];
+            
+            task.fileName = @"123";
+            task.verificationType = VerifyTypeMD5;
+            task.verification = @"5f75fe52c15566a12b012db21808ad8c";
+            task.requestHeader = @{};
+            task.savePath = [FKDownloadManager manager].configure.savePath;
+            task.resumeSavePath = [FKDownloadManager manager].configure.resumeSavePath;
+            [task addTags:[NSSet set]];
+             */
+            
             [[FKDownloadManager manager] addInfo:@{FKTaskInfoURL: url,
                                                    FKTaskInfoFileName: @"123",
                                                    FKTaskInfoVerificationType: @(VerifyTypeMD5),
                                                    FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
-                                                   FKTaskInfoRequestHeader: @{} }];
+                                                   FKTaskInfoRequestHeader: @{},
+                                                   FKTaskInfoTags: @[],
+                                                   FKTaskInfoResumeSavePath: [FKDownloadManager manager].configure.savePath,
+                                                   FKTaskInfoSavePath: [FKDownloadManager manager].configure.resumeSavePath }];
         } else {
             [[FKDownloadManager manager] add:url];
         }
     }];
+    
+    self.totalProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+    [self.view addSubview:self.totalProgressView];
+    __weak typeof(self) weak = self;
+    [FKDownloadManager manager].progressBlock = ^(NSProgress * _Nonnull progress) {
+        __strong typeof(weak) strong = weak;
+        strong.totalProgressView.progress = progress.fractionCompleted;
+    };
     
     self.listView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     [self.listView registerClass:[TaskViewCell class] forCellReuseIdentifier:NSStringFromClass([TaskViewCell class])];
@@ -52,7 +76,9 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    self.listView.frame = self.view.bounds;
+    CGSize size = self.view.frame.size;
+    self.totalProgressView.frame = CGRectMake(0, 64, size.width, 4);
+    self.listView.frame = CGRectMake(0, 68, size.width, size.height - 68);
 }
 
 - (void)dealloc {
