@@ -66,11 +66,6 @@ NS_SWIFT_NAME(Configure)
 @property (nonatomic, assign) NSInteger maximumExecutionTask;
 
 /**
- FKDownloadManager 的根目录. 默认为 Library/Caches/com.fk.downloader/
- */
-@property (nonatomic, strong) NSString  *rootPath;
-
-/**
  文件保存路径. 默认为 Library/Caches/com.fk.downloader/file/
  */
 @property (nonatomic, strong) NSString  *savePath;
@@ -78,12 +73,12 @@ NS_SWIFT_NAME(Configure)
 /**
  任务恢复数据保存路径. 默认为 Library/Caches/com.fk.downloader/resume/
  */
-@property (nonatomic, strong) NSString  *resumePath;
+@property (nonatomic, strong) NSString  *resumeSavePath;
 
 /**
  持久化任务文档路径. 默认为 Library/Caches/com.fk.downloader/downloader.restore
  */
-@property (nonatomic, strong) NSString  *restorePath;
+@property (nonatomic, strong) NSString  *restoreFilePath;
 
 /**
  后台下载句柄

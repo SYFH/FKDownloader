@@ -72,6 +72,16 @@ NS_SWIFT_NAME(Task)
 @property (nonatomic, strong, nullable) NSDictionary    *requestHeader;
 
 /**
+ 恢复数据保存路径, 如果有值, 将会忽略配置实例的 resumePath, 请勿包含文件名
+ */
+@property (nonatomic, strong, nullable) NSString *resumeSavePath;
+
+/**
+ 文件保存路径, 如果有值, 将会忽略配置实例的 savePath, 请勿包含文件名
+ */
+@property (nonatomic, strong, nullable) NSString *savePath;
+
+/**
  父管理器
  */
 @property (nonatomic, weak  ) FKDownloadManager     *manager;

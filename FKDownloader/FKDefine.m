@@ -43,8 +43,15 @@ FKTaskInfoName const FKTaskInfoVerificationType = @"FKTaskInfoVerificationType";
 FKTaskInfoName const FKTaskInfoVerification     = @"FKTaskInfoVerification";
 FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 FKTaskInfoName const FKTaskInfoTags             = @"FKTaskInfoTags";
+FKTaskInfoName const FKTaskInfoResumeSavePath   = @"FKTaskInfoResumeSavePath";
+FKTaskInfoName const FKTaskInfoSavePath         = @"FKTaskInfoSavePath";
 
 FKReachabilityNotificationName const FKReachabilityChangedNotification = @"FKReachabilityChangedNotification";
+
+NSErrorDomain const FKErrorDomain                   = @"FKErrorDomain";
+FKErrorInfoName const FKErrorInfoTaskKey            = @"FKErrorInfoTaskKey";
+FKErrorInfoName const FKErrorInfoDescriptKey        = @"FKErrorInfoDescriptKey";
+FKErrorInfoName const FKErrorInfoUnderlyingErrorKey = @"FKErrorInfoUnderlyingErrorKey";
 
 FKResumeDataKey const FKResumeDataDownloaderURL         = @"NSURLSessionDownloadURL";
 FKResumeDataKey const FKResumeDataByteRange             = @"NSURLSessionResumeByteRange";

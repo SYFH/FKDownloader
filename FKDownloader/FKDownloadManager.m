@@ -114,14 +114,24 @@ static FKDownloadManager *_instance = nil;
         }
     }
     
-    if (self.configure.resumePath.length) {
+    if (self.configure.resumeSavePath.length) {
         isDirectory = NO;
-        isFileExist = [self.fileManager fileExistsAtPath:self.configure.resumePath isDirectory:&isDirectory];
+        isFileExist = [self.fileManager fileExistsAtPath:self.configure.resumeSavePath isDirectory:&isDirectory];
         if (!(isFileExist && isDirectory)) {
-            [self.fileManager createDirectoryAtPath:self.configure.resumePath
+            [self.fileManager createDirectoryAtPath:self.configure.resumeSavePath
                    withIntermediateDirectories:YES
                                     attributes:nil
                                          error:nil];
+        }
+    }
+    
+    if (self.configure.restoreFilePath.length) {
+        isFileExist = [self.fileManager fileExistsAtPath:self.configure.restoreFilePath];
+        if (!isFileExist) {
+            [self.fileManager createDirectoryAtPath:self.configure.restoreFilePath
+                        withIntermediateDirectories:YES
+                                         attributes:nil
+                                              error:nil];
         }
     }
 }
@@ -368,8 +378,6 @@ static FKDownloadManager *_instance = nil;
     
     if (existedTask.status == TaskStatusExecuting) { [existedTask cancel]; }
     [existedTask clear];
-    [self.tasks removeObject:existedTask];
-    [self.tasksMap removeObjectForKey:existedTask.identifier];
     
     if (self.configure.isDeleteFinishFile) {
         NSString *filePath = existedTask.filePath;
@@ -377,10 +385,21 @@ static FKDownloadManager *_instance = nil;
             NSError *error;
             [self.fileManager removeItemAtPath:filePath error:&error];
             if (error) {
-                FKLog(@"%@", error);
+                // !!!: 删除文件失败, 需要时手动删除
+                NSError *taskError = [NSError errorWithDomain:FKErrorDomain
+                                                     code:TaskErrorDeleteFileFaild
+                                                 userInfo:@{FKErrorInfoTaskKey: existedTask,
+                                                            FKErrorInfoDescriptKey: @"删除文件失败",
+                                                            FKErrorInfoUnderlyingErrorKey: error }];
+                [existedTask sendErrorInfo:taskError];
             }
         }
     }
+    
+    [self.lock lock];
+    [self.tasks removeObject:existedTask];
+    [self.tasksMap removeObjectForKey:existedTask.identifier];
+    [self.lock unlock];
     
     [self saveTasks];
 }
@@ -411,14 +430,14 @@ static FKDownloadManager *_instance = nil;
 - (void)saveTasks {
     if (self.configure.isAutoCoding) {
         FKLog(@"归档所有任务")
-        [FKTaskStorage saveObject:self.tasks toPath:self.configure.restorePath];
+        [FKTaskStorage saveObject:self.tasks toPath:self.configure.restoreFilePath];
     }
 }
 
 - (void)loadTasks {
-    if ([self.fileManager fileExistsAtPath:self.configure.restorePath] && self.configure.isAutoCoding) {
+    if ([self.fileManager fileExistsAtPath:self.configure.restoreFilePath] && self.configure.isAutoCoding) {
         FKLog(@"解档所有任务")
-        NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restorePath];
+        NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restoreFilePath];
         [tasks forEach:^(FKTask *task, NSUInteger idx) {
             if (![self acquire:task.url]) {
                 task.manager = self;
@@ -526,6 +545,7 @@ static FKDownloadManager *_instance = nil;
 - (void)setConfigure:(FKConfigure *)configure {
     _configure = configure;
     [self setupSession];
+    [self setupPath];
 }
 
 - (FKDownloadExecutor *)executor {

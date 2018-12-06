@@ -172,6 +172,34 @@ NS_ASSUME_NONNULL_END
             [self addTags:[NSSet setWithSet:tags]];
         }
     }
+    
+    if ([info.allKeys containsObject:FKTaskInfoResumeSavePath]) {
+        id resumeSavePath = info[FKTaskInfoResumeSavePath];
+        if ([resumeSavePath isKindOfClass:[NSString class]]) {
+            if ([self.manager.fileManager fileExistsAtPath:resumeSavePath] == NO) {
+                [self.manager.fileManager createDirectoryAtPath:resumeSavePath
+                                    withIntermediateDirectories:YES
+                                                     attributes:nil
+                                                          error:nil];
+            }
+            
+            self.resumeSavePath = resumeSavePath;
+        }
+    }
+    
+    if ([info.allKeys containsObject:FKTaskInfoSavePath]) {
+        id savePath = info[FKTaskInfoSavePath];
+        if ([savePath isKindOfClass:[NSString class]]) {
+            if ([self.manager.fileManager fileExistsAtPath:savePath] == NO) {
+                [self.manager.fileManager createDirectoryAtPath:savePath
+                                    withIntermediateDirectories:YES
+                                                     attributes:nil
+                                                          error:nil];
+            }
+            
+            self.savePath = savePath;
+        }
+    }
 }
 
 - (void)reday {
@@ -813,17 +841,32 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Basic
 - (NSString *)filePath {
     if (self.fileName.length) {
-        NSString *fileName = [NSString stringWithFormat:@"%@.%@", self.fileName, [NSURL URLWithString:self.url].pathExtension];
-        return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
+        if (self.savePath.length) {
+            NSString *fileName = [NSString stringWithFormat:@"%@.%@", self.fileName, [NSURL URLWithString:self.url].pathExtension];
+            return [self.savePath stringByAppendingPathComponent:fileName];
+        } else {
+            NSString *fileName = [NSString stringWithFormat:@"%@.%@", self.fileName, [NSURL URLWithString:self.url].pathExtension];
+            return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
+        }
     } else {
-        NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
-        return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
+        if (self.savePath) {
+            NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
+            return [self.savePath stringByAppendingPathComponent:fileName];
+        } else {
+            NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
+            return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
+        }
     }
 }
 
 - (NSString *)resumeFilePath {
-    NSString *fileName = [NSString stringWithFormat:@"%@.resume", self.identifier];
-    return [self.manager.configure.resumePath stringByAppendingPathComponent:fileName];
+    if (self.resumeSavePath) {
+        NSString *fileName = [NSString stringWithFormat:@"%@.resume", self.identifier];
+        return [self.resumeSavePath stringByAppendingPathComponent:fileName];
+    } else {
+        NSString *fileName = [NSString stringWithFormat:@"%@.resume", self.identifier];
+        return [self.manager.configure.resumeSavePath stringByAppendingPathComponent:fileName];
+    }
 }
 
 - (BOOL)isHasResumeData {

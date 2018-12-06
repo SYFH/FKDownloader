@@ -43,9 +43,17 @@ extern FKTaskInfoName const FKTaskInfoVerificationType;
 extern FKTaskInfoName const FKTaskInfoVerification;
 extern FKTaskInfoName const FKTaskInfoRequestHeader;
 extern FKTaskInfoName const FKTaskInfoTags;
+extern FKTaskInfoName const FKTaskInfoResumeSavePath;
+extern FKTaskInfoName const FKTaskInfoSavePath;
 
 typedef NSString * FKReachabilityNotificationName;
 extern FKReachabilityNotificationName const FKReachabilityChangedNotification;
+
+typedef NSString * FKErrorInfoName;
+extern NSErrorDomain const FKErrorDomain;
+extern FKErrorInfoName const FKErrorInfoTaskKey;
+extern FKErrorInfoName const FKErrorInfoDescriptKey;
+extern FKErrorInfoName const FKErrorInfoUnderlyingErrorKey;
 
 typedef NSString * FKResumeDataKey;
 extern FKResumeDataKey const FKResumeDataDownloaderURL;
@@ -60,7 +68,7 @@ extern FKResumeDataKey const FKResumeDataServerDownloadDate;
 
 // TODO: 可添加连接服务器中的状态, 以填补网络环境太差的空缺
 typedef NS_ENUM(NSInteger, TaskStatus) {
-    TaskStatusNone,         // 无状态, 仅表示已加入队列
+    TaskStatusNone = 0,     // 无状态, 仅表示已加入队列
     TaskStatusPrepare,      // 预处理
     TaskStatusIdle,         // 等待中
     TaskStatusExecuting,    // 执行中
@@ -74,14 +82,14 @@ typedef NS_ENUM(NSInteger, TaskStatus) {
 };
 
 typedef NS_ENUM(NSInteger, VerifyType) {
-    VerifyTypeMD5,
+    VerifyTypeMD5 = 0,
     VerifyTypeSHA1,
     VerifyTypeSHA256,
     VerifyTypeSHA512
 };
 
 typedef NS_OPTIONS(NSInteger, DeviceModel) {
-    DeviceModelAirPods,
+    DeviceModelAirPods = 0,
     DeviceModelAppleTV,
     DeviceModelAppleWatch,
     DeviceModelHomePod,
@@ -95,6 +103,10 @@ typedef NS_ENUM(NSInteger, NetworkStatus) {
     NotReachable = 0,
     ReachableViaWiFi,
     ReachableViaWWAN
+};
+
+typedef NS_ENUM(NSInteger, TaskError) {
+    TaskErrorDeleteFileFaild = 0
 };
 
 NS_ASSUME_NONNULL_BEGIN
