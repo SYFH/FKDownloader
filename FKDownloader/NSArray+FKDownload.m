@@ -27,19 +27,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSProgress *)groupProgress {
-    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-        return [evaluatedObject isKindOfClass:[FKTask class]];
-    }];
-    if ([self filteredArrayUsingPredicate:predicate].count > 0) {
-        NSProgress *progress = [[NSProgress alloc] init];
-        [self forEach:^(FKTask *task, NSUInteger idx) {
+    NSProgress *progress = [[NSProgress alloc] init];
+    [self forEach:^(FKTask *task, NSUInteger idx) {
+        if ([task isKindOfClass:[FKTask class]]) {
+            // TODO: 兼容没有获取文件总大小的任务, 可使用固定大小进行百分比计算
             progress.totalUnitCount += task.progress.totalUnitCount;
             progress.completedUnitCount += task.progress.completedUnitCount;
-        }];
-        return progress;
-    } else {
-        return [[NSProgress alloc] init];
-    }
+        }
+    }];
+    return progress;
 }
 
 @end

@@ -382,7 +382,7 @@ static FKDownloadManager *_instance = nil;
     if (existedTask.status == TaskStatusExecuting) { [existedTask cancel]; }
     [existedTask clear];
     
-    if (self.configure.isDeleteFinishFile) {
+    if (self.configure.isDeleteFinishFile && existedTask.status == TaskStatusFinish) {
         NSString *filePath = existedTask.filePath;
         if ([self.fileManager fileExistsAtPath:filePath]) {
             NSError *error;
