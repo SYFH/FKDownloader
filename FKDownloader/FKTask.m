@@ -76,6 +76,7 @@ NS_ASSUME_NONNULL_END
     [aCoder encodeInteger:self.verificationType forKey:@"verificationType"];
     [aCoder encodeObject:self.requestHeader     forKey:@"requestHeader"];
     [aCoder encodeInteger:self.status           forKey:@"status"];
+    [aCoder encodeObject:self.tags              forKey:@"tags"];
     [aCoder encodeInt64:self.progress.totalUnitCount        forKey:@"totalUnitCount"];
     [aCoder encodeInt64:self.progress.completedUnitCount    forKey:@"completedUnitCount"];
 }
@@ -91,6 +92,7 @@ NS_ASSUME_NONNULL_END
         self.status             = [aDecoder decodeIntegerForKey:@"status"];
         self.progress.totalUnitCount        = [aDecoder decodeInt64ForKey:@"totalUnitCount"];
         self.progress.completedUnitCount    = [aDecoder decodeInt64ForKey:@"completedUnitCount"];
+        [self addTags:[aDecoder decodeObjectForKey:@"tags"]];
         
         [self setupTimer];
     }
