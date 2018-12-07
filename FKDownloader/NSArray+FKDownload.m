@@ -30,9 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSProgress *progress = [[NSProgress alloc] init];
     [self forEach:^(FKTask *task, NSUInteger idx) {
         if ([task isKindOfClass:[FKTask class]]) {
-            // TODO: 兼容没有获取文件总大小的任务, 可使用固定大小进行百分比计算
-            progress.totalUnitCount += task.progress.totalUnitCount;
-            progress.completedUnitCount += task.progress.completedUnitCount;
+            progress.totalUnitCount += 100;
+            progress.completedUnitCount += (int64_t)(task.progress.fractionCompleted * 100);
         }
     }];
     return progress;

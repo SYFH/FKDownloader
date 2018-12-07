@@ -848,19 +848,17 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Basic
 - (NSString *)filePath {
     if (self.fileName.length) {
+        NSString *fileName = [NSString stringWithFormat:@"%@.%@", self.fileName, [NSURL URLWithString:self.url].pathExtension];
         if (self.savePath.length) {
-            NSString *fileName = [NSString stringWithFormat:@"%@.%@", self.fileName, [NSURL URLWithString:self.url].pathExtension];
             return [self.savePath stringByAppendingPathComponent:fileName];
         } else {
-            NSString *fileName = [NSString stringWithFormat:@"%@.%@", self.fileName, [NSURL URLWithString:self.url].pathExtension];
             return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
         }
     } else {
+        NSString *fileName = [NSString stringWithFormat:@"%@.%@", self.identifier, [NSURL URLWithString:self.url].pathExtension];
         if (self.savePath) {
-            NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
             return [self.savePath stringByAppendingPathComponent:fileName];
         } else {
-            NSString *fileName = [NSString stringWithFormat:@"%@", [NSURL URLWithString:self.url].lastPathComponent];
             return [self.manager.configure.savePath stringByAppendingPathComponent:fileName];
         }
     }

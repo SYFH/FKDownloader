@@ -125,10 +125,9 @@ static FKDownloadManager *_instance = nil;
     if (self.configure.restoreFilePath.length) {
         isFileExist = [self.fileManager fileExistsAtPath:self.configure.restoreFilePath];
         if (!isFileExist) {
-            [self.fileManager createDirectoryAtPath:self.configure.restoreFilePath
-                        withIntermediateDirectories:YES
-                                         attributes:nil
-                                              error:nil];
+            [self.fileManager createFileAtPath:self.configure.restoreFilePath
+                                      contents:nil
+                                    attributes:nil];
         }
     }
 }
