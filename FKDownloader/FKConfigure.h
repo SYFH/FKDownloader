@@ -68,17 +68,17 @@ NS_SWIFT_NAME(Configure)
 /**
  文件保存路径. 默认为 Library/Caches/com.fk.downloader/file/
  */
-@property (nonatomic, strong) NSString  *savePath;
+@property (nonatomic, strong) NSString *savePath;
 
 /**
  任务恢复数据保存路径. 默认为 Library/Caches/com.fk.downloader/resume/
  */
-@property (nonatomic, strong) NSString  *resumeSavePath;
+@property (nonatomic, strong) NSString *resumeSavePath;
 
 /**
  持久化任务文档路径. 默认为 Library/Caches/com.fk.downloader/downloader.restore
  */
-@property (nonatomic, strong) NSString  *restoreFilePath;
+@property (nonatomic, strong) NSString *restoreFilePath;
 
 /**
  后台下载句柄
@@ -93,7 +93,7 @@ NS_SWIFT_NAME(Configure)
 /**
  Session 标识. 默认为 com.fk.downloader
  */
-@property (nonatomic, strong) NSString  *sessionIdentifier;
+@property (nonatomic, strong) NSString *sessionIdentifier;
 
 /**
  任务速度/预计完成时间更新间隔, 默认为 1s, 其值必须大于 0

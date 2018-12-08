@@ -29,7 +29,7 @@
     
     FKTask *downloadTask = [[FKDownloadManager manager] acquire:task.currentRequest.URL.absoluteString];
     if (downloadTask == nil) {
-        return;
+        downloadTask = [[FKDownloadManager manager] add:task.currentRequest.URL.absoluteString];
     }
     
     if ([task.response isKindOfClass:[NSHTTPURLResponse class]]) {

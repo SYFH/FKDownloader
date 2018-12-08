@@ -22,32 +22,32 @@ NS_SWIFT_NAME(Downloader)
 /**
  配置实例. 每次被赋值时都会设置 Session
  */
-@property (nonatomic, strong) FKConfigure               *configure;
+@property (nonatomic, strong) FKConfigure *configure;
 
 /**
  NSURLSession 实例
  */
-@property (nonatomic, strong, readonly) NSURLSession    *session;
+@property (nonatomic, strong, readonly) NSURLSession *session;
 
 /**
  文件管理
  */
-@property (nonatomic, strong, readonly) NSFileManager   *fileManager;
+@property (nonatomic, strong, readonly) NSFileManager *fileManager;
 
 /**
  所有任务集合, 可通过 -[NSArray forEach:] 遍历任务, 执行自定义处理
  */
-@property (nonatomic, copy  , readonly) NSMutableArray<FKTask *>    *tasks;
+@property (nonatomic, copy  , readonly) NSMutableArray<FKTask *> *tasks;
 
 /**
  保存 Task/Tag 相关的集合, 可以更快的更方便的添加与查找 Task/Tag 信息
  */
-@property (nonatomic, strong, readonly) FKMapHub  *hub;
+@property (nonatomic, strong, readonly) FKMapHub *hub;
 
 /**
  总任务进度
  */
-@property (nonatomic, strong, readonly) NSProgress  *progress;
+@property (nonatomic, strong, readonly) NSProgress *progress;
 
 /**
  总任务进度 Block, 总执行在主线程
@@ -57,7 +57,7 @@ NS_SWIFT_NAME(Downloader)
 /**
  网络状态检测
  */
-@property (nonatomic, strong, readonly) FKReachability  *reachability;
+@property (nonatomic, strong, readonly) FKReachability *reachability;
 
 /**
  初始化下载管理器

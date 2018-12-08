@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURLSession              *session;
 @property (nonatomic, strong) FKDownloadExecutor        *executor;
 @property (nonatomic, strong) NSProgress                *progress;
+@property (nonatomic, strong) NSTimer                   *timer;
 @property (nonatomic, strong) FKMapHub                  *hub;
 @property (nonatomic, strong) FKReachability            *reachability;
 @property (nonatomic, assign) BOOL                      isDidEnterBackground;
@@ -178,13 +179,13 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)setupProgress {
-    [self.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
+    [self.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionInitial context:nil];
 }
 
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"fractionCompleted"] && [object isEqual:self.progress]) {
+    if ([keyPath isEqualToString:@"fractionCompleted"]) {
         if (self.progressBlock) {
             __weak typeof(self) weak = self;
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -200,8 +201,7 @@ static FKDownloadManager *_instance = nil;
     FKLog(@"获取 FKTask: %@", url)
     checkURL(url);
     
-    NSString *identifier = [url identifier];
-    return [self.hub taskWithIdentifier:identifier];
+    return [self.hub taskWithIdentifier:url.identifier];
 }
 
 - (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag {

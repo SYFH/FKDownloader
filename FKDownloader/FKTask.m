@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKTask ()
 
-@property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
+@property (nonatomic, strong, nullable) NSURLSessionDownloadTask *downloadTask;
 @property (nonatomic, strong) NSString          *identifier;
 @property (nonatomic, strong) NSProgress        *progress;
 @property (nonatomic, strong, nullable) NSData  *resumeData;
@@ -289,6 +289,9 @@ NS_ASSUME_NONNULL_END
         [self resume];
     } else {
         FKLog(@"没有恢复数据: %@", self)
+        if (self.downloadTask == nil) {
+            [self reday];
+        }
         [self.downloadTask resume];
         [self sendExecutingInfo];
     }
@@ -347,17 +350,17 @@ NS_ASSUME_NONNULL_END
 
 - (void)resume {
     switch (self.status) {
-        case TaskStatusNone:        return;
+        case TaskStatusNone:        break;
         case TaskStatusPrepare:     return;
-        case TaskStatusIdle:        return;
+        case TaskStatusIdle:        break;
         case TaskStatusExecuting:   return;
         case TaskStatusFinish:      return;
         case TaskStatusSuspend:     break;
         case TaskStatusResuming:    return;
         case TaskStatusChecksumming:return;
         case TaskStatusChecksummed: return;
-        case TaskStatusCancelld:    return;
-        case TaskStatusUnknowError: return;
+        case TaskStatusCancelld:    break;
+        case TaskStatusUnknowError: break;
     }
     
     [self setupTimer];
@@ -429,6 +432,7 @@ NS_ASSUME_NONNULL_END
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     [self clearResumeData];
+    self.downloadTask = nil;
 }
 
 - (BOOL)checksum {
@@ -712,8 +716,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendFinishInfo {
-    self.progress.totalUnitCount = 1;
-    self.progress.completedUnitCount = 1;
+    self.progress.completedUnitCount = self.progress.totalUnitCount;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     self.status = TaskStatusFinish;
@@ -938,24 +941,12 @@ NS_ASSUME_NONNULL_END
 - (void)clearResumeData {
     self.resumeData = nil;
     if ([self.manager.fileManager fileExistsAtPath:[self resumeFilePath]]) {
-        NSDictionary *resumeDictionary = [FKResumeHelper readResumeData:[NSData dataWithContentsOfFile:self.resumeFilePath options:NSDataReadingMappedIfSafe error:nil]];
-        NSString *tempFilePath = @"";
-        if ([resumeDictionary[FKResumeDataInfoVersion] integerValue] == 1 ||
-            [resumeDictionary.allKeys containsObject:FKResumeDataInfoLocalPath]) {
-            
-            tempFilePath = resumeDictionary[FKResumeDataInfoLocalPath];
-        } else {
-            tempFilePath = [[self tempPath] stringByAppendingPathComponent:resumeDictionary[FKResumeDataInfoTempFileName]];
-        }
-        if ([self.manager.fileManager fileExistsAtPath:tempFilePath]) {
-            [self.manager.fileManager removeItemAtPath:tempFilePath error:nil];
-        }
         [self.manager.fileManager removeItemAtPath:[self resumeFilePath] error:nil];
     }
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p> <URL: %@, status: %@>", NSStringFromClass([self class]), self, self.url, [self statusDescription:self.status]];
+    return [NSString stringWithFormat:@"<%@: %p>.<URL: %@>.<%@>", NSStringFromClass([self class]), self, self.url, [self statusDescription:self.status]];
 }
 
 - (void)refreshSpeed {
