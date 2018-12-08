@@ -45,8 +45,8 @@
                                                    FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
                                                    FKTaskInfoRequestHeader: @{},
                                                    FKTaskInfoTags: @[@"group_task_01"],
-                                                   FKTaskInfoResumeSavePath: [FKDownloadManager manager].configure.savePath,
-                                                   FKTaskInfoSavePath: [FKDownloadManager manager].configure.resumeSavePath }];
+                                                   FKTaskInfoResumeSavePath: [FKDownloadManager manager].configure.resumeSavePath,
+                                                   FKTaskInfoSavePath: [FKDownloadManager manager].configure.savePath }];
         } else {
             FKTask *task = [[FKDownloadManager manager] add:url];
             [task addTags:[NSSet setWithObjects:@"group_task_02", nil]];
