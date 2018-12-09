@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy  ) NSDictionary      *info;
 
 @property (nonatomic, assign) BOOL              isPassChecksum;
-@property (nonatomic, assign) BOOL              isCalculateSpeedWithEstimated;
 
 @property (nonatomic, copy  ) NSMutableSet      *tags;
 @property (nonatomic, strong) NSLock            *lock;
@@ -68,7 +67,11 @@ NS_ASSUME_NONNULL_END
                                                 repeats:YES];
             [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
         } else {
-            [self clearSpeedTimer];
+            FKLog(@"重建定时器")
+            if (self.timer || (self.timer.isValid == YES)) {
+                [self.timer invalidate];
+                self.timer = nil;
+            }
             self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
                                                  target:self
                                                selector:@selector(refreshSpeed)
@@ -243,8 +246,7 @@ NS_ASSUME_NONNULL_END
     if ([info.allKeys containsObject:FKTaskInfoCalculateSpeedWithEstimated]) {
         id calculate = info[FKTaskInfoCalculateSpeedWithEstimated];
         if ([calculate isKindOfClass:[NSNumber class]] || [calculate isKindOfClass:[NSValue class]]) {
-            self.isCalculateSpeedWithEstimated = [calculate boolValue];
-            if (self.isCalculateSpeedWithEstimated == NO) {
+            if ([calculate boolValue] == NO) {
                 [self clearSpeedTimer];
             }
         }
@@ -323,7 +325,6 @@ NS_ASSUME_NONNULL_END
         return;
     }
     
-    [self setupTimer];
     [self sendWillExecutingInfo];
     
     if (self.isFinish) {
@@ -366,7 +367,6 @@ NS_ASSUME_NONNULL_END
     }
     
     [self suspendWithComplete:^{}];
-    [self clearSpeedTimer];
 }
 
 - (void)suspendWithComplete:(void (^)(void))complete {
@@ -407,7 +407,6 @@ NS_ASSUME_NONNULL_END
         case TaskStatusUnknowError: break;
     }
     
-    [self setupTimer];
     [self sendResumingInfo];
     
     if (self.manager.reachability.currentReachabilityStatus == NotReachable ||
@@ -445,7 +444,6 @@ NS_ASSUME_NONNULL_END
         case TaskStatusUnknowError: break;
     }
     
-    [self clearSpeedTimer];
     [self sendWillCancelldInfo];
     
     // 已完成下载的忽略停止操作

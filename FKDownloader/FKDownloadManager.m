@@ -590,6 +590,13 @@ static FKDownloadManager *_instance = nil;
     return dispatch_get_global_queue(0, 0);
 }
 
+- (FKMapHub *)hub {
+    if (!_hub) {
+        _hub = [[FKMapHub alloc] init];
+    }
+    return _hub;
+}
+
 - (NSProgress *)progress {
     if (!_progress) {
         _progress = [[NSProgress alloc] init];
