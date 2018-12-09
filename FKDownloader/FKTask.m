@@ -217,6 +217,7 @@ NS_ASSUME_NONNULL_END
     FKLog(@"开始准备: %@", self)
     
     if (self.isFinish) {
+        self.progress.totalUnitCount = 1;
         [self sendFinishInfo];
         return;
     }
@@ -290,7 +291,6 @@ NS_ASSUME_NONNULL_END
     if (self.isFinish) {
         FKLog(@"文件早已下载完成: %@", self)
         self.progress.totalUnitCount = 1;
-        self.progress.completedUnitCount = 1;
         [self sendFinishInfo];
     } else if (self.isHasResumeData) {
         FKLog(@"检测到恢复数据: %@", self)
@@ -1050,6 +1050,7 @@ NS_ASSUME_NONNULL_END
     }
     
     if (self.isFinish) {
+        self.progress.totalUnitCount = 1;
         [self sendFinishInfo];
     }
     [self sendProgressInfo];
