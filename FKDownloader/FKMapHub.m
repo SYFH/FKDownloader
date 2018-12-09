@@ -21,7 +21,7 @@
 @end
 
 @implementation FKMapHub
-
+// TODO: 暂时去掉锁
 #pragma mark - Task
 - (void)addTask:(FKTask *)task withTag:(nullable NSString *)tag {
 //    [self.lock lock];
