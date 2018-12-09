@@ -76,6 +76,7 @@ NS_SWIFT_NAME(Downloader)
  */
 - (void)setupPath;
 
+// TODO: 带有返回值的操作, 可添加 Block 操作方法, 在异步队列中执行
 #pragma mark - Operation
 /**
  获取已有任务

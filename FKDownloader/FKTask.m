@@ -251,6 +251,7 @@ NS_ASSUME_NONNULL_END
             }
         }
     }
+    // TODO: 添加顺序标号 key, 标记任务顺序, 为异步遍历做提前准备
 }
 
 - (void)reday {
@@ -1166,6 +1167,7 @@ NS_ASSUME_NONNULL_END
 
 - (NSProgress *)progress {
     if (!_progress) {
+        // TODO: 目前串行队列管理任务仓库会导致父 NSProgress 的 totalUnitCount 异常增长, Demo 中应为 600, 实际为 1400, 但重新启动后正常
         [FKDownloadManager manager].progress.totalUnitCount += 100;
         [[FKDownloadManager manager].progress becomeCurrentWithPendingUnitCount:100];
         _progress = [NSProgress progressWithTotalUnitCount:0];

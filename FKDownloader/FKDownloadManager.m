@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) FKDownloadExecutor    *executor;
 @property (nonatomic, strong) NSProgress            *progress;
 @property (nonatomic, strong) FKMapHub              *hub;
+// TODO: 串行队列移动到 hub 中, hub 改为单例, 其他操作使用新的并行队列
 @property (nonatomic, strong) NSOperationQueue      *processQueue;
 @property (nonatomic, strong) FKReachability        *reachability;
 @property (nonatomic, assign) BOOL                  isDidEnterBackground;
@@ -224,8 +225,8 @@ static FKDownloadManager *_instance = nil;
 - (FKTask *)createPreserveTask:(NSString *)url {
     FKLog(@"创建并保存 FKTask:%@", url)
     FKTask *task = [[FKTask alloc] init];
-    task.url = url;
     task.manager = self;
+    task.url = url;
     if (task.isHasResumeData) {
         [task setValue:@(TaskStatusSuspend) forKey:@"status"];
     } else if (task.isFinish) {

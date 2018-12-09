@@ -14,6 +14,7 @@
 
 @property (nonatomic, strong) NSLock *lock;
 
+// TODO: 使用 NSSet 储存 task, 忽略顺序, 使用新的集合保存顺序
 @property (nonatomic, copy  ) NSMutableArray<FKTask *> *tasks;
 @property (nonatomic, copy  ) NSMutableDictionary<NSString *, FKTask *> *taskMap;
 @property (nonatomic, copy  ) NSMutableDictionary<NSString *, NSMutableSet<FKTask *> *> *tagMap;
