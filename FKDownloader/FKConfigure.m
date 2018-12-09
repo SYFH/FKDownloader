@@ -13,13 +13,13 @@
 + (nonnull instancetype)defaultConfigure {
     NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
     FKConfigure *config = [[FKConfigure alloc] init];
-    config.isAutoStart          = NO;
-    config.isAutoClearTask      = NO;
-    config.isBackgroudExecute   = YES;
-    config.isFileChecksum       = NO;
-    config.isAllowCellular      = NO;
-    config.isAutoCoding         = YES;
-    config.isDeleteFinishFile   = NO;
+    config.autoStart          = NO;
+    config.autoClearTask      = NO;
+    config.backgroudExecute   = YES;
+    config.fileChecksum       = NO;
+    config.allowCellular      = NO;
+    config.autoCoding         = YES;
+    config.deleteFinishFile   = NO;
     config.timeoutInterval      = 30;
     config.sessionIdentifier    = @"com.fk.downloader";
     config.maximumExecutionTask = 3;

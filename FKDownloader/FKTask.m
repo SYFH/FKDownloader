@@ -806,6 +806,28 @@ NS_ASSUME_NONNULL_END
     });
 }
 
+- (void)sendWillRemoveInfo {
+    if ([self.delegate respondsToSelector:@selector(downloader:willRemoveTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager willRemoveTask:self];
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillRemoveNotification object:nil];
+    });
+}
+
+- (void)sendRemoveInfo {
+    if ([self.delegate respondsToSelector:@selector(downloader:didRemoveTask:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate downloader:self.manager didRemoveTask:self];
+        });
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidRemoveNotification object:nil];
+    });
+}
+
 
 #pragma mark - Description
 - (NSString *)statusDescription:(TaskStatus)status {

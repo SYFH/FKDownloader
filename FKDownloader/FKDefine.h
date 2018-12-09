@@ -51,6 +51,8 @@ extern FKNotificationName const FKTaskDidSuspendNotification;
 extern FKNotificationName const FKTaskWillCancelldNotification;
 extern FKNotificationName const FKTaskDidCancelldNotification;
 extern FKNotificationName const FKTaskSpeedInfoNotification;
+extern FKNotificationName const FKTaskWillRemoveNotification;
+extern FKNotificationName const FKTaskDidRemoveNotification;
 
 typedef NSString * FKTaskInfoName;
 extern FKTaskInfoName const FKTaskInfoURL;

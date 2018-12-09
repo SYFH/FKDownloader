@@ -274,7 +274,7 @@ static FKDownloadManager *_instance = nil;
     FKTask *existedTask = [self acquire:url];
     if (existedTask) {
         // !!!: 手动添加以标记为归档加载的任务, 则重制标记为非归档加载
-        existedTask.isCodingAdd = NO;
+        existedTask.codingAdd = NO;
         return existedTask;
     }
     
@@ -291,7 +291,7 @@ static FKDownloadManager *_instance = nil;
         
         FKTask *existedTask = [self acquire:url];
         if (existedTask) {
-            existedTask.isCodingAdd = NO;
+            existedTask.codingAdd = NO;
             [existedTask settingInfo:info];
             return existedTask;
         }
@@ -405,7 +405,9 @@ static FKDownloadManager *_instance = nil;
         }
     }
     
+    [existedTask sendWillRemoveInfo];
     [self.hub removeTask:existedTask];
+    [existedTask sendRemoveInfo];
     
     [self saveTasks];
 }
@@ -450,7 +452,7 @@ static FKDownloadManager *_instance = nil;
             [tasks forEach:^(FKTask *task, NSUInteger idx) {
                 if (![self acquire:task.url]) {
                     task.manager = self;
-                    task.isCodingAdd = YES;
+                    task.codingAdd = YES;
                     
                     [self.hub addTask:task withTag:nil];
                     

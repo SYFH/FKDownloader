@@ -36,6 +36,8 @@ FKNotificationName const FKTaskDidSuspendNotification   = @"FKTaskDidSuspendNoti
 FKNotificationName const FKTaskWillCancelldNotification = @"FKTaskWillCancelldNotification";
 FKNotificationName const FKTaskDidCancelldNotification  = @"FKTaskDidCancelldNotification";
 FKNotificationName const FKTaskSpeedInfoNotification    = @"FKTaskSpeedInfoNotification";
+FKNotificationName const FKTaskWillRemoveNotification   = @"FKTaskWillRemoveNotification";
+FKNotificationName const FKTaskDidRemoveNotification    = @"FKTaskDidRemoveNotification";
 
 FKTaskInfoName const FKTaskInfoURL              = @"FKTaskInfoURL";
 FKTaskInfoName const FKTaskInfoFileName         = @"FKTaskInfoFileName";

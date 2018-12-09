@@ -18,32 +18,32 @@ NS_SWIFT_NAME(Configure)
 /**
  是否设置为后台下载. 默认为 Yes
  */
-@property (nonatomic, assign) BOOL isBackgroudExecute;
+@property (nonatomic, assign, getter=isBackgroudExecute) BOOL backgroudExecute;
 
 /**
  是否自动开始, 当载入本地归档任务时起效. 默认为 No
  此值只作用于暂停中归档任务
  */
-@property (nonatomic, assign) BOOL isAutoStart;
+@property (nonatomic, assign, getter=isAutoStart) BOOL autoStart;
 
 /**
  是否自动清理, 当任务失败或完成时起效. 默认为 No
  注意, 此值仅清除 FKTask, 相关 UI 操作请自行更改
  */
-@property (nonatomic, assign) BOOL isAutoClearTask;
+@property (nonatomic, assign, getter=isAutoClearTask) BOOL autoClearTask;
 
 /**
  是否进行文件校验, 默认为 No
  注意, 大文件(1GB~)计算 Hash 值会严重消耗 CPU, 请谨慎开启
  */
-@property (nonatomic, assign) BOOL isFileChecksum;
+@property (nonatomic, assign, getter=isFileChecksum) BOOL fileChecksum;
 
 /**
  是否允许蜂窝网络进行下载, 默认为 NO
  注意, 为了保证上层的 FKTask 能保证此选项可用, 根 NSURLSeesion 初始化时会直接标记可使用蜂窝网络, 所以此值仅
  作用于上层的 FKTask 是否可以使用蜂窝网络, 不代表 NSURLSessionDownloadTask 是否可以使用蜂窝网络
  */
-@property (nonatomic, assign) BOOL isAllowCellular;
+@property (nonatomic, assign, getter=isAllowCellular) BOOL allowCellular;
 
 /**
  是否自动归档任务, 默认为 Yes
@@ -51,13 +51,13 @@ NS_SWIFT_NAME(Configure)
  显示的任务为等待中, 而下载中任务为非 UI 显示的归档任务.
  可以根据 FKTask.isCodingAdd 判断, 也可直接清除 restorePath, 但可能会出现其他莫名其妙的问题
  */
-@property (nonatomic, assign) BOOL isAutoCoding;
+@property (nonatomic, assign, getter=isAutoCoding) BOOL autoCoding;
 
 /**
  是否在删除已完成任务时删除原文件, 默认为 No
  注意: 该操作属于破坏性操作, 请小心操作, 如有必要, 可以手动使用 `-[FKTask filePath]` 获取文件保存路径后自行删除
  */
-@property (nonatomic, assign) BOOL isDeleteFinishFile;
+@property (nonatomic, assign, getter=isDeleteFinishFile) BOOL deleteFinishFile;
 
 /**
  最大并行任务数量. 默认为 3, 最大为 3

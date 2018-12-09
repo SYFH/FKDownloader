@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)downloader:(FKDownloadManager *)downloader didCancelldTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader errorTask:(FKTask *)task;
 - (void)downloader:(FKDownloadManager *)downloader speedInfo:(FKTask *)task;
+- (void)downloader:(FKDownloadManager *)downloader willRemoveTask:(FKTask *)task;
+- (void)downloader:(FKDownloadManager *)downloader didRemoveTask:(FKTask *)task;
 
 @end
 
@@ -140,7 +142,7 @@ NS_SWIFT_NAME(Task)
 /**
  是否为归档加载任务, 和手动添加作区分
  */
-@property (nonatomic, assign) BOOL isCodingAdd;
+@property (nonatomic, assign, getter=isCodingAdd) BOOL codingAdd;
 
 /**
  任务进度监听 Block
@@ -298,6 +300,16 @@ NS_SWIFT_NAME(Task)
  发送任务下载速度/预期时间信息
  */
 - (void)sendSpeedInfo;
+
+/**
+ 发送任务即将被移除信息
+ */
+- (void)sendWillRemoveInfo;
+
+/**
+ 发送任务已被移除信息, 此时可更新 UI
+ */
+- (void)sendRemoveInfo;
 
 
 #pragma mark - Description
