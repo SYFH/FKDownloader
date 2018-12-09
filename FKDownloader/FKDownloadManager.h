@@ -45,6 +45,11 @@ NS_SWIFT_NAME(Downloader)
 @property (nonatomic, strong, readonly) FKMapHub *hub;
 
 /**
+ 处理队列
+ */
+@property (nonatomic, strong, readonly) NSOperationQueue      *processQueue;
+
+/**
  总任务进度
  */
 @property (nonatomic, strong, readonly) NSProgress *progress;

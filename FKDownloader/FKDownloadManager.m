@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) FKDownloadExecutor    *executor;
 @property (nonatomic, strong) NSProgress            *progress;
 @property (nonatomic, strong) FKMapHub              *hub;
+@property (nonatomic, strong) NSOperationQueue      *processQueue;
 @property (nonatomic, strong) FKReachability        *reachability;
 @property (nonatomic, assign) BOOL                  isDidEnterBackground;
 
@@ -203,20 +204,20 @@ static FKDownloadManager *_instance = nil;
     
     __block FKTask *task = nil;
     __weak typeof(self) weak = self;
-    onWait(self.globalQueue, ^{
+    [self.processQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
         __strong typeof(weak) strong = weak;
         task = [strong.hub taskWithIdentifier:url.identifier];
-    });
+    }]] waitUntilFinished:YES];
     return task;
 }
 
 - (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag {
     __block NSArray<FKTask *> *tasks = nil;
     __weak typeof(self) weak = self;
-    onWait(self.globalQueue, ^{
+    [self.processQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
         __strong typeof(weak) strong = weak;
         tasks = [strong.hub taskForTag:tag];
-    });
+    }]] waitUntilFinished:YES];
     return tasks;
 }
 
@@ -285,10 +286,10 @@ static FKDownloadManager *_instance = nil;
     FKTask *task = [self createPreserveTask:url];
     
     __weak typeof(self) weak = self;
-    onWait(self.globalQueue, ^{
+    [self.processQueue addOperationWithBlock:^{
         __strong typeof(weak) strong = weak;
         [strong.hub addTask:task withTag:nil];
-    });
+    }];
     
     [self saveTasks];
     return task;
@@ -311,10 +312,10 @@ static FKDownloadManager *_instance = nil;
         [task settingInfo:info];
         
         __weak typeof(self) weak = self;
-        onWait(self.globalQueue, ^{
+        [self.processQueue addOperationWithBlock:^{
             __strong typeof(weak) strong = weak;
             [strong.hub addTask:task withTag:nil];
-        });
+        }];
         
         [self saveTasks];
         return task;
@@ -343,10 +344,10 @@ static FKDownloadManager *_instance = nil;
     FKTask *task = [self createPreserveTask:url];
     
     __weak typeof(self) weak = self;
-    onWait(self.globalQueue, ^{
+    [self.processQueue addOperationWithBlock:^{
         __strong typeof(weak) strong = weak;
         [strong.hub addTask:task withTag:nil];
-    });
+    }];
     
     /*
      因在返回 FKTask 后才设置代理, 所以部分代理和回调无法被调用
@@ -431,10 +432,10 @@ static FKDownloadManager *_instance = nil;
     [existedTask sendWillRemoveInfo];
     
     __weak typeof(self) weak = self;
-    onWait(self.globalQueue, ^{
+    [self.processQueue addOperationWithBlock:^{
         __strong typeof(weak) strong = weak;
         [strong.hub removeTask:existedTask];
-    });
+    }];
     
     [existedTask sendRemoveInfo];
     
@@ -481,10 +482,10 @@ static FKDownloadManager *_instance = nil;
                 task.codingAdd = YES;
                 
                 __weak typeof(self) weak = self;
-                onWait(self.globalQueue, ^{
+                [self.processQueue addOperationWithBlock:^{
                     __strong typeof(weak) strong = weak;
                     [strong.hub addTask:task withTag:nil];
-                });
+                }];
                 
                 if (self.configure.isAutoStart) {
                     FKLog(@"自动开始任务: %@", task)
@@ -586,8 +587,12 @@ static FKDownloadManager *_instance = nil;
     [self setupPath];
 }
 
-- (dispatch_queue_t)globalQueue {
-    return dispatch_get_global_queue(0, 0);
+- (NSOperationQueue *)processQueue {
+    if (!_processQueue) {
+        _processQueue = [[NSOperationQueue alloc] init];
+        _processQueue.maxConcurrentOperationCount = 1;
+    }
+    return _processQueue;
 }
 
 - (FKMapHub *)hub {
@@ -615,10 +620,10 @@ static FKDownloadManager *_instance = nil;
 - (NSArray<FKTask *> *)tasks {
     __block NSArray<FKTask *> *tasks = nil;
     __weak typeof(self) weak = self;
-    onWait(self.globalQueue, ^{
+    [self.processQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
         __strong typeof(weak) strong = weak;
         tasks = [strong.hub allTask];
-    });
+    }]] waitUntilFinished:YES];
     return tasks;
 }
 

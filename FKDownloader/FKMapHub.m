@@ -21,10 +21,8 @@
 @end
 
 @implementation FKMapHub
-// TODO: 暂时去掉锁
 #pragma mark - Task
 - (void)addTask:(FKTask *)task withTag:(nullable NSString *)tag {
-//    [self.lock lock];
     if ([self.tasks containsObject:task] == NO) {
         [self.tasks addObject:task];
         self.taskMap[task.identifier] = task;
@@ -35,11 +33,9 @@
         }
         [self.tagMap[tag] addObject:task];
     }
-//    [self.lock unlock];
 }
 
 - (void)removeTask:(FKTask *)task {
-//    [self.lock lock];
     if ([self.tasks containsObject:task]) {
         [self.tasks removeObject:task];
         [self.taskMap removeObjectForKey:task.identifier];
@@ -49,75 +45,46 @@
             [self.tagMap[tag] removeObject:task];
         }
     }
-//    [self.lock unlock];
 }
 
 
 #pragma mark - Tag
 - (void)addTag:(NSString *)tag to:(FKTask *)task {
-//    [self.lock lock];
     if ([self.tasks containsObject:task] == NO) { return; }
     if (self.tagMap[tag] == nil) {
         self.tagMap[tag] = [NSMutableSet set];
     }
     [self.tagMap[tag] addObject:task];
-//    [self.lock unlock];
 }
 
 - (void)removeTag:(NSString *)tag from:(FKTask *)task {
-//    [self.lock lock];
     [self.tagMap[tag] removeObject:task];
-//    [self.lock unlock];
 }
 
 
 #pragma mark - Operation
 - (NSArray<FKTask *> *)allTask {
-//    [self.lock lock];
-//    @onExit {
-//        [self.lock unlock];
-//    };
     return [self.tasks copy];
 }
 
 - (FKTask *)taskWithIdentifier:(NSString *)identifier {
-//    [self.lock lock];
-//    @onExit {
-//        [self.lock unlock];
-//    };
     return self.taskMap[identifier];
 }
 
 - (NSArray<FKTask *> *)taskForTag:(NSString *)tag {
-//    [self.lock lock];
-//    @onExit {
-//        [self.lock unlock];
-//    };
     if (self.tagMap[tag] == nil) { return @[]; }
     return self.tagMap[tag].allObjects;
 }
 
 - (BOOL)containsTask:(FKTask *)task {
-//    [self.lock lock];
-//    @onExit {
-//        [self.lock unlock];
-//    };
     return [self.tasks containsObject:task];
 }
 
 - (NSInteger)countOfTasks {
-//    [self.lock lock];
-//    @onExit {
-//        [self.lock unlock];
-//    };
     return self.tasks.count;
 }
 
 - (void)clear {
-//    [self.lock lock];
-//    @onExit {
-//        [self.lock unlock];
-//    };
     [self.tasks removeAllObjects];
     [self.taskMap removeAllObjects];
     [self.tagMap removeAllObjects];
