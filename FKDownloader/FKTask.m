@@ -661,6 +661,7 @@ NS_ASSUME_NONNULL_END
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     [self clearResumeData];
+    [self.downloadTask cancel];
     self.downloadTask = nil;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didCancelldTask:)]) {
@@ -1012,6 +1013,7 @@ NS_ASSUME_NONNULL_END
             
         case TaskStatusFinish: {
             if (self.isFinish) {
+                self.progress.totalUnitCount = 1;
                 [self sendFinishInfo];
             } else {
                 self.progress.completedUnitCount = 0;

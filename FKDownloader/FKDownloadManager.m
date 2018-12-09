@@ -577,8 +577,8 @@ static FKDownloadManager *_instance = nil;
     return _executor;
 }
 
-- (NSMutableArray<FKTask *> *)tasks {
-    return self.hub.tasks;
+- (NSArray<FKTask *> *)tasks {
+    return self.hub.allTask;
 }
 
 - (NSFileManager *)fileManager {

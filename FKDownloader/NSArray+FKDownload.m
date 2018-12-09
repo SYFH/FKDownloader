@@ -26,15 +26,23 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (NSProgress *)groupProgress {
-    NSProgress *progress = [[NSProgress alloc] init];
-    [self forEach:^(FKTask *task, NSUInteger idx) {
-        if ([task isKindOfClass:[FKTask class]]) {
-            progress.totalUnitCount += 100;
-            progress.completedUnitCount += (int64_t)(task.progress.fractionCompleted * 100);
+- (void)groupProgress:(nullable void (^)(NSProgress * _Nonnull))progressBlock {
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        @synchronized (self) {
+            NSProgress *progress = [[NSProgress alloc] init];
+            [self forEach:^(FKTask *task, NSUInteger idx) {
+                if ([task isKindOfClass:[FKTask class]]) {
+                    progress.totalUnitCount += 100;
+                    progress.completedUnitCount += (int64_t)(task.progress.fractionCompleted * 100);
+                }
+            }];
+            if (progressBlock) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    progressBlock(progress);
+                });
+            }
         }
-    }];
-    return progress;
+    });
 }
 
 @end

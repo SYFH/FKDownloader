@@ -12,8 +12,6 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface FKMapHub : NSObject
 
-@property (nonatomic, copy  , readonly) NSMutableArray<FKTask *> *tasks;
-
 #pragma mark - Task
 - (void)addTask:(FKTask *)task withTag:(nullable NSString *)tag;
 - (void)removeTask:(FKTask *)task;
@@ -23,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeTag:(NSString *)tag from:(FKTask *)task;
 
 #pragma mark - Operation
+- (NSArray<FKTask *> *)allTask;
 - (nullable FKTask *)taskWithIdentifier:(NSString *)identifier;
 - (NSArray<FKTask *> *)taskForTag:(NSString *)tag;
 - (BOOL)containsTask:(FKTask *)task;

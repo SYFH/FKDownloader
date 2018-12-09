@@ -18,9 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
  计算一组 FKTask 的进度
  注意: 频繁段时间间隔调用可能提高 CPU 占用
 
- @return 总进度
+ @param progressBlock 进度Block
  */
-- (NSProgress *)groupProgress;
+- (void)groupProgress:(nullable void(^)(NSProgress *progress))progressBlock;
 
 @end
 NS_ASSUME_NONNULL_END

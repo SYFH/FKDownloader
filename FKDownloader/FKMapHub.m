@@ -72,6 +72,14 @@
 
 
 #pragma mark - Operation
+- (NSArray<FKTask *> *)allTask {
+    [self.lock lock];
+    @onExit {
+        [self.lock unlock];
+    };
+    return [self.tasks copy];
+}
+
 - (FKTask *)taskWithIdentifier:(NSString *)identifier {
     [self.lock lock];
     @onExit {
