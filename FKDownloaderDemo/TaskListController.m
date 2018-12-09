@@ -59,8 +59,12 @@
     [FKDownloadManager manager].progressBlock = ^(NSProgress * _Nonnull progress) {
         __strong typeof(weak) strong = weak;
         strong.totalProgressView.progress = progress.fractionCompleted;
-        FKLog(@"group_task_01 progress: %.4f", [[FKDownloadManager manager] acquireWithTag:@"group_task_01"].groupProgress.fractionCompleted);
-        FKLog(@"group_task_02 progress: %.4f", [[FKDownloadManager manager] acquireWithTag:@"group_task_02"].groupProgress.fractionCompleted);
+        [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(NSProgress * _Nonnull progress) {
+            FKLog(@"group_task_01 progress: %.4f", progress.fractionCompleted);
+        }];
+        [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(NSProgress * _Nonnull progress) {
+            FKLog(@"group_task_02 progress: %.4f", progress.fractionCompleted);
+        }];
     };
     
     self.listView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
