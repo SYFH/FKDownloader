@@ -63,6 +63,14 @@ NS_ASSUME_NONNULL_END
                                            userInfo:nil
                                             repeats:YES];
         [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    } else {
+        [self clearSpeedTimer];
+        self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
+                                             target:self
+                                           selector:@selector(refreshSpeed)
+                                           userInfo:nil
+                                            repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
     }
 }
 
@@ -289,9 +297,7 @@ NS_ASSUME_NONNULL_END
         [self resume];
     } else {
         FKLog(@"没有恢复数据: %@", self)
-        if (self.downloadTask == nil) {
-            [self reday];
-        }
+        if (self.downloadTask == nil) { [self reday]; }
         [self.downloadTask resume];
         [self sendExecutingInfo];
     }
@@ -432,7 +438,6 @@ NS_ASSUME_NONNULL_END
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     [self clearResumeData];
-    self.downloadTask = nil;
 }
 
 - (BOOL)checksum {
@@ -656,6 +661,7 @@ NS_ASSUME_NONNULL_END
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     [self clearResumeData];
+    self.downloadTask = nil;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didCancelldTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -746,6 +752,8 @@ NS_ASSUME_NONNULL_END
     self.error = error;
     self.status = TaskStatusUnknowError;
     [self clearResumeData];
+    [self.downloadTask cancel];
+    self.downloadTask = nil;
     
     if ([self.delegate respondsToSelector:@selector(downloader:errorTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{

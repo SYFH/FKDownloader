@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURLSession              *session;
 @property (nonatomic, strong) FKDownloadExecutor        *executor;
 @property (nonatomic, strong) NSProgress                *progress;
-@property (nonatomic, strong) NSTimer                   *timer;
+@property (nonatomic, strong) dispatch_queue_t          processQueue;
 @property (nonatomic, strong) FKMapHub                  *hub;
 @property (nonatomic, strong) FKReachability            *reachability;
 @property (nonatomic, assign) BOOL                      isDidEnterBackground;
@@ -66,6 +66,8 @@ static FKDownloadManager *_instance = nil;
 - (instancetype)initWithSetup {
     self = [super init];
     if (self) {
+        
+        [self setupQueue];
         [self setupReachability];
         [self setupSession];
         [self setupPath];
@@ -85,6 +87,7 @@ static FKDownloadManager *_instance = nil;
             config.timeoutIntervalForRequest = self.configure.timeoutInterval;
             config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
             config.allowsCellularAccess = YES;
+            config.discretionary = YES;
             self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
         } else {
             NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -179,7 +182,11 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)setupProgress {
-    [self.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionInitial context:nil];
+    [self.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)setupQueue {
+    self.processQueue = dispatch_queue_create("com.fk.downloader.process.queue", DISPATCH_QUEUE_CONCURRENT);
 }
 
 
@@ -429,29 +436,33 @@ static FKDownloadManager *_instance = nil;
 - (void)saveTasks {
     if (self.configure.isAutoCoding) {
         FKLog(@"归档所有任务")
-        [FKTaskStorage saveObject:self.tasks toPath:self.configure.restoreFilePath];
+        dispatch_async(self.processQueue, ^{
+            [FKTaskStorage saveObject:self.tasks toPath:self.configure.restoreFilePath];
+        });
     }
 }
 
 - (void)loadTasks {
     if ([self.fileManager fileExistsAtPath:self.configure.restoreFilePath] && self.configure.isAutoCoding) {
         FKLog(@"解档所有任务")
-        NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restoreFilePath];
-        [tasks forEach:^(FKTask *task, NSUInteger idx) {
-            if (![self acquire:task.url]) {
-                task.manager = self;
-                task.isCodingAdd = YES;
-                
-                [self.hub addTask:task withTag:nil];
-                
-                if (self.configure.isAutoStart) {
-                    FKLog(@"自动开始任务: %@", task)
-                    if (task.status == TaskStatusSuspend) {
-                        [self executeTask:task];
+        dispatch_async(self.processQueue, ^{
+            NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restoreFilePath];
+            [tasks forEach:^(FKTask *task, NSUInteger idx) {
+                if (![self acquire:task.url]) {
+                    task.manager = self;
+                    task.isCodingAdd = YES;
+                    
+                    [self.hub addTask:task withTag:nil];
+                    
+                    if (self.configure.isAutoStart) {
+                        FKLog(@"自动开始任务: %@", task)
+                        if (task.status == TaskStatusSuspend) {
+                            [self executeTask:task];
+                        }
                     }
                 }
-            }
-        }];
+            }];
+        });
     }
 }
 
