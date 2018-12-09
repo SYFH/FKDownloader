@@ -7,18 +7,32 @@
 //
 
 #import "FKDefine.h"
+#import "NSString+FKDownload.h"
 
 void checkURL(NSString *address) {
     if (address.length == 0) {
         NSCAssert(NO, @"URL 地址不合法, 请填写正确的 URL!");
     }
     
-    NSURL *url = [NSURL URLWithString:address];
+    NSURL *url = [NSURL URLWithString:[address percentEscapedString]];
     if ([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"]) {
         NSCAssert(url != nil, @"URL 地址不合法, 请填写正确的 URL!");
     } else {
         NSCAssert(NO, @"不支持的 URL");
     }
+}
+
+void onQueue(dispatch_queue_t queue, dispatch_block_t block) {
+    dispatch_async(queue, block);
+}
+
+void onWait(dispatch_queue_t queue, dispatch_block_t block) {
+    dispatch_semaphore_t se = dispatch_semaphore_create(0);
+    dispatch_async(queue, ^{
+        block();
+        dispatch_semaphore_signal(se);
+    });
+    dispatch_semaphore_wait(se, DISPATCH_TIME_FOREVER);
 }
 
 FKNotificationName const FKTaskPrepareNotification      = @"FKTaskPrepareNotification";
@@ -47,6 +61,9 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 FKTaskInfoName const FKTaskInfoTags             = @"FKTaskInfoTags";
 FKTaskInfoName const FKTaskInfoResumeSavePath   = @"FKTaskInfoResumeSavePath";
 FKTaskInfoName const FKTaskInfoSavePath         = @"FKTaskInfoSavePath";
+FKTaskInfoName const FKTaskInfoCustomIdentifier = @"FKTaskInfoCustomIdentifier";
+FKTaskInfoName const FKTaskInfoIdentifierIgonerParameters   = @"FKTaskInfoIdentifierIgonerParameters";
+FKTaskInfoName const FKTaskInfoCalculateSpeedWithEstimated  = @"FKTaskInfoCalculateSpeedWithEstimated";
 
 FKReachabilityNotificationName const FKReachabilityChangedNotification = @"FKReachabilityChangedNotification";
 

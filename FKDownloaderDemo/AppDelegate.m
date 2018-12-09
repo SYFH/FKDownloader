@@ -21,6 +21,7 @@
     [FKDownloadManager manager].configure.maximumExecutionTask = 1;
     [FKDownloadManager manager].configure.allowCellular = YES;
     [FKDownloadManager manager].configure.deleteFinishFile = YES;
+    [FKDownloadManager manager].configure.taskIdentifierIgnoreParameters = YES;
     return YES;
 }
 

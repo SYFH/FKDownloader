@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)SHA512;
 
 - (NSString *)identifier;
+- (NSString *)percentEscapedString;
 
 @end
 NS_ASSUME_NONNULL_END

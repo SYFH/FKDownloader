@@ -22,13 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKDownloadManager ()
 
-@property (nonatomic, strong) NSURLSession              *session;
-@property (nonatomic, strong) FKDownloadExecutor        *executor;
-@property (nonatomic, strong) NSProgress                *progress;
-@property (nonatomic, strong) dispatch_queue_t          processQueue;
-@property (nonatomic, strong) FKMapHub                  *hub;
-@property (nonatomic, strong) FKReachability            *reachability;
-@property (nonatomic, assign) BOOL                      isDidEnterBackground;
+@property (nonatomic, strong) NSURLSession          *session;
+@property (nonatomic, strong) FKDownloadExecutor    *executor;
+@property (nonatomic, strong) NSProgress            *progress;
+@property (nonatomic, strong) FKMapHub              *hub;
+@property (nonatomic, strong) FKReachability        *reachability;
+@property (nonatomic, assign) BOOL                  isDidEnterBackground;
 
 @end
 
@@ -66,8 +65,6 @@ static FKDownloadManager *_instance = nil;
 - (instancetype)initWithSetup {
     self = [super init];
     if (self) {
-        
-        [self setupQueue];
         [self setupReachability];
         [self setupSession];
         [self setupPath];
@@ -185,10 +182,6 @@ static FKDownloadManager *_instance = nil;
     [self.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
 }
 
-- (void)setupQueue {
-    self.processQueue = dispatch_queue_create("com.fk.downloader.process.queue", DISPATCH_QUEUE_CONCURRENT);
-}
-
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -208,11 +201,23 @@ static FKDownloadManager *_instance = nil;
     FKLog(@"获取 FKTask: %@", url)
     checkURL(url);
     
-    return [self.hub taskWithIdentifier:url.identifier];
+    __block FKTask *task = nil;
+    __weak typeof(self) weak = self;
+    onWait(self.globalQueue, ^{
+        __strong typeof(weak) strong = weak;
+        task = [strong.hub taskWithIdentifier:url.identifier];
+    });
+    return task;
 }
 
 - (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag {
-    return [self.hub taskForTag:tag];
+    __block NSArray<FKTask *> *tasks = nil;
+    __weak typeof(self) weak = self;
+    onWait(self.globalQueue, ^{
+        __strong typeof(weak) strong = weak;
+        tasks = [strong.hub taskForTag:tag];
+    });
+    return tasks;
 }
 
 - (FKTask *)createPreserveTask:(NSString *)url {
@@ -229,7 +234,6 @@ static FKDownloadManager *_instance = nil;
     }
     // !!!: 提前进行预处理, 以防止任务延迟: https://forums.developer.apple.com/thread/14854
     // [task reday];
-    [self.hub addTask:task withTag:nil];
     
     return task;
 }
@@ -279,6 +283,13 @@ static FKDownloadManager *_instance = nil;
     }
     
     FKTask *task = [self createPreserveTask:url];
+    
+    __weak typeof(self) weak = self;
+    onWait(self.globalQueue, ^{
+        __strong typeof(weak) strong = weak;
+        [strong.hub addTask:task withTag:nil];
+    });
+    
     [self saveTasks];
     return task;
 }
@@ -298,6 +309,12 @@ static FKDownloadManager *_instance = nil;
         
         FKTask *task = [self createPreserveTask:url];
         [task settingInfo:info];
+        
+        __weak typeof(self) weak = self;
+        onWait(self.globalQueue, ^{
+            __strong typeof(weak) strong = weak;
+            [strong.hub addTask:task withTag:nil];
+        });
         
         [self saveTasks];
         return task;
@@ -324,6 +341,12 @@ static FKDownloadManager *_instance = nil;
     }
     
     FKTask *task = [self createPreserveTask:url];
+    
+    __weak typeof(self) weak = self;
+    onWait(self.globalQueue, ^{
+        __strong typeof(weak) strong = weak;
+        [strong.hub addTask:task withTag:nil];
+    });
     
     /*
      因在返回 FKTask 后才设置代理, 所以部分代理和回调无法被调用
@@ -406,7 +429,13 @@ static FKDownloadManager *_instance = nil;
     }
     
     [existedTask sendWillRemoveInfo];
-    [self.hub removeTask:existedTask];
+    
+    __weak typeof(self) weak = self;
+    onWait(self.globalQueue, ^{
+        __strong typeof(weak) strong = weak;
+        [strong.hub removeTask:existedTask];
+    });
+    
     [existedTask sendRemoveInfo];
     
     [self saveTasks];
@@ -438,33 +467,33 @@ static FKDownloadManager *_instance = nil;
 - (void)saveTasks {
     if (self.configure.isAutoCoding) {
         FKLog(@"归档所有任务")
-        dispatch_async(self.processQueue, ^{
-            [FKTaskStorage saveObject:self.tasks toPath:self.configure.restoreFilePath];
-        });
+        [FKTaskStorage saveObject:self.tasks toPath:self.configure.restoreFilePath];
     }
 }
 
 - (void)loadTasks {
     if ([self.fileManager fileExistsAtPath:self.configure.restoreFilePath] && self.configure.isAutoCoding) {
         FKLog(@"解档所有任务")
-        dispatch_async(self.processQueue, ^{
-            NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restoreFilePath];
-            [tasks forEach:^(FKTask *task, NSUInteger idx) {
-                if (![self acquire:task.url]) {
-                    task.manager = self;
-                    task.codingAdd = YES;
-                    
-                    [self.hub addTask:task withTag:nil];
-                    
-                    if (self.configure.isAutoStart) {
-                        FKLog(@"自动开始任务: %@", task)
-                        if (task.status == TaskStatusSuspend) {
-                            [self executeTask:task];
-                        }
+        NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restoreFilePath];
+        [tasks forEach:^(FKTask *task, NSUInteger idx) {
+            if (![self acquire:task.url]) {
+                task.manager = self;
+                task.codingAdd = YES;
+                
+                __weak typeof(self) weak = self;
+                onWait(self.globalQueue, ^{
+                    __strong typeof(weak) strong = weak;
+                    [strong.hub addTask:task withTag:nil];
+                });
+                
+                if (self.configure.isAutoStart) {
+                    FKLog(@"自动开始任务: %@", task)
+                    if (task.status == TaskStatusSuspend) {
+                        [self executeTask:task];
                     }
                 }
-            }];
-        });
+            }
+        }];
     }
 }
 
@@ -557,11 +586,8 @@ static FKDownloadManager *_instance = nil;
     [self setupPath];
 }
 
-- (FKMapHub *)hub {
-    if (!_hub) {
-        _hub = [[FKMapHub alloc] init];
-    }
-    return _hub;
+- (dispatch_queue_t)globalQueue {
+    return dispatch_get_global_queue(0, 0);
 }
 
 - (NSProgress *)progress {
@@ -580,7 +606,13 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (NSArray<FKTask *> *)tasks {
-    return self.hub.allTask;
+    __block NSArray<FKTask *> *tasks = nil;
+    __weak typeof(self) weak = self;
+    onWait(self.globalQueue, ^{
+        __strong typeof(weak) strong = weak;
+        tasks = [strong.hub allTask];
+    });
+    return tasks;
 }
 
 - (NSFileManager *)fileManager {

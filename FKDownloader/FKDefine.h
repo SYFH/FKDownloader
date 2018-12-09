@@ -33,6 +33,7 @@
     __strong rac_cleanupBlock_t metamacro_concat(rac_exitBlock_, __LINE__) __attribute__((cleanup(rac_executeCleanupBlock), unused)) = ^
 
 extern void checkURL(NSString *address);
+extern void onWait(dispatch_queue_t queue, dispatch_block_t block);
 
 // 任务状态的细化通知, 与枚举 ·TaskStatus· 等同, will 表示开始处理, did 表示处理完成
 typedef NSString * FKNotificationName;
@@ -63,6 +64,9 @@ extern FKTaskInfoName const FKTaskInfoRequestHeader;
 extern FKTaskInfoName const FKTaskInfoTags;
 extern FKTaskInfoName const FKTaskInfoResumeSavePath;
 extern FKTaskInfoName const FKTaskInfoSavePath;
+extern FKTaskInfoName const FKTaskInfoCustomIdentifier;
+extern FKTaskInfoName const FKTaskInfoIdentifierIgonerParameters;
+extern FKTaskInfoName const FKTaskInfoCalculateSpeedWithEstimated;
 
 typedef NSString * FKReachabilityNotificationName;
 extern FKReachabilityNotificationName const FKReachabilityChangedNotification;
@@ -137,7 +141,6 @@ NS_ASSUME_NONNULL_END
 
 // ReactiveCocoa
 typedef void (^rac_cleanupBlock_t)(void);
-
 static inline void rac_executeCleanupBlock (__strong rac_cleanupBlock_t *block) {
     (*block)();
 }

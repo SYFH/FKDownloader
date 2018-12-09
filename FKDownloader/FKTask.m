@@ -32,7 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSNumber          *estimatedTimeRemaining;
 @property (nonatomic, strong) NSNumber          *bytesPerSecondSpeed;
 
+@property (nonatomic, copy  ) NSDictionary      *info;
+
 @property (nonatomic, assign) BOOL              isPassChecksum;
+@property (nonatomic, assign) BOOL              isCalculateSpeedWithEstimated;
 
 @property (nonatomic, copy  ) NSMutableSet      *tags;
 @property (nonatomic, strong) NSLock            *lock;
@@ -55,22 +58,24 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)setupTimer {
-    if (self.timer == nil || (self.timer.isValid == NO)) {
-        FKLog(@"开始计时")
-        self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
-                                             target:self
-                                           selector:@selector(refreshSpeed)
-                                           userInfo:nil
-                                            repeats:YES];
-        [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-    } else {
-        [self clearSpeedTimer];
-        self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
-                                             target:self
-                                           selector:@selector(refreshSpeed)
-                                           userInfo:nil
-                                            repeats:YES];
-        [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    if ([FKDownloadManager manager].configure.isCalculateSpeedWithEstimated) {
+        if (self.timer == nil || (self.timer.isValid == NO)) {
+            FKLog(@"开始计时")
+            self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
+                                                 target:self
+                                               selector:@selector(refreshSpeed)
+                                               userInfo:nil
+                                                repeats:YES];
+            [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+        } else {
+            [self clearSpeedTimer];
+            self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
+                                                 target:self
+                                               selector:@selector(refreshSpeed)
+                                               userInfo:nil
+                                                repeats:YES];
+            [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+        }
     }
 }
 
@@ -85,6 +90,7 @@ NS_ASSUME_NONNULL_END
     [aCoder encodeObject:self.requestHeader     forKey:@"requestHeader"];
     [aCoder encodeInteger:self.status           forKey:@"status"];
     [aCoder encodeObject:self.tags              forKey:@"tags"];
+    [aCoder encodeObject:self.info              forKey:@"info"];
     [aCoder encodeInt64:self.progress.totalUnitCount        forKey:@"totalUnitCount"];
     [aCoder encodeInt64:self.progress.completedUnitCount    forKey:@"completedUnitCount"];
 }
@@ -100,7 +106,9 @@ NS_ASSUME_NONNULL_END
         self.status             = [aDecoder decodeIntegerForKey:@"status"];
         self.progress.totalUnitCount        = [aDecoder decodeInt64ForKey:@"totalUnitCount"];
         self.progress.completedUnitCount    = [aDecoder decodeInt64ForKey:@"completedUnitCount"];
-        [self addTags:[aDecoder decodeObjectForKey:@"tags"]];
+        
+        [self addTags:[aDecoder decodeObjectForKey:@"tags"] ?: [NSSet set]];
+        [self settingInfo:[aDecoder decodeObjectForKey:@"info"] ?: @{}];
         
         [self setupTimer];
     }
@@ -140,6 +148,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)settingInfo:(NSDictionary *)info {
+    self.info = info;
+    
     if ([info.allKeys containsObject:FKTaskInfoURL]) {
         id url = info[FKTaskInfoURL];
         if ([url isKindOfClass:[NSString class]]) {
@@ -211,6 +221,34 @@ NS_ASSUME_NONNULL_END
             self.savePath = savePath;
         }
     }
+    
+    if ([info.allKeys containsObject:FKTaskInfoIdentifierIgonerParameters]) {
+        id ignoer = info[FKTaskInfoIdentifierIgonerParameters];
+        if ([ignoer isKindOfClass:[NSNumber class]] || [ignoer isKindOfClass:[NSValue class]]) {
+            if ([ignoer boolValue]) {
+                self.identifier = [self.url identifier];
+            } else {
+                self.identifier = [self.url SHA256];
+            }
+        }
+    }
+    
+    if ([info.allKeys containsObject:FKTaskInfoCustomIdentifier]) {
+        id identifier = info[FKTaskInfoCustomIdentifier];
+        if ([identifier isKindOfClass:[NSString class]]) {
+            self.identifier = identifier;
+        }
+    }
+    
+    if ([info.allKeys containsObject:FKTaskInfoCalculateSpeedWithEstimated]) {
+        id calculate = info[FKTaskInfoCalculateSpeedWithEstimated];
+        if ([calculate isKindOfClass:[NSNumber class]] || [calculate isKindOfClass:[NSValue class]]) {
+            self.isCalculateSpeedWithEstimated = [calculate boolValue];
+            if (self.isCalculateSpeedWithEstimated == NO) {
+                [self clearSpeedTimer];
+            }
+        }
+    }
 }
 
 - (void)reday {
@@ -224,7 +262,7 @@ NS_ASSUME_NONNULL_END
     
     [self sendPrepareInfo];
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[self.url percentEscapedString]]];
     [self.requestHeader enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [request setValue:value forHTTPHeaderField:key];
     }];
@@ -1014,7 +1052,11 @@ NS_ASSUME_NONNULL_END
 - (void)setUrl:(NSString *)url {
     _url = url;
     
-    self.identifier = [url identifier];
+    if ([FKDownloadManager manager].configure.isTaskIdentifierIgnoreParameters) {
+        self.identifier = [url identifier];
+    } else {
+        self.identifier = [url SHA256];
+    }
 }
 
 - (void)setDelegate:(id<FKTaskDelegate>)delegate {
