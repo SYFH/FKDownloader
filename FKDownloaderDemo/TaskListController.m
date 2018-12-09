@@ -58,13 +58,14 @@
     __weak typeof(self) weak = self;
     [FKDownloadManager manager].progressBlock = ^(NSProgress * _Nonnull progress) {
         __strong typeof(weak) strong = weak;
+        FKLog(@"%@", progress);
         strong.totalProgressView.progress = progress.fractionCompleted;
-        [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(NSProgress * _Nonnull progress) {
-            FKLog(@"group_task_01 progress: %.4f", progress.fractionCompleted);
-        }];
-        [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(NSProgress * _Nonnull progress) {
-            FKLog(@"group_task_02 progress: %.4f", progress.fractionCompleted);
-        }];
+//        [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(NSProgress * _Nonnull progress) {
+//            FKLog(@"group_task_01 progress: %.4f", progress.fractionCompleted);
+//        }];
+//        [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(NSProgress * _Nonnull progress) {
+//            FKLog(@"group_task_02 progress: %.4f", progress.fractionCompleted);
+//        }];
     };
     
     self.listView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
