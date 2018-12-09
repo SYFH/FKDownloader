@@ -470,7 +470,6 @@ NS_ASSUME_NONNULL_END
     }
     
     [self.downloadTask cancel];
-    self.progress.completedUnitCount = 0;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     [self clearResumeData];

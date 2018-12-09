@@ -21,7 +21,7 @@
     [FKDownloadManager manager].configure.maximumExecutionTask = 1;
     [FKDownloadManager manager].configure.allowCellular = YES;
     [FKDownloadManager manager].configure.deleteFinishFile = YES;
-    [FKDownloadManager manager].configure.calculateSpeedWithEstimated = NO;
+    [FKDownloadManager manager].configure.calculateSpeedWithEstimated = YES;
     return YES;
 }
 
