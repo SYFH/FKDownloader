@@ -122,6 +122,7 @@
 
 - (void)downloader:(FKDownloadManager *)downloader didFinishTask:(FKTask *)task {
     NSLog(@"已完成: %@", task.url);
+    self.progress.progress = 1;
     [self.operationButton setTitle:@"完成" forState:UIControlStateNormal];
     self.operationButton.enabled = NO;
 }
