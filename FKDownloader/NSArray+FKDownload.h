@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  计算一组 FKTask 的进度
- 注意: 频繁段时间间隔调用可能提高 CPU 占用
+ 注意: 频繁段时间间隔调用可能会提高 CPU 占用
 
  @param progressBlock 进度Block
  */

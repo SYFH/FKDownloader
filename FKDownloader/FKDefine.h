@@ -64,7 +64,6 @@ extern FKTaskInfoName const FKTaskInfoRequestHeader;
 extern FKTaskInfoName const FKTaskInfoTags;
 extern FKTaskInfoName const FKTaskInfoResumeSavePath;
 extern FKTaskInfoName const FKTaskInfoSavePath;
-extern FKTaskInfoName const FKTaskInfoCustomIdentifier;
 extern FKTaskInfoName const FKTaskInfoIdentifierIgonerParameters;
 extern FKTaskInfoName const FKTaskInfoCalculateSpeedWithEstimated;
 

@@ -33,11 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSNumber          *bytesPerSecondSpeed;
 
 @property (nonatomic, copy  ) NSDictionary      *info;
+@property (nonatomic, assign) int64_t           number;
 
 @property (nonatomic, assign) BOOL              isPassChecksum;
 
 @property (nonatomic, copy  ) NSMutableSet      *tags;
-@property (nonatomic, strong) NSLock            *lock;
 
 @end
 
@@ -52,6 +52,8 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if (self) {
         [self setupTimer];
+        // TODO: NSDate 计算时间戳太昂贵, 考虑使用 C 计算
+        self.number = (int64_t)([NSDate date].timeIntervalSince1970 * 1000000000);
     }
     return self;
 }
@@ -60,26 +62,27 @@ NS_ASSUME_NONNULL_END
     if ([FKDownloadManager manager].configure.isCalculateSpeedWithEstimated) {
         if (self.timer == nil || (self.timer.isValid == NO)) {
             FKLog(@"开始计时")
-            self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
-                                                 target:self
-                                               selector:@selector(refreshSpeed)
-                                               userInfo:nil
-                                                repeats:YES];
-            [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+            [self performSelector:@selector(runTimer) onThread:[FKDownloadManager manager].timerThread withObject:nil waitUntilDone:NO];
         } else {
             FKLog(@"重建定时器")
-            if (self.timer || (self.timer.isValid == YES)) {
-                [self.timer invalidate];
-                self.timer = nil;
-            }
-            self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
-                                                 target:self
-                                               selector:@selector(refreshSpeed)
-                                               userInfo:nil
-                                                repeats:YES];
-            [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+            [self performSelector:@selector(stopTimer) onThread:[FKDownloadManager manager].timerThread withObject:nil waitUntilDone:YES];
+            [self performSelector:@selector(runTimer) onThread:[FKDownloadManager manager].timerThread withObject:nil waitUntilDone:NO];
         }
     }
+}
+
+- (void)runTimer {
+    self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
+                                         target:self
+                                       selector:@selector(refreshSpeed)
+                                       userInfo:nil
+                                        repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+}
+
+- (void)stopTimer {
+    [self.timer invalidate];
+    self.timer = nil;
 }
 
 
@@ -94,6 +97,7 @@ NS_ASSUME_NONNULL_END
     [aCoder encodeInteger:self.status           forKey:@"status"];
     [aCoder encodeObject:self.tags              forKey:@"tags"];
     [aCoder encodeObject:self.info              forKey:@"info"];
+    [aCoder encodeInt64:self.number             forKey:@"number"];
     [aCoder encodeInt64:self.progress.totalUnitCount        forKey:@"totalUnitCount"];
     [aCoder encodeInt64:self.progress.completedUnitCount    forKey:@"completedUnitCount"];
 }
@@ -107,6 +111,7 @@ NS_ASSUME_NONNULL_END
         self.verificationType   = [aDecoder decodeIntegerForKey:@"verificationType"];
         self.requestHeader      = [aDecoder decodeObjectForKey:@"requestHeader"];
         self.status             = [aDecoder decodeIntegerForKey:@"status"];
+        self.number             = [aDecoder decodeInt64ForKey:@"number"];
         self.progress.totalUnitCount        = [aDecoder decodeInt64ForKey:@"totalUnitCount"];
         self.progress.completedUnitCount    = [aDecoder decodeInt64ForKey:@"completedUnitCount"];
         
@@ -114,8 +119,24 @@ NS_ASSUME_NONNULL_END
         [self settingInfo:[aDecoder decodeObjectForKey:@"info"] ?: @{}];
         
         [self setupTimer];
+        if (self.number == 0) {
+            self.number = (int64_t)([NSDate date].timeIntervalSince1970 * 1000000000);
+        }
     }
     return self;
+}
+
+
+#pragma mark - Override
+- (BOOL)isEqual:(id)object {
+    if ([object isKindOfClass:[FKTask class]] && [[object identifier] isEqual:self.identifier]) {
+        return YES;
+    }
+    return NO;
+}
+
+- (NSUInteger)hash {
+    return [self.identifier hash];
 }
 
 
@@ -151,7 +172,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)settingInfo:(NSDictionary *)info {
-    self.info = info;
+    self.info = [NSDictionary dictionaryWithDictionary:info];
     
     if ([info.allKeys containsObject:FKTaskInfoURL]) {
         id url = info[FKTaskInfoURL];
@@ -236,13 +257,6 @@ NS_ASSUME_NONNULL_END
         }
     }
     
-    if ([info.allKeys containsObject:FKTaskInfoCustomIdentifier]) {
-        id identifier = info[FKTaskInfoCustomIdentifier];
-        if ([identifier isKindOfClass:[NSString class]]) {
-            self.identifier = identifier;
-        }
-    }
-    
     if ([info.allKeys containsObject:FKTaskInfoCalculateSpeedWithEstimated]) {
         id calculate = info[FKTaskInfoCalculateSpeedWithEstimated];
         if ([calculate isKindOfClass:[NSNumber class]] || [calculate isKindOfClass:[NSValue class]]) {
@@ -251,7 +265,6 @@ NS_ASSUME_NONNULL_END
             }
         }
     }
-    // TODO: 添加顺序标号 key, 标记任务顺序, 为异步遍历做提前准备
 }
 
 - (void)reday {
@@ -523,28 +536,24 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - Tags Group
 - (void)addTags:(NSSet *)tags {
-    [self.lock lock];
-    NSMutableSet *subtract = [NSMutableSet setWithSet:self.tags];
-    [subtract subtractSet:tags];
-    if (subtract.count > 0) {
+    @synchronized (self.tags) {
         [self.tags unionSet:tags];
     }
-    [self.lock unlock];
     for (NSString *tag in tags) {
-        [self.manager.hub addTag:tag to:self];
+        [self.manager.taskHub addTag:tag to:self];
     }
 }
 
 - (void)removeTags:(NSSet *)tags {
-    [self.lock lock];
-    NSMutableSet *intersect = [NSMutableSet setWithSet:self.tags];
-    [intersect intersectSet:tags];
-    if (intersect.count > 0) {
-        [self.tags subtractSet:tags];
+    @synchronized (self.tags) {
+        NSMutableSet *intersect = [NSMutableSet setWithSet:self.tags];
+        [intersect intersectSet:tags];
+        if (intersect.count > 0) {
+            [self.tags subtractSet:tags];
+        }
     }
-    [self.lock unlock];
     for (NSString *tag in tags) {
-        [self.manager.hub removeTag:tag from:self];
+        [self.manager.taskHub removeTag:tag from:self];
     }
 }
 
@@ -758,7 +767,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendFinishInfo {
-    self.progress.completedUnitCount = self.progress.totalUnitCount;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     self.status = TaskStatusFinish;
@@ -1012,31 +1020,32 @@ NS_ASSUME_NONNULL_END
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p>.<URL: %@>.<%@>", NSStringFromClass([self class]), self, self.url, [self statusDescription:self.status]];
+    return [NSString stringWithFormat:@"<%@: %p>.<%lld>.<%@>.<%@>.<%.04f>", NSStringFromClass([self class]), self, self.number, [self statusDescription:self.status], self.url, self.progress.fractionCompleted];
 }
 
 - (void)refreshSpeed {
-    if (self.status != TaskStatusExecuting) {
-        return;
-    }
-    
-    NSTimeInterval now = [NSDate date].timeIntervalSince1970;
-    int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.prevReceivedBytes;
-    self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
-    self.prevTime = now;
-    self.prevReceivedBytes = self.downloadTask.countOfBytesReceived;
-    
-    double remaining = (self.progress.totalUnitCount - self.progress.completedUnitCount) / (receivedCount?:1);
-    self.estimatedTimeRemaining = [NSNumber numberWithDouble:remaining];
-    
-    [self sendSpeedInfo];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.status != TaskStatusExecuting) {
+            return;
+        }
+        
+        NSTimeInterval now = [NSDate date].timeIntervalSince1970;
+        int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.prevReceivedBytes;
+        self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
+        self.prevTime = now;
+        self.prevReceivedBytes = self.downloadTask.countOfBytesReceived;
+        
+        double remaining = (self.progress.totalUnitCount - self.progress.completedUnitCount) / (receivedCount?:1);
+        self.estimatedTimeRemaining = [NSNumber numberWithDouble:remaining];
+        
+        [self sendSpeedInfo];
+    });
 }
 
 - (void)clearSpeedTimer {
     if (self.timer || (self.timer.isValid == YES)) {
         FKLog(@"清除定时器")
-        [self.timer invalidate];
-        self.timer = nil;
+        [self performSelector:@selector(stopTimer) onThread:[FKDownloadManager manager].timerThread withObject:nil waitUntilDone:NO];
     }
 }
 
@@ -1075,9 +1084,6 @@ NS_ASSUME_NONNULL_END
         case TaskStatusFinish: {
             if (self.isFinish) {
                 [self sendFinishInfo];
-            } else {
-                self.progress.completedUnitCount = 0;
-                self.progress.totalUnitCount = 0;
             }
         } break;
             
@@ -1111,8 +1117,9 @@ NS_ASSUME_NONNULL_END
     
     if (self.isFinish) {
         [self sendFinishInfo];
+    } else {
+        [self sendProgressInfo];
     }
-    [self sendProgressInfo];
 }
 
 - (NSData *)resumeData {
@@ -1181,13 +1188,6 @@ NS_ASSUME_NONNULL_END
         _tags = [NSMutableSet set];
     }
     return _tags;
-}
-
-- (NSLock *)lock {
-    if (!_lock) {
-        _lock = [[NSLock alloc] init];
-    }
-    return _lock;
 }
 
 - (void)setStatus:(TaskStatus)status {

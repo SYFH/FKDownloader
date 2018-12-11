@@ -13,7 +13,7 @@
 - (void)subtractSet:(NSSet *)set {
     NSMutableSet *temp = [NSMutableSet setWithSet:self];
     [temp intersectSet:set];
-    [self minusSet:set];
+    [self minusSet:temp];
 }
 
 @end

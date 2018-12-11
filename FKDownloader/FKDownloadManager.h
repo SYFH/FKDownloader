@@ -35,24 +35,20 @@ NS_SWIFT_NAME(Downloader)
 @property (nonatomic, strong, readonly) NSFileManager *fileManager;
 
 /**
- 所有任务集合, 可通过 -[NSArray forEach:] 遍历任务, 执行自定义处理
- */
-@property (nonatomic, copy  , readonly) NSArray<FKTask *> *tasks;
-
-/**
  保存 Task/Tag 相关的集合, 可以更快的更方便的添加与查找 Task/Tag 信息
+ 可使用 -[FKMapHub allTask] 获取所有任务
  */
-@property (nonatomic, strong, readonly) FKMapHub *hub;
-
-/**
- 处理队列
- */
-@property (nonatomic, strong, readonly) NSOperationQueue      *processQueue;
+@property (nonatomic, strong, readonly) FKMapHub *taskHub;
 
 /**
  总任务进度
  */
 @property (nonatomic, strong, readonly) NSProgress *progress;
+
+/**
+ 运行 NSTimer 的子线程, 避免造成主线程卡顿
+ */
+@property (nonatomic, strong, readonly) NSThread *timerThread;
 
 /**
  总任务进度 Block, 总执行在主线程
@@ -94,7 +90,7 @@ NS_SWIFT_NAME(Downloader)
  */
 - (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag;
 
-
+// TODO: 修改添加方法为组式添加, 不再提供单任务添加, 以保证低频率归档
 /**
  添加任务, 但不执行, 任务状态为 TaskStatusNone
 

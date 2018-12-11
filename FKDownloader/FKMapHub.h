@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<FKTask *> *)taskForTag:(NSString *)tag;
 - (BOOL)containsTask:(FKTask *)task;
 - (NSInteger)countOfTasks;
-- (void)clear;
 
 @end
 NS_ASSUME_NONNULL_END

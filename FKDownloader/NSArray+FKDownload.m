@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)groupProgress:(nullable void (^)(NSProgress * _Nonnull))progressBlock {
+    if (progressBlock == nil) { return; }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         @synchronized (self) {
             NSProgress *progress = [[NSProgress alloc] init];
@@ -36,11 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
                     progress.completedUnitCount += (int64_t)(task.progress.fractionCompleted * 100);
                 }
             }];
-            if (progressBlock) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    progressBlock(progress);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                progressBlock(progress);
+            });
         }
     });
 }

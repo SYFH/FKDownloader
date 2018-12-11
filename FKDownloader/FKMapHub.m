@@ -12,38 +12,46 @@
 
 @interface FKMapHub ()
 
-@property (nonatomic, strong) NSLock *lock;
-
-// TODO: 使用 NSSet 储存 task, 忽略顺序, 使用新的集合保存顺序
-@property (nonatomic, copy  ) NSMutableArray<FKTask *> *tasks;
+@property (nonatomic, copy  ) NSMutableSet<FKTask *> *tasks;
 @property (nonatomic, copy  ) NSMutableDictionary<NSString *, FKTask *> *taskMap;
 @property (nonatomic, copy  ) NSMutableDictionary<NSString *, NSMutableSet<FKTask *> *> *tagMap;
 
 @end
 
 @implementation FKMapHub
+
 #pragma mark - Task
 - (void)addTask:(FKTask *)task withTag:(nullable NSString *)tag {
-    if ([self.tasks containsObject:task] == NO) {
+    @synchronized (self.tasks) {
         [self.tasks addObject:task];
-        self.taskMap[task.identifier] = task;
+    }
+    @synchronized (self.taskMap) {
+        if ([self.taskMap objectForKey:task.identifier] == nil) {
+            [self.taskMap setObject:task forKey:task.identifier];
+        }
     }
     if (tag.length > 0) {
-        if (self.tagMap[tag] == nil) {
-            self.tagMap[tag] = [NSMutableSet set];
+        @synchronized (self.tagMap) {
+            if ([self.tagMap objectForKey:tag] == nil) {
+                [self.tagMap setObject:[NSMutableSet set] forKey:tag];
+            }
         }
-        [self.tagMap[tag] addObject:task];
+        @synchronized ([self.tagMap objectForKey:tag]) {
+            [[self.tagMap objectForKey:tag] addObject:task];
+        }
     }
 }
 
 - (void)removeTask:(FKTask *)task {
-    if ([self.tasks containsObject:task]) {
+    @synchronized (self.tasks) {
         [self.tasks removeObject:task];
+    }
+    @synchronized (self.taskMap) {
         [self.taskMap removeObjectForKey:task.identifier];
     }
     for (NSString *tag in task.tags) {
-        if ([self.tagMap.allKeys containsObject:tag]) {
-            [self.tagMap[tag] removeObject:task];
+        @synchronized (self.tagMap) {
+            [[self.tagMap objectForKey:tag] removeObject:task];
         }
     }
 }
@@ -51,58 +59,69 @@
 
 #pragma mark - Tag
 - (void)addTag:(NSString *)tag to:(FKTask *)task {
-    if ([self.tasks containsObject:task] == NO) { return; }
-    if (self.tagMap[tag] == nil) {
-        self.tagMap[tag] = [NSMutableSet set];
+    @synchronized (self.tasks) {
+        if ([self.tasks containsObject:task] == NO) {
+            return;
+        }
     }
-    [self.tagMap[tag] addObject:task];
+    @synchronized (self.tagMap) {
+        if ([self.tagMap objectForKey:tag] == nil) {
+            [self.tagMap setObject:[NSMutableSet set] forKey:tag];
+        }
+    }
+    @synchronized ([self.tagMap objectForKey:tag]) {
+        [[self.tagMap objectForKey:tag] addObject:task];
+    }
 }
 
 - (void)removeTag:(NSString *)tag from:(FKTask *)task {
-    [self.tagMap[tag] removeObject:task];
+    @synchronized ([self.tagMap objectForKey:tag]) {
+        [[self.tagMap objectForKey:tag] removeObject:task];
+    }
 }
 
 
 #pragma mark - Operation
 - (NSArray<FKTask *> *)allTask {
-    return [self.tasks copy];
+    @synchronized (self.tasks) {
+        return [self.tasks allObjects];
+    }
 }
 
 - (FKTask *)taskWithIdentifier:(NSString *)identifier {
-    return self.taskMap[identifier];
+    @synchronized (self.taskMap) {
+        return [self.taskMap objectForKey:identifier];
+    }
 }
 
 - (NSArray<FKTask *> *)taskForTag:(NSString *)tag {
-    if (self.tagMap[tag] == nil) { return @[]; }
-    return self.tagMap[tag].allObjects;
+    @synchronized ([self.tagMap objectForKey:tag]) {
+        if ([self.taskMap objectForKey:tag] == nil) {
+            return @[];
+        }
+    }
+    @synchronized (self.tagMap) {
+        return [[self.tagMap objectForKey:tag] allObjects];
+    }
 }
 
 - (BOOL)containsTask:(FKTask *)task {
-    return [self.tasks containsObject:task];
+    @synchronized (self.tasks) {
+        return [self.tasks containsObject:task];
+    }
 }
 
 - (NSInteger)countOfTasks {
-    return self.tasks.count;
-}
-
-- (void)clear {
-    [self.tasks removeAllObjects];
-    [self.taskMap removeAllObjects];
-    [self.tagMap removeAllObjects];
+    @synchronized (self.tasks) {
+        return [self.tasks count];
+    }
 }
 
 
 #pragma mark - Getter/Setter
-- (NSLock *)lock {
-    if (!_lock) {
-        _lock = [[NSLock alloc] init];
-    }
-    return _lock;
-}
-
-- (NSMutableArray<FKTask *> *)tasks {
+- (NSMutableSet<FKTask *> *)tasks {
     if (!_tasks) {
-        _tasks = [NSMutableArray array];
+        _tasks = [NSMutableSet set];
     }
     return _tasks;
 }
