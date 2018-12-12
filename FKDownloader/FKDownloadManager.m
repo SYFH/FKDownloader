@@ -359,6 +359,9 @@ static FKDownloadManager *_instance = nil;
         FKTask *task = [self createPreserveTask:url number:number];
         [task settingInfo:info];
         [self.taskHub addTask:task withTag:nil];
+        for (NSString *tag in task.tags) {
+            [self.taskHub addTag:tag to:task];
+        }
         
         return task;
     } else {
@@ -404,7 +407,7 @@ static FKDownloadManager *_instance = nil;
 - (void)startNextIdleTask {
     FKLog(@"开始执行下一个等待中任务")
     if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
-        FKTask *nextTask = [[FKDownloadManager manager] filterTaskWithStatus:TaskStatusIdle].firstObject;
+        FKTask *nextTask = [[[FKDownloadManager manager] filterTaskWithStatus:TaskStatusIdle] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"number" ascending:YES]]].firstObject;
         if (nextTask) {
             [nextTask execute];
         }

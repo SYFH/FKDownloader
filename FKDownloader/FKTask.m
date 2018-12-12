@@ -535,9 +535,6 @@ NS_ASSUME_NONNULL_END
     @synchronized (self.tags) {
         [self.tags unionSet:tags];
     }
-    for (NSString *tag in tags) {
-        [self.manager.taskHub addTag:tag to:self];
-    }
 }
 
 - (void)removeTags:(NSSet *)tags {

@@ -96,7 +96,7 @@
 
 - (NSArray<FKTask *> *)taskForTag:(NSString *)tag {
     @synchronized ([self.tagMap objectForKey:tag]) {
-        if ([self.taskMap objectForKey:tag] == nil) {
+        if ([self.tagMap objectForKey:tag] == nil) {
             return @[];
         }
     }
