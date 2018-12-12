@@ -26,6 +26,20 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+- (NSArray *)flatten {
+    NSMutableArray *array = [NSMutableArray array];
+    
+    for (id object in self) {
+        if ([object isKindOfClass:NSArray.class]) {
+            [array addObjectsFromArray:[object flatten]];
+        } else {
+            [array addObject:object];
+        }
+    }
+    
+    return array;
+}
+
 - (void)groupProgress:(nullable void (^)(NSProgress * _Nonnull))progressBlock {
     if (progressBlock == nil) { return; }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{

@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if (self) {
         [self setupTimer];
-        // TODO: NSDate 计算时间戳太昂贵, 考虑使用 C 计算
+        // !!!: NSDate 计算纳秒级时间戳, 在主线程上 300000 次循环获取时长 0.06s 左右, 不需担心
         self.number = (int64_t)([NSDate date].timeIntervalSince1970 * 1000000000);
     }
     return self;
@@ -1024,22 +1024,20 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)refreshSpeed {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.status != TaskStatusExecuting) {
-            return;
-        }
-        
-        NSTimeInterval now = [NSDate date].timeIntervalSince1970;
-        int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.prevReceivedBytes;
-        self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
-        self.prevTime = now;
-        self.prevReceivedBytes = self.downloadTask.countOfBytesReceived;
-        
-        double remaining = (self.progress.totalUnitCount - self.progress.completedUnitCount) / (receivedCount?:1);
-        self.estimatedTimeRemaining = [NSNumber numberWithDouble:remaining];
-        
-        [self sendSpeedInfo];
-    });
+    if (self.status != TaskStatusExecuting) {
+        return;
+    }
+    
+    NSTimeInterval now = [NSDate date].timeIntervalSince1970;
+    int64_t receivedCount = self.downloadTask.countOfBytesReceived - self.prevReceivedBytes;
+    self.bytesPerSecondSpeed = [NSNumber numberWithDouble:(receivedCount / (now - self.prevTime))];
+    self.prevTime = now;
+    self.prevReceivedBytes = self.downloadTask.countOfBytesReceived;
+    
+    double remaining = (self.progress.totalUnitCount - self.progress.completedUnitCount) / (receivedCount?:1);
+    self.estimatedTimeRemaining = [NSNumber numberWithDouble:remaining];
+    
+    [self sendSpeedInfo];
 }
 
 - (void)clearSpeedTimer {
@@ -1174,7 +1172,6 @@ NS_ASSUME_NONNULL_END
 
 - (NSProgress *)progress {
     if (!_progress) {
-        // TODO: 目前串行队列管理任务仓库会导致父 NSProgress 的 totalUnitCount 异常增长, Demo 中应为 600, 实际为 1400, 但重新启动后正常
         [FKDownloadManager manager].progress.totalUnitCount += 100;
         [[FKDownloadManager manager].progress becomeCurrentWithPendingUnitCount:100];
         _progress = [NSProgress progressWithTotalUnitCount:0];

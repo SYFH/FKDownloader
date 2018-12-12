@@ -90,32 +90,21 @@ NS_SWIFT_NAME(Downloader)
  */
 - (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag;
 
-// TODO: 修改添加方法为组式添加, 不再提供单任务添加, 以保证低频率归档
 /**
- 添加任务, 但不执行, 任务状态为 TaskStatusNone
-
- @param url 下载地址
- @return 任务实例
+ 通过数组批量添加任务, 元素限定: NSString, NSURL, NSDictionary
+ 
+ @param array 数组
  */
-- (FKTask *)add:(NSString *)url;
+- (void)addTaskWithArray:(NSArray *)array;
 
 /**
- 添加任务, 可附带指定参数, 但不执行, 任务状态为 TaskStatusNone
- 可添加参数请查看 `FKTaskInfoName` 相关的信息
-
- @param info 包含附加参数的url
- @return 任务实例
- */
-- (FKTask *)addInfo:(NSDictionary *)info;
-
-/**
- 开始任务, 如果下载链接对应的任务不存在, 就会创建任务
+ 开始任务, 如果下载链接对应的任务不存在, 则返回的 task 为 nil
  任务状态变动为 TaskStatusNone -> TaskStatusPrepare -> TaskStatusExecuting
 
  @param url 下载地址
  @return 任务实例
  */
-- (FKTask *)start:(NSString *)url;
+- (nonnull FKTask *)start:(NSString *)url;
 
 /**
  取消任务

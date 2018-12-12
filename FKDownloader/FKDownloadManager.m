@@ -283,6 +283,29 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
+- (void)addTaskWithArray:(NSArray *)array {
+    NSArray *flatArray = [array flatten];
+    dispatch_group_t group = dispatch_group_create();
+    [flatArray forEach:^(id obj, NSUInteger idx) {
+        dispatch_group_enter(group);
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            if ([obj isKindOfClass:[NSString class]]) {
+                [self add:obj];
+            }
+            if ([obj isKindOfClass:[NSURL class]]) {
+                [self add:[(NSURL *)obj absoluteString]];
+            }
+            if ([obj isKindOfClass:[NSDictionary class]]) {
+                [self addInfo:obj];
+            }
+            dispatch_group_leave(group);
+        });
+    }];
+    dispatch_group_notify(group, dispatch_get_global_queue(0, 0), ^{
+        [self saveTasks];
+    });
+}
+
 - (FKTask *)add:(NSString *)url {
     FKLog(@"添加任务: %@", url)
     checkURL(url);
@@ -340,20 +363,24 @@ static FKDownloadManager *_instance = nil;
             [self executeTask:existedTask];
         });
         return existedTask;
+    } else {
+        return nil;
     }
-    
+    /*
     FKTask *task = [self createPreserveTask:url];
     [self.taskHub addTask:task withTag:nil];
+     */
     
     /*
      因在返回 FKTask 后才设置代理, 所以部分代理和回调无法被调用
-     设置一个 dispatch_after 表示延时执行, 先返回 FKTask, 延时时间设置为 0
-     再执行预处理或执行
+     设置一个 dispatch_after 表示延时执行, 先返回 FKTask, 延时时间设置为 0, 再执行预处理或执行
      */
+    /*
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self executeTask:task];
     });
     return task;
+    */
 }
 
 - (void)startNextIdleTask {
@@ -458,7 +485,6 @@ static FKDownloadManager *_instance = nil;
 - (void)saveTasks {
     if (self.configure.isAutoCoding) {
         FKLog(@"归档所有任务")
-        // TODO: 多线程归档非常耗费 CPU, 带更改
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [FKTaskStorage saveObject:self.tasks toPath:self.configure.restoreFilePath];
         });

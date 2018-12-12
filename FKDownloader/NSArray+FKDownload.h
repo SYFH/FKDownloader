@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: FKDownloadManager 添加新的遍历方法, 无序异步和有序异步
 - (NSArray *)map:(id (^)(ObjectType obj, NSUInteger idx))block;
 - (void)forEach:(void (^)(ObjectType obj, NSUInteger idx))block;
+- (NSArray *)flatten;
 
 /**
  计算一组 FKTask 的进度
