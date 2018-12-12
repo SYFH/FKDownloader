@@ -13,10 +13,10 @@
 #import "FKDownloadExecutor.h"
 #import "FKSystemHelper.h"
 #import "FKTaskStorage.h"
-#import "NSString+FKDownload.h"
-#import "NSArray+FKDownload.h"
 #import "FKDefine.h"
 #import "FKReachability.h"
+#import "NSString+FKDownload.h"
+#import "NSArray+FKDownload.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSThread              *timerThread;
 @property (nonatomic, strong) FKReachability        *reachability;
 @property (nonatomic, assign) BOOL                  isDidEnterBackground;
+
+// 原子自增编号
+@property (nonatomic, strong) NSString              *autonumberFilePath;
+@property (nonatomic, strong) dispatch_queue_t      autonumberQueue;
 
 @end
 
@@ -72,6 +76,7 @@ static FKDownloadManager *_instance = nil;
         [self setupNotification];
         [self setupProgress];
         [self setupThread];
+        [self setupAutonumber];
     }
     return self;
 }
@@ -136,26 +141,27 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)setupNotification {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(saveTasks)
-                                                 name:FKTaskDidExecuteNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(saveTasks)
-                                                 name:FKTaskDidSuspendNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(saveTasks)
-                                                 name:FKTaskDidCancelldNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(saveTasks)
-                                                 name:FKTaskDidFinishNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(saveTasks)
-                                                 name:FKTaskErrorNotification
-                                               object:nil];
+    // TODO: 尽量减少对归档的依赖
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(saveTasks)
+//                                                 name:FKTaskDidExecuteNotification
+//                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(saveTasks)
+//                                                 name:FKTaskDidSuspendNotification
+//                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(saveTasks)
+//                                                 name:FKTaskDidCancelldNotification
+//                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(saveTasks)
+//                                                 name:FKTaskDidFinishNotification
+//                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(saveTasks)
+//                                                 name:FKTaskErrorNotification
+//                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(restory)
@@ -196,6 +202,11 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
+- (void)setupAutonumber {
+    self.autonumberFilePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject stringByAppendingPathComponent:@"com.fk.downloader/autonumber"];
+    self.autonumberQueue = dispatch_queue_create("com.fk.auto.nunmber", DISPATCH_QUEUE_CONCURRENT);
+}
+
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -232,11 +243,12 @@ static FKDownloadManager *_instance = nil;
     return [self.taskHub taskForTag:tag];
 }
 
-- (FKTask *)createPreserveTask:(NSString *)url {
+- (FKTask *)createPreserveTask:(NSString *)url number:(NSUInteger)number{
     FKLog(@"创建并保存 FKTask:%@", url)
     FKTask *task = [[FKTask alloc] init];
     task.manager = self;
     task.url = url;
+    [task setValue:@(number) forKey:@"number"];
     if (task.isHasResumeData) {
         [task setValue:@(TaskStatusSuspend) forKey:@"status"];
     } else if (task.isFinish) {
@@ -284,29 +296,37 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)addTaskWithArray:(NSArray *)array {
-    NSArray *flatArray = [array flatten];
+    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        return ([evaluatedObject isKindOfClass:NSString.class] ||
+                [evaluatedObject isKindOfClass:NSURL.class] ||
+                [evaluatedObject isKindOfClass:NSDictionary.class] ||
+                [evaluatedObject isKindOfClass:NSMutableDictionary.class]);
+    }];
+    NSArray *flatArray = [[array flatten] filteredArrayUsingPredicate:predicate];
+    
+    uint64_t currentAutonumber = [self readAutonumber];
     dispatch_group_t group = dispatch_group_create();
     [flatArray forEach:^(id obj, NSUInteger idx) {
         dispatch_group_enter(group);
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             if ([obj isKindOfClass:[NSString class]]) {
-                [self add:obj];
+                [self add:obj number:currentAutonumber + idx];
             }
             if ([obj isKindOfClass:[NSURL class]]) {
-                [self add:[(NSURL *)obj absoluteString]];
+                [self add:[(NSURL *)obj absoluteString] number:currentAutonumber + idx];
             }
             if ([obj isKindOfClass:[NSDictionary class]]) {
-                [self addInfo:obj];
+                [self addInfo:obj number:currentAutonumber + idx];
             }
             dispatch_group_leave(group);
         });
     }];
     dispatch_group_notify(group, dispatch_get_global_queue(0, 0), ^{
-        [self saveTasks];
+        [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
     });
 }
 
-- (FKTask *)add:(NSString *)url {
+- (FKTask *)add:(NSString *)url number:(NSUInteger)number {
     FKLog(@"添加任务: %@", url)
     checkURL(url);
     
@@ -317,14 +337,13 @@ static FKDownloadManager *_instance = nil;
         return existedTask;
     }
     
-    FKTask *task = [self createPreserveTask:url];
+    FKTask *task = [self createPreserveTask:url number:number];
     [self.taskHub addTask:task withTag:nil];
     
-//    [self saveTasks];
     return task;
 }
 
-- (FKTask *)addInfo:(NSDictionary *)info {
+- (FKTask *)addInfo:(NSDictionary *)info number:(NSUInteger)number {
     if ([info.allKeys containsObject:FKTaskInfoURL]) {
         NSString *url = info[FKTaskInfoURL];
         FKLog(@"添加任务: %@", url)
@@ -337,11 +356,10 @@ static FKDownloadManager *_instance = nil;
             return existedTask;
         }
         
-        FKTask *task = [self createPreserveTask:url];
+        FKTask *task = [self createPreserveTask:url number:number];
         [task settingInfo:info];
         [self.taskHub addTask:task withTag:nil];
         
-//        [self saveTasks];
         return task;
     } else {
         checkURL(@"");
@@ -456,7 +474,7 @@ static FKDownloadManager *_instance = nil;
     [self.taskHub removeTask:existedTask];
     [existedTask sendRemoveInfo];
     
-//    [self saveTasks];
+    [self saveTasks];
 }
 
 
@@ -491,7 +509,18 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
+- (void)saveTasksWithAutonumber:(uint64_t)count {
+    if (self.configure.isAutoCoding) {
+        FKLog(@"归档所有任务")
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [FKTaskStorage saveObject:self.tasks toPath:self.configure.restoreFilePath];
+            [self autonumberOfInc:count];
+        });
+    }
+}
+
 - (void)loadTasks {
+    // TODO: 默认全部为 None 状态, 判断 error, resumeData, file 是否存在更新状态, 尽量减少依赖归档信息
     if ([self.fileManager fileExistsAtPath:self.configure.restoreFilePath] && self.configure.isAutoCoding) {
         FKLog(@"解档所有任务")
         NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restoreFilePath];
@@ -584,6 +613,41 @@ static FKDownloadManager *_instance = nil;
 
 - (void)didEnterBackground:(NSNotification *)notify {
     self.isDidEnterBackground = YES;
+}
+
+
+#pragma mark - Autonumber
+- (uint64_t)readAutonumber {
+    __block uint64_t number = 0;
+    dispatch_sync(self.autonumberQueue, ^{
+        @autoreleasepool {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:self.autonumberFilePath]) {
+                NSData *data = [NSData dataWithContentsOfFile:self.autonumberFilePath options:NSDataReadingMappedIfSafe error:nil];
+                [data getBytes:&number length:sizeof(uint64_t)];
+            } else {
+                [[NSData dataWithBytes:&number length:sizeof(uint64_t)] writeToFile:self.autonumberFilePath atomically:YES];
+            }
+        }
+    });
+    return number;
+}
+
+- (void)autonumberOfInc:(uint64_t)number {
+    dispatch_barrier_sync(self.autonumberQueue, ^{
+        @autoreleasepool {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:self.autonumberFilePath]) {
+                uint64_t exist = 0;
+                NSData *data = [NSData dataWithContentsOfFile:self.autonumberFilePath options:NSDataReadingMappedIfSafe error:nil];
+                [data getBytes:&exist length:sizeof(uint64_t)];
+                if (exist + number < UINT64_MAX) {
+                    exist += number;
+                    [[NSData dataWithBytes:&exist length:sizeof(uint64_t)] writeToFile:self.autonumberFilePath atomically:YES];
+                }
+            } else {
+                [[NSData dataWithBytes:&number length:sizeof(uint64_t)] writeToFile:self.autonumberFilePath atomically:YES];
+            }
+        }
+    });
 }
 
 

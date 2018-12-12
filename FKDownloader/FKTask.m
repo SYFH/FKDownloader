@@ -34,11 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy  ) NSDictionary      *info;
 
-/**
- 任务序号, 目前使用纳秒级时间戳
- // TODO: 异步添加任务会导致时间戳与数组顺序不符, 需要使用其他方法标记顺序, 可使用自增键代替
- */
-@property (nonatomic, assign) int64_t           number;
+@property (nonatomic, assign) uint64_t          number;
 
 @property (nonatomic, assign) BOOL              isPassChecksum;
 
@@ -57,8 +53,6 @@ NS_ASSUME_NONNULL_END
     self = [super init];
     if (self) {
         [self setupTimer];
-        // !!!: NSDate 计算纳秒级时间戳, 在主线程上 300000 次循环获取时长 0.06s 左右, 不需担心
-        self.number = (int64_t)([NSDate date].timeIntervalSince1970 * 1000000000);
     }
     return self;
 }
@@ -124,9 +118,6 @@ NS_ASSUME_NONNULL_END
         [self settingInfo:[aDecoder decodeObjectForKey:@"info"] ?: @{}];
         
         [self setupTimer];
-        if (self.number == 0) {
-            self.number = (int64_t)([NSDate date].timeIntervalSince1970 * 1000000000);
-        }
     }
     return self;
 }

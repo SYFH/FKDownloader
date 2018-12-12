@@ -91,7 +91,8 @@ NS_SWIFT_NAME(Downloader)
 - (NSArray<FKTask *> *)acquireWithTag:(NSString *)tag;
 
 /**
- 通过数组批量添加任务, 元素限定: NSString, NSURL, NSDictionary
+ 通过数组批量添加任务, 元素限定: NSString, NSURL, NSDictionary, NSMutableDictionary
+ 可接受多维数组, 但元素限定不变
  
  @param array 数组
  */
