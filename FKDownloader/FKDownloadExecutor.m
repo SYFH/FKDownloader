@@ -22,7 +22,8 @@
     }
 }
 
-// TODO: 有时后台任务在 kill app 后会被系统取消, 恢复时会报 `No such file or dictionary` 错误, 但即使重新创建 task 也还会出同样的错
+// TODO: 后台任务在 kill app 后, 重启之后再取消, 开始时会报 `No such file or dictionary` 错误, 但即使重新创建 task 也还会出同样的错.
+// 但先暂停后再取消, 然后开始则不会出现 `No such file or dictionary` 错误
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     if (task.currentRequest.URL.absoluteString.length == 0) {
         return;

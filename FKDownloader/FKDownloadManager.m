@@ -358,10 +358,7 @@ static FKDownloadManager *_instance = nil;
         
         FKTask *task = [self createPreserveTask:url number:number];
         [task settingInfo:info];
-        [self.taskHub addTask:task withTag:nil];
-        for (NSString *tag in task.tags) {
-            [self.taskHub addTag:tag to:task];
-        }
+        [self.taskHub addTask:task withTags:task.tags.allObjects];
         
         return task;
     } else {
@@ -531,7 +528,7 @@ static FKDownloadManager *_instance = nil;
             if (![self acquire:task.url]) {
                 task.manager = self;
                 task.codingAdd = YES;
-                [self.taskHub addTask:task withTag:nil];
+                [self.taskHub addTask:task withTags:task.tags.allObjects];
                 
                 if (self.configure.isAutoStart) {
                     FKLog(@"自动开始任务: %@", task)

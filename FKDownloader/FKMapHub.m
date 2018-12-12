@@ -42,6 +42,29 @@
     }
 }
 
+- (void)addTask:(FKTask *)task withTags:(NSArray<NSString *> *)tags {
+    @synchronized (self.tasks) {
+        [self.tasks addObject:task];
+    }
+    @synchronized (self.taskMap) {
+        if ([self.taskMap objectForKey:task.identifier] == nil) {
+            [self.taskMap setObject:task forKey:task.identifier];
+        }
+    }
+    if (tags.count > 0) {
+        for (NSString *tag in tags) {
+            @synchronized (self.tagMap) {
+                if ([self.tagMap objectForKey:tag] == nil) {
+                    [self.tagMap setObject:[NSMutableSet set] forKey:tag];
+                }
+            }
+            @synchronized ([self.tagMap objectForKey:tag]) {
+                [[self.tagMap objectForKey:tag] addObject:task];
+            }
+        }
+    }
+}
+
 - (void)removeTask:(FKTask *)task {
     @synchronized (self.tasks) {
         [self.tasks removeObject:task];

@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Task
 - (void)addTask:(FKTask *)task withTag:(nullable NSString *)tag;
+- (void)addTask:(FKTask *)task withTags:(NSArray<NSString *> *)tags;
 - (void)removeTask:(FKTask *)task;
 
 #pragma mark - Tag
