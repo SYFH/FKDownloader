@@ -171,12 +171,6 @@ NS_SWIFT_NAME(Task)
  */
 @property (nonatomic, copy  , readonly) NSMutableSet *tags;
 
-/**
- 任务编号, 使用任务创建时间戳生成, 单位: 纳秒
- 当不使用归档恢复时, 顺序受用户代码影响
- */
-@property (nonatomic, assign, readonly) int64_t number;
-
 
 #pragma mark - Operation
 /**

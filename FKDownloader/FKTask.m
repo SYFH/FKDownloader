@@ -33,6 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSNumber          *bytesPerSecondSpeed;
 
 @property (nonatomic, copy  ) NSDictionary      *info;
+
+/**
+ 任务序号, 目前使用纳秒级时间戳
+ // TODO: 异步添加任务会导致时间戳与数组顺序不符, 需要使用其他方法标记顺序, 可使用自增键代替
+ */
 @property (nonatomic, assign) int64_t           number;
 
 @property (nonatomic, assign) BOOL              isPassChecksum;

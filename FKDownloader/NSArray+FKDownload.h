@@ -10,9 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface NSArray<ObjectType> (FKDownload)
-// TODO: FKDownloadManager 添加新的遍历方法, 无序异步和有序异步
 - (NSArray *)map:(id (^)(ObjectType obj, NSUInteger idx))block;
 - (void)forEach:(void (^)(ObjectType obj, NSUInteger idx))block;
+
+- (void)orderEach:(void (^)(ObjectType obj, NSUInteger idx))block;
+- (void)disorderEach:(void (^)(ObjectType obj, NSUInteger idx))block;
 - (NSArray *)flatten;
 
 /**

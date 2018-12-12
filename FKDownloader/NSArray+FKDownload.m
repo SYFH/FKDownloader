@@ -26,6 +26,16 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+
+- (void)orderEach:(void (^)(id _Nonnull, NSUInteger))block {
+    NSArray *orderTasks = [self sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"number" ascending:YES]]];
+    [orderTasks forEach:block];
+}
+
+- (void)disorderEach:(void (^)(id _Nonnull, NSUInteger))block {
+    [self forEach:block];
+}
+
 - (NSArray *)flatten {
     NSMutableArray *array = [NSMutableArray array];
     

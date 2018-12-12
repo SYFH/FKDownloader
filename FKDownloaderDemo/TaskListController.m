@@ -92,9 +92,14 @@
 }
 
 - (void)startDidTap:(UIBarButtonItem *)sender {
-    [[FKDownloadManager manager].taskHub.allTask forEach:^(FKTask *task, NSUInteger idx) {
+    [[FKDownloadManager manager].taskHub.allTask orderEach:^(FKTask *task, NSUInteger idx) {
         [[FKDownloadManager manager] start:task.url];
     }];
+    /*
+    [[FKDownloadManager manager].taskHub.allTask disorderEach:^(FKTask *task, NSUInteger idx) {
+        [[FKDownloadManager manager] start:task.url];
+    }];
+     */
 }
 
 - (void)stopDidTap:(UIBarButtonItem *)sender {
