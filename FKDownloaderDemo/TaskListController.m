@@ -25,40 +25,26 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    /* 多线程添加任务
-    [self.urls forEach:^(NSString *url, NSUInteger idx) {
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [[FKDownloadManager manager] add:url];
-        });
-    }];
-     */
+    NSMutableArray *tasks = [NSMutableArray arrayWithCapacity:self.urls.count];
     [self.urls forEach:^(NSString *url, NSUInteger idx) {
         if (idx == 0) {
-            /* 不使用 `-[FKDownloadManager addInfo:]` 的另一种写法
-            FKTask *task = [[FKDownloadManager manager] add:url];
-
-            task.fileName = @"123";
-            task.verificationType = VerifyTypeMD5;
-            task.verification = @"5f75fe52c15566a12b012db21808ad8c";
-            task.requestHeader = @{};
-            task.savePath = [FKDownloadManager manager].configure.savePath;
-            task.resumeSavePath = [FKDownloadManager manager].configure.resumeSavePath;
-            [task addTags:[NSSet set]];
-             */
-
-            [[FKDownloadManager manager] addInfo:@{FKTaskInfoURL: url,
-                                                   FKTaskInfoFileName: @"123",
-                                                   FKTaskInfoVerificationType: @(VerifyTypeMD5),
-                                                   FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
-                                                   FKTaskInfoRequestHeader: @{},
-                                                   FKTaskInfoTags: @[@"group_task_01"],
-                                                   FKTaskInfoResumeSavePath: [FKDownloadManager manager].configure.resumeSavePath,
-                                                   FKTaskInfoSavePath: [FKDownloadManager manager].configure.savePath }];
+            [tasks addObject:@{FKTaskInfoURL: url,
+                               FKTaskInfoFileName: @"123",
+                               FKTaskInfoVerificationType: @(VerifyTypeMD5),
+                               FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
+                               FKTaskInfoRequestHeader: @{},
+                               FKTaskInfoTags: @[@"group_task_01"],
+                               FKTaskInfoResumeSavePath: [FKDownloadManager manager].configure.resumeSavePath,
+                               FKTaskInfoSavePath: [FKDownloadManager manager].configure.savePath}];
         } else {
-            FKTask *task = [[FKDownloadManager manager] add:url];
-            [task addTags:[NSSet setWithObjects:@"group_task_02", nil]];
+            [tasks addObject:@{FKTaskInfoURL: url,
+                               FKTaskInfoTags: @[@"group_task_02"]}];
         }
     }];
+    /* 直接使用 url 数组添加任务
+     [[FKDownloadManager manager] addTaskWithArray:self.urls];
+     */
+    [[FKDownloadManager manager] addTaskWithArray:tasks.copy];
     
     self.totalProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
     [self.view addSubview:self.totalProgressView];

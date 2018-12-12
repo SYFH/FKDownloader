@@ -178,7 +178,7 @@
 - (void)setUrl:(NSString *)url {
     _url = url;
     
-    [[FKDownloadManager manager] add:url].delegate = self;
+    [[FKDownloadManager manager] acquire:url].delegate = self;
     self.nameLable.text = [NSURL URLWithString:url].lastPathComponent;
 }
 
