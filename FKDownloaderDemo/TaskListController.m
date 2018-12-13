@@ -42,8 +42,9 @@
         }
     }];
     /* 直接使用 url 数组添加任务
-     [[FKDownloadManager manager] addTaskWithArray:self.urls];
+     [[FKDownloadManager manager] addTaskWithArray:self.urls tag:@"group_task_01"];
      */
+     
     [[FKDownloadManager manager] addTaskWithArray:tasks.copy];
     
     self.totalProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];

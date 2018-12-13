@@ -22,6 +22,7 @@
     [FKDownloadManager manager].configure.allowCellular = YES;
     [FKDownloadManager manager].configure.deleteFinishFile = YES;
     [FKDownloadManager manager].configure.calculateSpeedWithEstimated = YES;
+    [FKDownloadManager manager].configure.taskIdentifierIgnoreParameters = YES;
     return YES;
 }
 
@@ -54,6 +55,12 @@
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler {
     
     if ([identifier isEqualToString:[FKDownloadManager manager].configure.sessionIdentifier]) {
+        // !!!: 用户可在此处自定义配置配置实例, 以避免部分参数与 kill app 时的配置不符
+        [FKDownloadManager manager].configure.maximumExecutionTask = 1;
+        [FKDownloadManager manager].configure.allowCellular = YES;
+        [FKDownloadManager manager].configure.deleteFinishFile = YES;
+        [FKDownloadManager manager].configure.calculateSpeedWithEstimated = YES;
+        [FKDownloadManager manager].configure.taskIdentifierIgnoreParameters = YES;
         [FKDownloadManager manager].configure.backgroundHandler = completionHandler;
     }
 }
