@@ -54,14 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (progressBlock == nil) { return; }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         @synchronized (self) {
-            __block double total = 0.f;
-            [self forEach:^(FKTask *task, NSUInteger idx) {
-                if ([task isKindOfClass:[FKTask class]]) {
-                    total += task.progress.fractionCompleted;
-                }
-            }];
+            double progress = [[self valueForKeyPath:@"@avg.progress.fractionCompleted"] doubleValue];
             dispatch_async(dispatch_get_main_queue(), ^{
-                progressBlock(total / self.count);
+                progressBlock(progress);
             });
         }
     });
