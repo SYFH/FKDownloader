@@ -520,7 +520,6 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)loadTasks {
-    // TODO: 默认全部为 None 状态, 判断 error, resumeData, file 是否存在更新状态, 尽量减少依赖归档信息
     if ([self.fileManager fileExistsAtPath:self.configure.restoreFilePath] && self.configure.isAutoCoding) {
         FKLog(@"解档所有任务")
         NSArray<FKTask *> *tasks = [FKTaskStorage loadData:self.configure.restoreFilePath];
@@ -528,6 +527,7 @@ static FKDownloadManager *_instance = nil;
             if (![self acquire:task.url]) {
                 task.manager = self;
                 task.codingAdd = YES;
+                [task setValue:@(TaskStatusNone) forKey:@"status"];
                 [self.taskHub addTask:task withTags:task.tags.allObjects];
                 
                 if (self.configure.isAutoStart) {

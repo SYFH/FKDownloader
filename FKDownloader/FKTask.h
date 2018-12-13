@@ -96,6 +96,7 @@ NS_SWIFT_NAME(Task)
 /**
  当前任务的下载进度, progress.totalUnitCount 为文件总大小
  progress.completedUnitCount 为已下载大小, progress.fractionCompleted 为进度百分比
+ NSProgress 的属性值不能胡乱修改, 否则进度/总进度/组进度将计算错误
  */
 @property (nonatomic, strong, readonly) NSProgress *progress;
 

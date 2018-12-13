@@ -97,8 +97,6 @@ NS_ASSUME_NONNULL_END
     [aCoder encodeObject:self.tags              forKey:@"tags"];
     [aCoder encodeObject:self.info              forKey:@"info"];
     [aCoder encodeInt64:self.number             forKey:@"number"];
-    [aCoder encodeInt64:self.progress.totalUnitCount        forKey:@"totalUnitCount"];
-    [aCoder encodeInt64:self.progress.completedUnitCount    forKey:@"completedUnitCount"];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
@@ -111,8 +109,6 @@ NS_ASSUME_NONNULL_END
         self.requestHeader      = [aDecoder decodeObjectForKey:@"requestHeader"];
         self.status             = [aDecoder decodeIntegerForKey:@"status"];
         self.number             = [aDecoder decodeInt64ForKey:@"number"];
-        self.progress.totalUnitCount        = [aDecoder decodeInt64ForKey:@"totalUnitCount"];
-        self.progress.completedUnitCount    = [aDecoder decodeInt64ForKey:@"completedUnitCount"];
         
         [self addTags:[aDecoder decodeObjectForKey:@"tags"] ?: [NSSet set]];
         [self settingInfo:[aDecoder decodeObjectForKey:@"info"] ?: @{}];
@@ -143,12 +139,13 @@ NS_ASSUME_NONNULL_END
     [self addProgressObserver];
     
     switch (task.state) {
-        case NSURLSessionTaskStateRunning:
+        case NSURLSessionTaskStateRunning: {
             self.status = TaskStatusExecuting;
-            break;
+            // !!!: 先暂停再继续, 以防止直接取消后再开始就报错的问题
+            [self suspendWithComplete:^{ [self resume]; }];
+        } break;
             
         case NSURLSessionTaskStateSuspended:
-            // tips: 后台任务没有暂停状态
             self.status = TaskStatusSuspend;
             break;
             
