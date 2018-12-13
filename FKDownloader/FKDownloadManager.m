@@ -311,13 +311,13 @@ static FKDownloadManager *_instance = nil;
         dispatch_group_enter(group);
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             if ([obj isKindOfClass:[NSString class]]) {
-                [self add:obj number:currentAutonumber + idx];
+                [self add:obj number:currentAutonumber + (uint64_t)idx];
             }
             if ([obj isKindOfClass:[NSURL class]]) {
-                [self add:[(NSURL *)obj absoluteString] number:currentAutonumber + idx];
+                [self add:[(NSURL *)obj absoluteString] number:currentAutonumber + (uint64_t)idx];
             }
             if ([obj isKindOfClass:[NSDictionary class]]) {
-                [self addInfo:obj number:currentAutonumber + idx];
+                [self addInfo:obj number:currentAutonumber + (uint64_t)idx];
             }
             dispatch_group_leave(group);
         });
@@ -345,12 +345,12 @@ static FKDownloadManager *_instance = nil;
                 if ([obj isKindOfClass:[NSString class]]) {
                     NSString *url = obj;
                     NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
-                    [self addInfo:info number:currentAutonumber + idx];
+                    [self addInfo:info number:currentAutonumber + (uint64_t)idx];
                 }
                 if ([obj isKindOfClass:[NSURL class]]) {
                     NSString *url = [(NSURL *)obj absoluteString];
                     NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
-                    [self addInfo:info number:currentAutonumber + idx];
+                    [self addInfo:info number:currentAutonumber + (uint64_t)idx];
                 }
                 if ([obj isKindOfClass:[NSDictionary class]]) {
                     NSMutableDictionary *info = [(NSDictionary *)obj mutableCopy];
@@ -366,7 +366,7 @@ static FKDownloadManager *_instance = nil;
                     } else {
                         [info setObject:@[tag] forKey:FKTaskInfoTags];
                     }
-                    [self addInfo:info number:currentAutonumber + idx];
+                    [self addInfo:info number:currentAutonumber + (uint64_t)idx];
                 }
                 dispatch_group_leave(group);
             });
@@ -706,8 +706,10 @@ static FKDownloadManager *_instance = nil;
                 [data getBytes:&exist length:sizeof(uint64_t)];
                 if (exist + number < UINT64_MAX) {
                     exist += number;
-                    [[NSData dataWithBytes:&exist length:sizeof(uint64_t)] writeToFile:self.autonumberFilePath atomically:YES];
+                } else {
+                    exist = 0;
                 }
+                [[NSData dataWithBytes:&exist length:sizeof(uint64_t)] writeToFile:self.autonumberFilePath atomically:YES];
             } else {
                 [[NSData dataWithBytes:&number length:sizeof(uint64_t)] writeToFile:self.autonumberFilePath atomically:YES];
             }
