@@ -99,6 +99,15 @@ NS_SWIFT_NAME(Downloader)
 - (void)addTaskWithArray:(NSArray *)array;
 
 /**
+ 通过数组批量添加任务, 元素限定: NSString, NSURL, NSDictionary, NSMutableDictionary
+ 可接受多维数组, 但元素限定不变
+
+ @param array 数组
+ @param tag 标签
+ */
+- (void)addTaskWithArray:(NSArray *)array tag:(nullable NSString *)tag;
+
+/**
  开始任务, 如果下载链接对应的任务不存在, 则返回的 task 为 nil
  任务状态变动为 TaskStatusNone -> TaskStatusPrepare -> TaskStatusExecuting
 

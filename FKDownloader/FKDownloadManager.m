@@ -12,6 +12,7 @@
 #import "FKMapHub.h"
 #import "FKDownloadExecutor.h"
 #import "FKSystemHelper.h"
+#import "FKResumeHelper.h"
 #import "FKTaskStorage.h"
 #import "FKDefine.h"
 #import "FKReachability.h"
@@ -326,6 +327,58 @@ static FKDownloadManager *_instance = nil;
     });
 }
 
+- (void)addTaskWithArray:(NSArray *)array tag:(NSString *)tag {
+    if (tag.length) {
+        NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            return ([evaluatedObject isKindOfClass:NSString.class] ||
+                    [evaluatedObject isKindOfClass:NSURL.class] ||
+                    [evaluatedObject isKindOfClass:NSDictionary.class] ||
+                    [evaluatedObject isKindOfClass:NSMutableDictionary.class]);
+        }];
+        NSArray *flatArray = [[array flatten] filteredArrayUsingPredicate:predicate];
+        
+        uint64_t currentAutonumber = [self readAutonumber];
+        dispatch_group_t group = dispatch_group_create();
+        [flatArray forEach:^(id obj, NSUInteger idx) {
+            dispatch_group_enter(group);
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                if ([obj isKindOfClass:[NSString class]]) {
+                    NSString *url = obj;
+                    NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
+                    [self addInfo:info number:currentAutonumber + idx];
+                }
+                if ([obj isKindOfClass:[NSURL class]]) {
+                    NSString *url = [(NSURL *)obj absoluteString];
+                    NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
+                    [self addInfo:info number:currentAutonumber + idx];
+                }
+                if ([obj isKindOfClass:[NSDictionary class]]) {
+                    NSMutableDictionary *info = [(NSDictionary *)obj mutableCopy];
+                    id tags = [info valueForKey:FKTaskInfoTags];
+                    if (tags) {
+                        if ([tags isKindOfClass:[NSArray class]]) {
+                            [info setObject:[@[tag] arrayByAddingObjectsFromArray:tags] forKey:FKTaskInfoTags];
+                        } else if ([tags isKindOfClass:[NSSet class]]) {
+                            NSMutableSet *tagsSet = [NSMutableSet setWithSet:tags];
+                            [tagsSet unionSet:[NSSet setWithObject:tag]];
+                            [info setObject:tagsSet forKey:FKTaskInfoTags];
+                        }
+                    } else {
+                        [info setObject:@[tag] forKey:FKTaskInfoTags];
+                    }
+                    [self addInfo:info number:currentAutonumber + idx];
+                }
+                dispatch_group_leave(group);
+            });
+        }];
+        dispatch_group_notify(group, dispatch_get_global_queue(0, 0), ^{
+            [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
+        });
+    } else {
+        [self addTaskWithArray:array];
+    }
+}
+
 - (FKTask *)add:(NSString *)url number:(NSUInteger)number {
     FKLog(@"添加任务: %@", url)
     checkURL(url);
@@ -494,8 +547,20 @@ static FKDownloadManager *_instance = nil;
         if (task) {
             [task restore:downloadTask];
         } else {
-            // TODO: 没有归档时会来这里, 可以获取恢复数据后取消, 以便后期使用
-            [downloadTask cancel];
+            // !!!: 没有归档时会来这里, 可以获取恢复数据保存后取消, 以便后期使用, 但路径需要兼容
+            [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
+                if ([FKResumeHelper checkUsable:resumeData]) {
+                    FKLog(@"%@", [FKResumeHelper pockResumeData:resumeData])
+                    NSString *identifier = @"";
+                    if (self.configure.isTaskIdentifierIgnoreParameters) {
+                        identifier = downloadTask.currentRequest.URL.absoluteString.identifier;
+                    } else {
+                        identifier = downloadTask.currentRequest.URL.absoluteString.SHA256;
+                    }
+                    NSString *resumeFielPath = [self.configure.resumeSavePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.resume", identifier]];
+                    [[FKResumeHelper correctResumeData:resumeData] writeToFile:resumeFielPath atomically:YES];
+                }
+            }];
         }
     }];
 }

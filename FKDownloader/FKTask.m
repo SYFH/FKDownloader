@@ -1041,7 +1041,6 @@ NS_ASSUME_NONNULL_END
     return NSTemporaryDirectory();
 }
 
-
 #pragma mark - Getter/Setter
 - (void)setUrl:(NSString *)url {
     _url = url;
@@ -1105,6 +1104,8 @@ NS_ASSUME_NONNULL_END
     
     if (self.isFinish) {
         [self sendFinishInfo];
+    } else if (self.isHasResumeData) {
+        [self sendSuspendInfo];
     } else {
         [self sendProgressInfo];
     }

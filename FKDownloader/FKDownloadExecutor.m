@@ -11,6 +11,7 @@
 #import "FKConfigure.h"
 #import "FKTask.h"
 #import "FKResumeHelper.h"
+#import "NSString+FKDownload.h"
 
 @implementation FKDownloadExecutor
 
@@ -22,8 +23,6 @@
     }
 }
 
-// TODO: 后台任务在 kill app 后, 重启之后再取消, 开始时会报 `No such file or dictionary` 错误, 但即使重新创建 task 也还会出同样的错.
-// 但先暂停后再取消, 然后开始则不会出现 `No such file or dictionary` 错误
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     if (task.currentRequest.URL.absoluteString.length == 0) {
         return;
@@ -31,8 +30,19 @@
     
     FKTask *downloadTask = [[FKDownloadManager manager] acquire:task.currentRequest.URL.absoluteString];
     if (downloadTask == nil) {
-        [[FKDownloadManager manager] addTaskWithArray:@[task.currentRequest.URL.absoluteString]];
-        downloadTask = [[FKDownloadManager manager] acquire:task.currentRequest.URL.absoluteString];
+        // !!!: kill app 后可能有任务会被系统取消, 再次启动时将恢复数据保存到默认文件中.
+        if (error.code == NSURLErrorCancelled && error.userInfo[NSURLSessionDownloadTaskResumeData]) {
+            NSData *resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData];
+            NSString *identifier = @"";
+            if ([FKDownloadManager manager].configure.isTaskIdentifierIgnoreParameters) {
+                identifier = task.currentRequest.URL.absoluteString.identifier;
+            } else {
+                identifier = task.currentRequest.URL.absoluteString.SHA256;
+            }
+            NSString *resumeFielPath = [[FKDownloadManager manager].configure.resumeSavePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.resume", identifier]];
+            [[FKResumeHelper correctResumeData:resumeData] writeToFile:resumeFielPath atomically:YES];
+        }
+        return;
     }
     
     if ([task.response isKindOfClass:[NSHTTPURLResponse class]]) {
