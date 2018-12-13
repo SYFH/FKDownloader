@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @param progressBlock 进度Block
  */
-- (void)groupProgress:(nullable void(^)(NSProgress *progress))progressBlock;
+- (void)groupProgress:(nullable void(^)(double progress))progressBlock;
 
 @end
 NS_ASSUME_NONNULL_END

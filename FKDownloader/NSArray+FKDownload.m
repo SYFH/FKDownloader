@@ -50,19 +50,18 @@ NS_ASSUME_NONNULL_BEGIN
     return array;
 }
 
-- (void)groupProgress:(nullable void (^)(NSProgress * _Nonnull))progressBlock {
+- (void)groupProgress:(nullable void (^)(double))progressBlock {
     if (progressBlock == nil) { return; }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         @synchronized (self) {
-            NSProgress *progress = [[NSProgress alloc] init];
+            __block double total = 0.f;
             [self forEach:^(FKTask *task, NSUInteger idx) {
                 if ([task isKindOfClass:[FKTask class]]) {
-                    progress.totalUnitCount += 100;
-                    progress.completedUnitCount += (int64_t)(task.progress.fractionCompleted * 100);
+                    total += task.progress.fractionCompleted;
                 }
             }];
             dispatch_async(dispatch_get_main_queue(), ^{
-                progressBlock(progress);
+                progressBlock(total / self.count);
             });
         }
     });

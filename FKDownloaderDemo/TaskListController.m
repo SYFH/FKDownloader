@@ -53,11 +53,11 @@
         __strong typeof(weak) strong = weak;
         FKLog(@"%@", progress);
         strong.totalProgressView.progress = progress.fractionCompleted;
-        [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(NSProgress * _Nonnull progress) {
-            FKLog(@"group_task_01 progress: %.4f", progress.fractionCompleted);
+        [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(double progress) {
+            FKLog(@"group_task_01 progress: %.6f", progress);
         }];
-        [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(NSProgress * _Nonnull progress) {
-            FKLog(@"group_task_02 progress: %.4f", progress.fractionCompleted);
+        [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(double progress) {
+            FKLog(@"group_task_02 progress: %.6f", progress);
         }];
     };
     
