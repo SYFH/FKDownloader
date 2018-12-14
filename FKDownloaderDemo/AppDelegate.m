@@ -22,7 +22,6 @@
     [FKDownloadManager manager].configure.allowCellular = YES;
     [FKDownloadManager manager].configure.deleteFinishFile = YES;
     [FKDownloadManager manager].configure.calculateSpeedWithEstimated = YES;
-    [FKDownloadManager manager].configure.taskIdentifierIgnoreParameters = YES;
     return YES;
 }
 
@@ -60,7 +59,6 @@
         [FKDownloadManager manager].configure.allowCellular = YES;
         [FKDownloadManager manager].configure.deleteFinishFile = YES;
         [FKDownloadManager manager].configure.calculateSpeedWithEstimated = YES;
-        [FKDownloadManager manager].configure.taskIdentifierIgnoreParameters = YES;
         [FKDownloadManager manager].configure.backgroundHandler = completionHandler;
     }
 }

@@ -60,12 +60,6 @@ NS_SWIFT_NAME(Configure)
 @property (nonatomic, assign, getter=isDeleteFinishFile) BOOL deleteFinishFile;
 
 /**
- FKTask 根据 URL 创建 identifier 时, 是否忽略参数, 默认为 NO
- 可以使用 FKTaskInfoKey 指定某个任务是否忽略参数
- */
-@property (nonatomic, assign, getter=isTaskIdentifierIgnoreParameters) BOOL taskIdentifierIgnoreParameters;
-
-/**
  是否计算任务的下载速度和预计时间, 默认为 Yes
  */
 @property (nonatomic, assign, getter=isCalculateSpeedWithEstimated) BOOL calculateSpeedWithEstimated;

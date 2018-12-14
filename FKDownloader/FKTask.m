@@ -239,17 +239,6 @@ NS_ASSUME_NONNULL_END
         }
     }
     
-    if ([info.allKeys containsObject:FKTaskInfoIdentifierIgonerParameters]) {
-        id ignoer = info[FKTaskInfoIdentifierIgonerParameters];
-        if ([ignoer isKindOfClass:[NSNumber class]] || [ignoer isKindOfClass:[NSValue class]]) {
-            if ([ignoer boolValue]) {
-                self.identifier = [self.url identifier];
-            } else {
-                self.identifier = [self.url SHA256];
-            }
-        }
-    }
-    
     if ([info.allKeys containsObject:FKTaskInfoCalculateSpeedWithEstimated]) {
         id calculate = info[FKTaskInfoCalculateSpeedWithEstimated];
         if ([calculate isKindOfClass:[NSNumber class]] || [calculate isKindOfClass:[NSValue class]]) {
@@ -1045,11 +1034,7 @@ NS_ASSUME_NONNULL_END
 - (void)setUrl:(NSString *)url {
     _url = url;
     
-    if ([FKDownloadManager manager].configure.isTaskIdentifierIgnoreParameters) {
-        self.identifier = [url identifier];
-    } else {
-        self.identifier = [url SHA256];
-    }
+    self.identifier = [url SHA256];
 }
 
 - (void)setDelegate:(id<FKTaskDelegate>)delegate {

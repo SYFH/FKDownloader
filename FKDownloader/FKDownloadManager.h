@@ -144,6 +144,14 @@ NS_SWIFT_NAME(Downloader)
  */
 - (void)remove:(NSString *)url;
 
+/**
+ 更新任务的下载链接
+
+ @param expire 已过期地址
+ @param url 替换地址
+ */
+- (void)update:(NSString *)expire to:(NSString *)url;
+
 
 /**
  开始下一个等待中的任务

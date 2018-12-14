@@ -48,8 +48,7 @@
 }
 
 - (NSString *)identifier {
-    NSURL *URL = [NSURL URLWithString:self];
-    return [[NSString stringWithFormat:@"%@://%@%@", URL.scheme, URL.host, URL.path] SHA256];
+    return [self SHA256];
 }
 
 - (NSString *)toHexString:(unsigned char*)data length:(unsigned int)length {

@@ -61,7 +61,6 @@ FKTaskInfoName const FKTaskInfoRequestHeader    = @"FKTaskInfoRequestHeader";
 FKTaskInfoName const FKTaskInfoTags             = @"FKTaskInfoTags";
 FKTaskInfoName const FKTaskInfoResumeSavePath   = @"FKTaskInfoResumeSavePath";
 FKTaskInfoName const FKTaskInfoSavePath         = @"FKTaskInfoSavePath";
-FKTaskInfoName const FKTaskInfoIdentifierIgonerParameters   = @"FKTaskInfoIdentifierIgonerParameters";
 FKTaskInfoName const FKTaskInfoCalculateSpeedWithEstimated  = @"FKTaskInfoCalculateSpeedWithEstimated";
 
 FKReachabilityNotificationName const FKReachabilityChangedNotification = @"FKReachabilityChangedNotification";

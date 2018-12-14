@@ -20,7 +20,6 @@
     config.allowCellular      = NO;
     config.autoCoding         = YES;
     config.deleteFinishFile   = NO;
-    config.taskIdentifierIgnoreParameters = NO;
     config.calculateSpeedWithEstimated = YES;
     config.timeoutInterval      = 30;
     config.sessionIdentifier    = @"com.fk.downloader";

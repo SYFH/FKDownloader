@@ -313,9 +313,11 @@ static FKDownloadManager *_instance = nil;
             if ([obj isKindOfClass:[NSString class]]) {
                 [self add:obj number:currentAutonumber + (uint64_t)idx];
             }
+            
             if ([obj isKindOfClass:[NSURL class]]) {
                 [self add:[(NSURL *)obj absoluteString] number:currentAutonumber + (uint64_t)idx];
             }
+            
             if ([obj isKindOfClass:[NSDictionary class]]) {
                 [self addInfo:obj number:currentAutonumber + (uint64_t)idx];
             }
@@ -347,11 +349,13 @@ static FKDownloadManager *_instance = nil;
                     NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
                     [self addInfo:info number:currentAutonumber + (uint64_t)idx];
                 }
+                
                 if ([obj isKindOfClass:[NSURL class]]) {
                     NSString *url = [(NSURL *)obj absoluteString];
                     NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
                     [self addInfo:info number:currentAutonumber + (uint64_t)idx];
                 }
+                
                 if ([obj isKindOfClass:[NSDictionary class]]) {
                     NSMutableDictionary *info = [(NSDictionary *)obj mutableCopy];
                     id tags = [info valueForKey:FKTaskInfoTags];
@@ -383,12 +387,12 @@ static FKDownloadManager *_instance = nil;
     FKLog(@"添加任务: %@", url)
     checkURL(url);
     
-    FKTask *existedTask = [self acquire:url];
-    if (existedTask) {
-        // !!!: 手动添加以标记为归档加载的任务, 则重制标记为非归档加载
-        existedTask.codingAdd = NO;
-        return existedTask;
-    }
+//    FKTask *existedTask = [self acquire:url];
+//    if (existedTask) {
+//        // !!!: 手动添加以标记为归档加载的任务, 则重制标记为非归档加载
+//        existedTask.codingAdd = NO;
+//        return existedTask;
+//    }
     
     FKTask *task = [self createPreserveTask:url number:number];
     [self.taskHub addTask:task withTag:nil];
@@ -402,12 +406,12 @@ static FKDownloadManager *_instance = nil;
         FKLog(@"添加任务: %@", url)
         checkURL(url);
         
-        FKTask *existedTask = [self acquire:url];
-        if (existedTask) {
-            existedTask.codingAdd = NO;
-            [existedTask settingInfo:info];
-            return existedTask;
-        }
+//        FKTask *existedTask = [self acquire:url];
+//        if (existedTask) {
+//            existedTask.codingAdd = NO;
+//            [existedTask settingInfo:info];
+//            return existedTask;
+//        }
         
         FKTask *task = [self createPreserveTask:url number:number];
         [task settingInfo:info];
@@ -424,11 +428,11 @@ static FKDownloadManager *_instance = nil;
     FKLog(@"开始任务: %@", url)
     checkURL(url);
     
-    if ([self acquire:url].status == TaskStatusExecuting) {
-        return [self acquire:url];
+    FKTask *existedTask = [self acquire:url];
+    if (existedTask.status == TaskStatusExecuting) {
+        return existedTask;
     }
     
-    FKTask *existedTask = [self acquire:url];
     if (existedTask) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self executeTask:existedTask];
@@ -530,6 +534,22 @@ static FKDownloadManager *_instance = nil;
     [self saveTasks];
 }
 
+- (void)update:(NSString *)expire to:(NSString *)url {
+    FKLog(@"更新任务: %@", expire);
+    checkURL(url);
+    
+    FKTask *task = [self.taskHub taskWithIdentifier:expire.identifier];
+    if (task) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:task.resumeFilePath]) {
+            NSData *resumeData = [NSData dataWithContentsOfFile:task.resumeFilePath options:NSDataReadingMappedIfSafe error:nil];
+            [FKResumeHelper updateResumeData:resumeData url:url];
+        }
+        task.url = url;
+        [self.taskHub removeTask:task];
+        [self.taskHub addTask:task withTags:task.tags.allObjects];
+    }
+}
+
 
 #pragma mark - Restore
 - (void)restory {
@@ -551,12 +571,7 @@ static FKDownloadManager *_instance = nil;
             [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
                 if ([FKResumeHelper checkUsable:resumeData]) {
                     FKLog(@"%@", [FKResumeHelper pockResumeData:resumeData])
-                    NSString *identifier = @"";
-                    if (self.configure.isTaskIdentifierIgnoreParameters) {
-                        identifier = downloadTask.currentRequest.URL.absoluteString.identifier;
-                    } else {
-                        identifier = downloadTask.currentRequest.URL.absoluteString.SHA256;
-                    }
+                    NSString *identifier = downloadTask.currentRequest.URL.absoluteString.identifier;
                     NSString *resumeFielPath = [self.configure.resumeSavePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.resume", identifier]];
                     [[FKResumeHelper correctResumeData:resumeData] writeToFile:resumeFielPath atomically:YES];
                 }

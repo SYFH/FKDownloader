@@ -33,12 +33,7 @@
         // !!!: kill app 后可能有任务会被系统取消, 再次启动时将恢复数据保存到默认文件中.
         if (error.code == NSURLErrorCancelled && error.userInfo[NSURLSessionDownloadTaskResumeData]) {
             NSData *resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData];
-            NSString *identifier = @"";
-            if ([FKDownloadManager manager].configure.isTaskIdentifierIgnoreParameters) {
-                identifier = task.currentRequest.URL.absoluteString.identifier;
-            } else {
-                identifier = task.currentRequest.URL.absoluteString.SHA256;
-            }
+            NSString *identifier = task.currentRequest.URL.absoluteString.identifier;
             NSString *resumeFielPath = [[FKDownloadManager manager].configure.resumeSavePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.resume", identifier]];
             [[FKResumeHelper correctResumeData:resumeData] writeToFile:resumeFielPath atomically:YES];
         }
