@@ -33,9 +33,7 @@
                                FKTaskInfoVerificationType: @(VerifyTypeMD5),
                                FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
                                FKTaskInfoRequestHeader: @{},
-                               FKTaskInfoTags: @[@"group_task_01"],
-                               FKTaskInfoResumeSavePath: [FKDownloadManager manager].configure.resumeSavePath,
-                               FKTaskInfoSavePath: [FKDownloadManager manager].configure.savePath}];
+                               FKTaskInfoTags: @[@"group_task_01"] }];
         } else {
             [tasks addObject:@{FKTaskInfoURL: url,
                                FKTaskInfoTags: @[@"group_task_02"]}];
@@ -155,7 +153,11 @@
 #pragma mark - Getter/Setter
 - (NSArray<NSString *> *)urls {
     if (!_urls) {
-        _urls = @[@"http://m4.pc6.com/cjh3/Remotix.dmg",
+        _urls = @[@"http://m4.pc6.com/cjh3/Remotix.dmg?p=0",
+                  @"http://m4.pc6.com/cjh3/Remotix.dmg?p=1",
+                  @"http://m4.pc6.com/cjh3/Remotix.dmg?p=2",
+                  @"http://m4.pc6.com/cjh3/Remotix.dmg?p=3",
+                  @"http://m4.pc6.com/cjh3/Remotix.dmg?p=4",
                   @"http://m4.pc6.com/cjh3/deliver259.dmg",
                   @"http://m4.pc6.com/cjh3/LogMeInInstaller7009.zip",
                   @"http://m4.pc6.com/cjh3/VicomsoftFTPClient.dmg",

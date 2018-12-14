@@ -249,6 +249,7 @@ static FKDownloadManager *_instance = nil;
     FKTask *task = [[FKTask alloc] init];
     task.manager = self;
     task.url = url;
+    task.codingAdd = NO;
     [task setValue:@(number) forKey:@"number"];
     if (task.isHasResumeData) {
         [task setValue:@(TaskStatusSuspend) forKey:@"status"];
@@ -534,15 +535,19 @@ static FKDownloadManager *_instance = nil;
     [self saveTasks];
 }
 
+// TODO: 目前更新后的恢复数据会导致创建 task 时崩溃, 可能缓存文件名系统有检验
 - (void)update:(NSString *)expire to:(NSString *)url {
     FKLog(@"更新任务: %@", expire);
     checkURL(url);
     
     FKTask *task = [self.taskHub taskWithIdentifier:expire.identifier];
     if (task) {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:task.resumeFilePath]) {
+        if ([self.fileManager fileExistsAtPath:task.resumeFilePath]) {
             NSData *resumeData = [NSData dataWithContentsOfFile:task.resumeFilePath options:NSDataReadingMappedIfSafe error:nil];
-            [FKResumeHelper updateResumeData:resumeData url:url];
+            NSData *updateResumeData = [FKResumeHelper updateResumeData:resumeData url:url];
+            NSString *updatePath = [self.configure.resumeSavePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.resume", url.identifier]];
+            [self.fileManager removeItemAtPath:task.resumeFilePath error:nil];
+            [updateResumeData writeToFile:updatePath atomically:YES];
         }
         task.url = url;
         [self.taskHub removeTask:task];

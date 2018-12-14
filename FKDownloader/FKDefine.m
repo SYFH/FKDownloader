@@ -14,7 +14,7 @@ void checkURL(NSString *address) {
         NSCAssert(NO, @"URL 地址不合法, 请填写正确的 URL!");
     }
     
-    NSURL *url = [NSURL URLWithString:[address percentEscapedString]];
+    NSURL *url = [NSURL URLWithString:[address encodeEscapedString]];
     if ([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"]) {
         NSCAssert(url != nil, @"URL 地址不合法, 请填写正确的 URL!");
     } else {

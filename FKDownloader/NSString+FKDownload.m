@@ -108,4 +108,12 @@
     return [NSString stringWithFormat:@"%@://%@", scheme, escaped];
 }
 
+- (NSString *)encodeEscapedString {
+    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+}
+
+- (NSString *)decodeEscapedString {
+    return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+
 @end

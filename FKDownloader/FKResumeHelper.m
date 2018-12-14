@@ -9,6 +9,7 @@
 #import "FKResumeHelper.h"
 #import "FKSystemHelper.h"
 #import "FKDefine.h"
+#import "NSString+FKDownload.h"
 
 @implementation FKResumeHelper
 + (NSDictionary *)pockResumeData:(NSData *)resumeData {
@@ -81,11 +82,12 @@
     unsigned long long tempFileLength = [attributes[NSFileSize] unsignedLongLongValue];
     
     NSString *range = [NSString stringWithFormat:@"bytes=%llu-", tempFileLength];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[url encodeEscapedString]]];
     [request setValue:range forHTTPHeaderField:@"Range"];
     
     resumeDictionary[FKResumeDataCurrentRequest] = [NSKeyedArchiver archivedDataWithRootObject:request];
-    resumeDictionary[FKResumeDataDownloaderURL] = url;
+    resumeDictionary[FKResumeDataOriginalRequest] = [NSKeyedArchiver archivedDataWithRootObject:request];
+    resumeDictionary[FKResumeDataDownloaderURL] = [url encodeEscapedString];
     
     return [self packetResumeData:resumeDictionary];
 }

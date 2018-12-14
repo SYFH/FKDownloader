@@ -19,5 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)identifier;
 - (NSString *)percentEscapedString;
 
+- (NSString *)encodeEscapedString;
+- (NSString *)decodeEscapedString;
+
 @end
 NS_ASSUME_NONNULL_END

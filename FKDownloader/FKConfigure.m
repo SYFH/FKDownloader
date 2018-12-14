@@ -11,7 +11,7 @@
 @implementation FKConfigure
 
 + (nonnull instancetype)defaultConfigure {
-    NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+    NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
     FKConfigure *config = [[FKConfigure alloc] init];
     config.autoStart          = NO;
     config.autoClearTask      = NO;

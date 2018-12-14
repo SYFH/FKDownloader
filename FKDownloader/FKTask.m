@@ -114,6 +114,7 @@ NS_ASSUME_NONNULL_END
         [self settingInfo:[aDecoder decodeObjectForKey:@"info"] ?: @{}];
         
         [self setupTimer];
+        // TODO: 更新路径属性, 沙盒路径在模拟器中每次运行都会更新
     }
     return self;
 }
@@ -260,7 +261,7 @@ NS_ASSUME_NONNULL_END
     
     [self sendPrepareInfo];
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[self.url percentEscapedString]]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[self.url encodeEscapedString]]];
     [self.requestHeader enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [request setValue:value forHTTPHeaderField:key];
     }];
@@ -362,6 +363,7 @@ NS_ASSUME_NONNULL_END
     }
     
     [self suspendWithComplete:^{}];
+    [self clearSpeedTimer];
 }
 
 - (void)suspendWithComplete:(void (^)(void))complete {
@@ -420,6 +422,7 @@ NS_ASSUME_NONNULL_END
     [self clearResumeData];
     [self addProgressObserver];
     [self.downloadTask resume];
+    [self setupTimer];
     
     [self sendExecutingInfo];
 }

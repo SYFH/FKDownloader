@@ -49,7 +49,7 @@ NS_SWIFT_NAME(Configure)
  是否自动归档任务, 默认为 Yes
  注意, 一旦确定是否开启, 则不要轻易变更, 否则归档任务会和手动添加任务起冲突, 如 `全部开始` 操作, 会造成 UI 上
  显示的任务为等待中, 而下载中任务为非 UI 显示的归档任务.
- 可以根据 FKTask.isCodingAdd 判断, 也可直接清除 restorePath, 但可能会出现其他莫名其妙的问题
+ 可以根据 FKTask.isCodingAdd 判断, 也可直接清除 restorePath, 但可能会出现其他一些问题
  */
 @property (nonatomic, assign, getter=isAutoCoding) BOOL autoCoding;
 

@@ -28,7 +28,7 @@
         return;
     }
     
-    FKTask *downloadTask = [[FKDownloadManager manager] acquire:task.currentRequest.URL.absoluteString];
+    FKTask *downloadTask = [[FKDownloadManager manager] acquire:task.currentRequest.URL.absoluteString.decodeEscapedString];
     if (downloadTask == nil) {
         // !!!: kill app 后可能有任务会被系统取消, 再次启动时将恢复数据保存到默认文件中.
         if (error.code == NSURLErrorCancelled && error.userInfo[NSURLSessionDownloadTaskResumeData]) {
