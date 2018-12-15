@@ -96,7 +96,7 @@ NS_SWIFT_NAME(Downloader)
  
  @param array 数组
  */
-- (void)addTaskWithArray:(NSArray *)array;
+- (void)addTasksWithArray:(NSArray *)array;
 
 /**
  通过数组批量添加任务, 元素限定: NSString, NSURL, NSDictionary, NSMutableDictionary
@@ -105,7 +105,7 @@ NS_SWIFT_NAME(Downloader)
  @param array 数组
  @param tag 标签
  */
-- (void)addTaskWithArray:(NSArray *)array tag:(nullable NSString *)tag;
+- (void)addTasksWithArray:(NSArray *)array tag:(nullable NSString *)tag;
 
 /**
  开始任务, 如果下载链接对应的任务不存在, 则返回的 task 为 nil

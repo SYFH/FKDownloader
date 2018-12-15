@@ -297,7 +297,7 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
-- (void)addTaskWithArray:(NSArray *)array {
+- (void)addTasksWithArray:(NSArray *)array {
     NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
         return ([evaluatedObject isKindOfClass:NSString.class] ||
                 [evaluatedObject isKindOfClass:NSURL.class] ||
@@ -330,7 +330,7 @@ static FKDownloadManager *_instance = nil;
     });
 }
 
-- (void)addTaskWithArray:(NSArray *)array tag:(NSString *)tag {
+- (void)addTasksWithArray:(NSArray *)array tag:(NSString *)tag {
     if (tag.length) {
         NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             return ([evaluatedObject isKindOfClass:NSString.class] ||
@@ -380,20 +380,13 @@ static FKDownloadManager *_instance = nil;
             [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
         });
     } else {
-        [self addTaskWithArray:array];
+        [self addTasksWithArray:array];
     }
 }
 
 - (FKTask *)add:(NSString *)url number:(NSUInteger)number {
     FKLog(@"添加任务: %@", url)
     checkURL(url);
-    
-//    FKTask *existedTask = [self acquire:url];
-//    if (existedTask) {
-//        // !!!: 手动添加以标记为归档加载的任务, 则重制标记为非归档加载
-//        existedTask.codingAdd = NO;
-//        return existedTask;
-//    }
     
     FKTask *task = [self createPreserveTask:url number:number];
     [self.taskHub addTask:task withTag:nil];
@@ -406,13 +399,6 @@ static FKDownloadManager *_instance = nil;
         NSString *url = info[FKTaskInfoURL];
         FKLog(@"添加任务: %@", url)
         checkURL(url);
-        
-//        FKTask *existedTask = [self acquire:url];
-//        if (existedTask) {
-//            existedTask.codingAdd = NO;
-//            [existedTask settingInfo:info];
-//            return existedTask;
-//        }
         
         FKTask *task = [self createPreserveTask:url number:number];
         [task settingInfo:info];

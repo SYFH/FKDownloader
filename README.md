@@ -12,7 +12,6 @@
 * [x] 后台下载
 * [x] 恢复所有后台任务和进度
 * [x] 自管理任务持久化
-* [x] 兼容时效性下载地址
 * [x] 使用配置实例统一配置
     * [x] 可配置是否为后台下载
     * [x] 可配置是否允许蜂窝网络下载
@@ -43,15 +42,11 @@
 - 任务管理
 
 ``` Objective-C
-// 添加任务, 但不执行, 适合批量添加任务的场景
-[[FKDownloadManager manager] add:@"URL"];
+// 批量添加任务, 数组元素支持 NSString, NSURL, NSDictionary, NSMutableDictionary
+[[FKDownloadManager manager] addTaskWithArray:urls];
 
-// 添加任务, 并附加额外信息, 目前支持 URL, 自定义保存文件名, 校验值, 校验类型, 自定义请求头
-[[FKDownloadManager manager] addInfo:@{FKTaskInfoURL: @"URL",
-                                       FKTaskInfoFileName: @"xCode7",
-                                       FKTaskInfoVerificationType: @(VerifyTypeMD5),
-                                       FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
-                                       FKTaskInfoRequestHeader: @{} }];
+// 批量添加任务并分配 tag
+[[FKDownloadManager manager] addTaskWithArray:urls tag:@"group_task_01"];
 
 // 开始执行任务
 [[FKDownloadManager manager] start:@"URL"];
@@ -106,6 +101,8 @@ extern FKNotificationName const FKTaskDidSuspendNotication;
 extern FKNotificationName const FKTaskWillCancelldNotication;
 extern FKNotificationName const FKTaskDidCancelldNotication;
 extern FKNotificationName const FKTaskSpeedInfoNotication;
+extern FKNotificationName const FKTaskWillRemoveNotification;
+extern FKNotificationName const FKTaskDidRemoveNotification;
 ```
 
 - 需要在 AppDelegate 中调用的
@@ -124,15 +121,11 @@ extern FKNotificationName const FKTaskSpeedInfoNotication;
 - 任务管理
 
 ``` Swift
-// 添加任务, 但不执行, 适合批量添加任务的场景
-Downloader.shared().add("URL")
+// 批量添加任务, 数组元素支持 NSString, NSURL, NSDictionary, NSMutableDictionary
+Downloader.shared().addTasks(with: urls)
 
-// 添加任务, 并附加额外信息, 目前支持 URL, 自定义保存文件名, 校验值, 校验类型, 自定义请求头
-Downloader.shared().addInfo([FKTaskInfoURL: "URL",
-                             FKTaskInfoFileName: "xCode9",
-                             FKTaskInfoVerification: "5f75fe52c15566a12b012db21808ad8c",
-                             FKTaskInfoVerificationType: VerifyType.MD5,
-                             FKTaskInfoRequestHeader: []])
+// 批量添加任务并分配 tag
+Downloader.shared().addTasks(with: urls, tag: "group_task_01")
 
 // 开始执行任务
 Downloader.shared().start("URL")
@@ -203,6 +196,10 @@ extension NSNotification.Name {
     public static let FKTaskDidCancelld: NSNotification.Name
 
     public static let FKTaskSpeedInfo: NSNotification.Name
+    
+    public static let FKTaskWillRemove: NSNotification.Name
+
+    public static let FKTaskDidRemove: NSNotification.Name
 }
 ```
 
