@@ -150,7 +150,7 @@ NS_SWIFT_NAME(Downloader)
  @param expire 已过期地址
  @param url 替换地址
  */
-- (void)update:(NSString *)expire to:(NSString *)url;
+- (void)update:(NSString *)expire to:(NSString *)url UNAVAILABLE_ATTRIBUTE;
 
 
 /**

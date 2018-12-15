@@ -60,36 +60,29 @@
 }
 
 + (NSData *)updateResumeData:(NSData *)resumeData url:(NSString *)url {
+    /*
     NSMutableDictionary *resumeDictionary = [[self readResumeData:resumeData] mutableCopy];
     if ([resumeDictionary.allKeys containsObject:FKResumeDataByteRange]) {
         [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
     }
     
-    NSString *tempFilePath = @"";
-    if ([resumeDictionary.allKeys containsObject:FKResumeDataInfoTempFileName]) {
-        tempFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:resumeDictionary[FKResumeDataInfoTempFileName]];
-    } else if ([resumeDictionary.allKeys containsObject:FKResumeDataInfoLocalPath]) {
-        tempFilePath = resumeDictionary[FKResumeDataInfoLocalPath];
-    } else {
-        return resumeData;
+    NSURLRequest *oldCurrentRequest = [NSKeyedUnarchiver unarchiveObjectWithData:[self correctRequestData:resumeDictionary[FKResumeDataCurrentRequest]]];
+    NSMutableURLRequest *currentRequest = [oldCurrentRequest mutableCopy];
+    currentRequest.URL = [NSURL URLWithString:[url encodeEscapedString]];
+    
+    if ([resumeDictionary.allKeys containsObject:FKResumeDataOriginalRequest]) {
+        NSURLRequest *oldOriginalReuqest = [NSKeyedUnarchiver unarchiveObjectWithData:[self correctRequestData:resumeDictionary[FKResumeDataOriginalRequest]]];
+        NSMutableURLRequest *originalReuqest = [oldOriginalReuqest mutableCopy];
+        originalReuqest.URL = [NSURL URLWithString:[url encodeEscapedString]];
+        resumeDictionary[FKResumeDataOriginalRequest] = [NSKeyedArchiver archivedDataWithRootObject:[originalReuqest copy]];
     }
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:tempFilePath] == NO) {
-        return resumeData;
-    }
-    
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:tempFilePath error:nil];
-    unsigned long long tempFileLength = [attributes[NSFileSize] unsignedLongLongValue];
-    
-    NSString *range = [NSString stringWithFormat:@"bytes=%llu-", tempFileLength];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[url encodeEscapedString]]];
-    [request setValue:range forHTTPHeaderField:@"Range"];
-    
-    resumeDictionary[FKResumeDataCurrentRequest] = [NSKeyedArchiver archivedDataWithRootObject:request];
-    resumeDictionary[FKResumeDataOriginalRequest] = [NSKeyedArchiver archivedDataWithRootObject:request];
+    resumeDictionary[FKResumeDataCurrentRequest] = [NSKeyedArchiver archivedDataWithRootObject:[currentRequest copy]];
     resumeDictionary[FKResumeDataDownloaderURL] = [url encodeEscapedString];
     
     return [self packetResumeData:resumeDictionary];
+     */
+    return nil;
 }
 
 + (NSData *)correctRequestData:(NSData *)data {

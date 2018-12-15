@@ -535,8 +535,9 @@ static FKDownloadManager *_instance = nil;
     [self saveTasks];
 }
 
-// TODO: 目前更新后的恢复数据会导致创建 task 时崩溃, 可能缓存文件名系统有检验
+// !!!: 目前更新后的恢复数据会导致创建 task 时崩溃
 - (void)update:(NSString *)expire to:(NSString *)url {
+    /*
     FKLog(@"更新任务: %@", expire);
     checkURL(url);
     
@@ -553,6 +554,7 @@ static FKDownloadManager *_instance = nil;
         [self.taskHub removeTask:task];
         [self.taskHub addTask:task withTags:task.tags.allObjects];
     }
+     */
 }
 
 

@@ -238,7 +238,7 @@ NS_SWIFT_NAME(Task)
 
  @param url 更新后的 URL
  */
-- (void)updateURL:(NSString *)url;
+- (void)updateURL:(NSString *)url UNAVAILABLE_ATTRIBUTE;
 
 
 #pragma mark - Tags Group

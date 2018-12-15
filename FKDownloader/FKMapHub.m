@@ -35,8 +35,6 @@
             if ([self.tagMap objectForKey:tag] == nil) {
                 [self.tagMap setObject:[NSMutableSet set] forKey:tag];
             }
-        }
-        @synchronized ([self.tagMap objectForKey:tag]) {
             [[self.tagMap objectForKey:tag] addObject:task];
         }
     }
@@ -57,8 +55,6 @@
                 if ([self.tagMap objectForKey:tag] == nil) {
                     [self.tagMap setObject:[NSMutableSet set] forKey:tag];
                 }
-            }
-            @synchronized ([self.tagMap objectForKey:tag]) {
                 [[self.tagMap objectForKey:tag] addObject:task];
             }
         }
@@ -91,8 +87,6 @@
         if ([self.tagMap objectForKey:tag] == nil) {
             [self.tagMap setObject:[NSMutableSet set] forKey:tag];
         }
-    }
-    @synchronized ([self.tagMap objectForKey:tag]) {
         [[self.tagMap objectForKey:tag] addObject:task];
     }
 }
@@ -118,7 +112,7 @@
 }
 
 - (NSArray<FKTask *> *)taskForTag:(NSString *)tag {
-    @synchronized ([self.tagMap objectForKey:tag]) {
+    @synchronized (self.tagMap) {
         if ([self.tagMap objectForKey:tag] == nil) {
             return @[];
         }

@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param url 要更新的 URL
  @return 恢复数据
  */
-+ (nullable NSData *)updateResumeData:(NSData *)resumeData url:(NSString *)url;
++ (nullable NSData *)updateResumeData:(NSData *)resumeData url:(NSString *)url UNAVAILABLE_ATTRIBUTE;
 
 /**
  根据系统版本修复恢复数据

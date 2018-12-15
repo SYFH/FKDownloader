@@ -267,8 +267,13 @@ NS_ASSUME_NONNULL_END
     }];
     if (self.isHasResumeData) {
         [self removeProgressObserver];
-        self.downloadTask = [self.manager.session downloadTaskWithResumeData:[self resumeData]];
-        [self clearResumeData];
+        NSData *resumeData = [self resumeData];
+        if (resumeData) {
+            self.downloadTask = [self.manager.session downloadTaskWithResumeData:resumeData];
+            [self clearResumeData];
+        } else {
+            self.downloadTask = [self.manager.session downloadTaskWithRequest:request];
+        }
     } else {
         self.downloadTask = [self.manager.session downloadTaskWithRequest:request];
     }
@@ -509,6 +514,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)updateURL:(NSString *)url {
+    /*
     if (self.status != TaskStatusExecuting) {
         if (self.isHasResumeData) {
             NSData *resumeData = [NSData dataWithContentsOfFile:self.resumeFilePath options:NSDataReadingMappedIfSafe error:nil];
@@ -516,6 +522,7 @@ NS_ASSUME_NONNULL_END
         }
         self.url = url;
     }
+     */
 }
 
 
