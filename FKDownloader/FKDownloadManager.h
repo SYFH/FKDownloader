@@ -50,9 +50,15 @@ NS_SWIFT_NAME(Downloader)
  */
 @property (nonatomic, strong, readonly) dispatch_queue_t timerQueue;
 /**
- 总任务进度 Block, 总执行在主线程
+ 总任务进度 Block, 可能会在子线程内执行
  */
 @property (nonatomic, copy  ) FKTotalProgress progressBlock;
+
+/**
+ 添加任务组完成后事件 Block, 可能会在子线程内执行, 注意线程的切换
+ 当在主线程上添加大量(>500)任务时, 可在子线程上添加避免 UI 卡顿, 这时可以使用该 Block 执行 UI 相关的操作
+ */
+@property (nonatomic, copy  ) FKAddedTasks addedBlock;
 
 /**
  网络状态检测

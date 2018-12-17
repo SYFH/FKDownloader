@@ -322,6 +322,8 @@ static FKDownloadManager *_instance = nil;
         }
     }];
     [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
+    
+    if (self.addedBlock) { self.addedBlock(); }
 }
 
 - (void)addTasksWithArray:(NSArray *)array tag:(NSString *)tag {
@@ -366,6 +368,8 @@ static FKDownloadManager *_instance = nil;
             }
         }];
         [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
+        
+        if (self.addedBlock) { self.addedBlock(); }
     } else {
         [self addTasksWithArray:array];
     }
