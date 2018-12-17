@@ -56,6 +56,17 @@
     return self;
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    // 重用时设置初始状态
+    [self.operationButton setTitle:@"开始" forState:UIControlStateNormal];
+    self.operationButton.enabled = YES;
+    
+    [self.stopButton setTitle:@"取消" forState:UIControlStateNormal];
+    self.stopButton.enabled = YES;
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
     

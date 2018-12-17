@@ -25,6 +25,7 @@
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
+    
     NSMutableArray *tasks = [NSMutableArray arrayWithCapacity:self.urls.count];
     [self.urls forEach:^(NSString *url, NSUInteger idx) {
         if (idx == 0) {
@@ -42,7 +43,11 @@
     /* 直接使用 url 数组添加任务
      [[FKDownloadManager manager] addTasksWithArray:self.urls tag:@"group_task_01"];
      */
-     
+    /** 当一次性添加任务过多时(>1000)会造成主线程卡顿, 可以将添加方法放入子线程, 然后使用 [FKDownloadManager manager].addedBlock 监听添加完成事件
+     dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [[FKDownloadManager manager] addTasksWithArray:tasks.copy];
+     });
+    */
     [[FKDownloadManager manager] addTasksWithArray:tasks.copy];
     
     self.totalProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
@@ -50,14 +55,17 @@
     __weak typeof(self) weak = self;
     [FKDownloadManager manager].progressBlock = ^(NSProgress * _Nonnull progress) {
         __strong typeof(weak) strong = weak;
-        FKLog(@"%@", progress);
-        strong.totalProgressView.progress = progress.fractionCompleted;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            strong.totalProgressView.progress = progress.fractionCompleted;
+        });
+        /** 注意: 当任务过多时(>1000), 频繁调用控制台打印语句会造成 CPU 占用过高(>110%), 请直接使用值
         [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(double progress) {
             FKLog(@"group_task_01 progress: %.6f", progress);
         }];
         [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(double progress) {
             FKLog(@"group_task_02 progress: %.6f", progress);
         }];
+         */
     };
     
     self.listView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
@@ -71,6 +79,15 @@
     UIBarButtonItem *stopItem = [[UIBarButtonItem alloc] initWithTitle:@"全部停止" style: UIBarButtonItemStyleDone target:self action:@selector(stopDidTap:)];
     UIBarButtonItem *suspendItem = [[UIBarButtonItem alloc] initWithTitle:@"全部暂停" style: UIBarButtonItemStyleDone target:self action:@selector(suspendDidTap:)];
     self.navigationItem.rightBarButtonItems = @[ startItem, stopItem, suspendItem ];
+    
+    /** 监听添加任务组完成事件
+    [FKDownloadManager manager].addedBlock = ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(weak) strong = weak;
+            [strong.listView reloadData];
+        });
+    };
+     */
 }
 
 - (void)viewWillLayoutSubviews {
@@ -153,16 +170,19 @@
 #pragma mark - Getter/Setter
 - (NSArray<NSString *> *)urls {
     if (!_urls) {
-        _urls = @[@"http://m4.pc6.com/cjh3/Remotix.dmg?p=0",
-                  @"http://m4.pc6.com/cjh3/Remotix.dmg?p=1",
-                  @"http://m4.pc6.com/cjh3/Remotix.dmg?p=2",
-                  @"http://m4.pc6.com/cjh3/Remotix.dmg?p=3",
-                  @"http://m4.pc6.com/cjh3/Remotix.dmg?p=4",
-                  @"http://m4.pc6.com/cjh3/deliver259.dmg",
-                  @"http://m4.pc6.com/cjh3/LogMeInInstaller7009.zip",
-                  @"http://m4.pc6.com/cjh3/VicomsoftFTPClient.dmg",
-                  @"http://m5.pc6.com/xuh5/hype363.zip",
-                  @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg",];
+        NSUInteger count = 5000;
+        NSMutableArray *urls = [NSMutableArray arrayWithCapacity:count];
+        
+        [urls addObjectsFromArray:@[@"http://m4.pc6.com/cjh3/deliver259.dmg",
+                                    @"http://m4.pc6.com/cjh3/LogMeInInstaller7009.zip",
+                                    @"http://m4.pc6.com/cjh3/VicomsoftFTPClient.dmg",
+                                    @"http://m5.pc6.com/xuh5/hype363.zip",
+                                    @"http://dl1sw.baidu.com/client/20150922/Xcode_7.1_beta.dmg"]];
+        
+        for (int i = 0; i < count; i ++) {
+            [urls addObject:[NSString stringWithFormat:@"http://m4.pc6.com/cjh3/Remotix.dmg?p=%d", i]];
+        }
+        _urls = [NSArray arrayWithArray:urls];
     }
     return _urls;
 }
