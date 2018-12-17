@@ -58,7 +58,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             strong.totalProgressView.progress = progress.fractionCompleted;
         });
-        /** 注意: 当任务过多时(>1000), 频繁调用控制台打印语句会造成 CPU 占用过高(>110%), 请直接使用值
+        /** 注意: 当任务过多时(>1000), 频繁调用控制台打印语句会造成 CPU 占用过高(>110%), 请直接使用进度值
         [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(double progress) {
             FKLog(@"group_task_01 progress: %.6f", progress);
         }];
@@ -170,7 +170,8 @@
 #pragma mark - Getter/Setter
 - (NSArray<NSString *> *)urls {
     if (!_urls) {
-        NSUInteger count = 5000;
+        // 可以将测试数量增大, 如 500, 1000, 5000...
+        NSUInteger count = 1;
         NSMutableArray *urls = [NSMutableArray arrayWithCapacity:count];
         
         [urls addObjectsFromArray:@[@"http://m4.pc6.com/cjh3/deliver259.dmg",
