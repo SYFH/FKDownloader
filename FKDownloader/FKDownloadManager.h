@@ -48,8 +48,7 @@ NS_SWIFT_NAME(Downloader)
 /**
  运行 NSTimer 的子线程, 避免造成主线程卡顿
  */
-@property (nonatomic, strong, readonly) NSThread *timerThread;
-
+@property (nonatomic, strong, readonly) dispatch_queue_t timerQueue;
 /**
  总任务进度 Block, 总执行在主线程
  */

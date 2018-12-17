@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) FKDownloadExecutor    *executor;
 @property (nonatomic, strong) NSProgress            *progress;
 @property (nonatomic, strong) FKMapHub              *taskHub;
-@property (nonatomic, strong) NSThread              *timerThread;
+@property (nonatomic, strong) dispatch_queue_t      timerQueue;
 @property (nonatomic, strong) FKReachability        *reachability;
 @property (nonatomic, assign) BOOL                  isDidEnterBackground;
 
@@ -192,8 +192,7 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)setupThread {
-    self.timerThread = [[NSThread alloc] initWithTarget:self selector:@selector(runTimerThread) object:nil];
-    [self.timerThread start];
+    self.timerQueue = dispatch_queue_create("com.fk.downloader.timer.queue", DISPATCH_QUEUE_CONCURRENT);
 }
 
 - (void)runTimerThread {
@@ -213,10 +212,7 @@ static FKDownloadManager *_instance = nil;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ([keyPath isEqualToString:@"fractionCompleted"]) {
         if (self.progressBlock) {
-            __weak typeof(self) weak = self;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                weak.progressBlock(weak.progress);
-            });
+            self.progressBlock(self.progress);
         }
     }
 }
@@ -246,6 +242,11 @@ static FKDownloadManager *_instance = nil;
 
 - (FKTask *)createPreserveTask:(NSString *)url number:(NSUInteger)number{
     FKLog(@"创建并保存 FKTask:%@", url)
+    FKTask *existTask = [self.taskHub taskWithIdentifier:url.identifier];
+    if (existTask) {
+        return existTask;
+    }
+    
     FKTask *task = [[FKTask alloc] init];
     task.manager = self;
     task.url = url;
@@ -266,10 +267,10 @@ static FKDownloadManager *_instance = nil;
 
 - (void)executeTask:(FKTask *)task {
     FKLog(@"开始执行 FKTask: %@", task)
-    // !!!: 会出现 kill app 后, 任务自动进行的情况, 暂时回退
-    [task reday];
     if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
         FKLog(@"当前执行数量 %lu 小于 %ld", (unsigned long)[self filterTaskWithStatus:TaskStatusExecuting].count, (unsigned long)self.configure.maximumExecutionTask)
+        
+        [task reday];
         [task execute];
     } else {
         FKLog(@"当前执行数量 %ld 已超过 %ld", (unsigned long)[self filterTaskWithStatus:TaskStatusExecuting].count, (unsigned long)self.configure.maximumExecutionTask)
@@ -307,27 +308,20 @@ static FKDownloadManager *_instance = nil;
     NSArray *flatArray = [[array flatten] filteredArrayUsingPredicate:predicate];
     
     uint64_t currentAutonumber = [self readAutonumber];
-    dispatch_group_t group = dispatch_group_create();
     [flatArray forEach:^(id obj, NSUInteger idx) {
-        dispatch_group_enter(group);
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            if ([obj isKindOfClass:[NSString class]]) {
-                [self add:obj number:currentAutonumber + (uint64_t)idx];
-            }
-            
-            if ([obj isKindOfClass:[NSURL class]]) {
-                [self add:[(NSURL *)obj absoluteString] number:currentAutonumber + (uint64_t)idx];
-            }
-            
-            if ([obj isKindOfClass:[NSDictionary class]]) {
-                [self addInfo:obj number:currentAutonumber + (uint64_t)idx];
-            }
-            dispatch_group_leave(group);
-        });
+        if ([obj isKindOfClass:[NSString class]]) {
+            [self add:obj number:currentAutonumber + (uint64_t)idx];
+        }
+        
+        if ([obj isKindOfClass:[NSURL class]]) {
+            [self add:[(NSURL *)obj absoluteString] number:currentAutonumber + (uint64_t)idx];
+        }
+        
+        if ([obj isKindOfClass:[NSDictionary class]]) {
+            [self addInfo:obj number:currentAutonumber + (uint64_t)idx];
+        }
     }];
-    dispatch_group_notify(group, dispatch_get_global_queue(0, 0), ^{
-        [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
-    });
+    [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
 }
 
 - (void)addTasksWithArray:(NSArray *)array tag:(NSString *)tag {
@@ -341,44 +335,37 @@ static FKDownloadManager *_instance = nil;
         NSArray *flatArray = [[array flatten] filteredArrayUsingPredicate:predicate];
         
         uint64_t currentAutonumber = [self readAutonumber];
-        dispatch_group_t group = dispatch_group_create();
         [flatArray forEach:^(id obj, NSUInteger idx) {
-            dispatch_group_enter(group);
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                if ([obj isKindOfClass:[NSString class]]) {
-                    NSString *url = obj;
-                    NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
-                    [self addInfo:info number:currentAutonumber + (uint64_t)idx];
-                }
-                
-                if ([obj isKindOfClass:[NSURL class]]) {
-                    NSString *url = [(NSURL *)obj absoluteString];
-                    NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
-                    [self addInfo:info number:currentAutonumber + (uint64_t)idx];
-                }
-                
-                if ([obj isKindOfClass:[NSDictionary class]]) {
-                    NSMutableDictionary *info = [(NSDictionary *)obj mutableCopy];
-                    id tags = [info valueForKey:FKTaskInfoTags];
-                    if (tags) {
-                        if ([tags isKindOfClass:[NSArray class]]) {
-                            [info setObject:[@[tag] arrayByAddingObjectsFromArray:tags] forKey:FKTaskInfoTags];
-                        } else if ([tags isKindOfClass:[NSSet class]]) {
-                            NSMutableSet *tagsSet = [NSMutableSet setWithSet:tags];
-                            [tagsSet unionSet:[NSSet setWithObject:tag]];
-                            [info setObject:tagsSet forKey:FKTaskInfoTags];
-                        }
-                    } else {
-                        [info setObject:@[tag] forKey:FKTaskInfoTags];
+            if ([obj isKindOfClass:[NSString class]]) {
+                NSString *url = obj;
+                NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
+                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+            }
+            
+            if ([obj isKindOfClass:[NSURL class]]) {
+                NSString *url = [(NSURL *)obj absoluteString];
+                NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
+                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+            }
+            
+            if ([obj isKindOfClass:[NSDictionary class]]) {
+                NSMutableDictionary *info = [(NSDictionary *)obj mutableCopy];
+                id tags = [info valueForKey:FKTaskInfoTags];
+                if (tags) {
+                    if ([tags isKindOfClass:[NSArray class]]) {
+                        [info setObject:[@[tag] arrayByAddingObjectsFromArray:tags] forKey:FKTaskInfoTags];
+                    } else if ([tags isKindOfClass:[NSSet class]]) {
+                        NSMutableSet *tagsSet = [NSMutableSet setWithSet:tags];
+                        [tagsSet unionSet:[NSSet setWithObject:tag]];
+                        [info setObject:tagsSet forKey:FKTaskInfoTags];
                     }
-                    [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+                } else {
+                    [info setObject:@[tag] forKey:FKTaskInfoTags];
                 }
-                dispatch_group_leave(group);
-            });
+                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+            }
         }];
-        dispatch_group_notify(group, dispatch_get_global_queue(0, 0), ^{
-            [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
-        });
+        [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
     } else {
         [self addTasksWithArray:array];
     }
@@ -421,9 +408,7 @@ static FKDownloadManager *_instance = nil;
     }
     
     if (existedTask) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self executeTask:existedTask];
-        });
+        [self executeTask:existedTask];
         return existedTask;
     } else {
         return nil;
@@ -583,11 +568,11 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)saveTasksWithAutonumber:(uint64_t)count {
+    [self autonumberOfInc:count];
     if (self.configure.isAutoCoding) {
         FKLog(@"归档所有任务")
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [FKTaskStorage saveObject:self.tasks toPath:self.configure.restoreFilePath];
-            [self autonumberOfInc:count];
         });
     }
 }

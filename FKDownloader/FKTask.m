@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSProgress        *progress;
 @property (nonatomic, strong, nullable) NSData  *resumeData;
 
-@property (nonatomic, strong, nullable) NSTimer *timer;
+@property (nonatomic, strong, nullable) dispatch_source_t timer;
 
 @property (nonatomic, assign) NSTimeInterval    prevTime;
 @property (nonatomic, assign) int64_t           prevReceivedBytes;
@@ -57,30 +57,31 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
+// TODO: 重复创建任务会重复创建 timer 导致 timer 线程 cpu 占用飙升
 - (void)setupTimer {
     if ([FKDownloadManager manager].configure.isCalculateSpeedWithEstimated) {
-        if (self.timer == nil || (self.timer.isValid == NO)) {
+        if (self.timer == nil) {
             FKLog(@"开始计时")
-            [self performSelector:@selector(runTimer) onThread:[FKDownloadManager manager].timerThread withObject:nil waitUntilDone:NO];
+            [self runTimer];
         } else {
             FKLog(@"重建定时器")
-            [self performSelector:@selector(stopTimer) onThread:[FKDownloadManager manager].timerThread withObject:nil waitUntilDone:YES];
-            [self performSelector:@selector(runTimer) onThread:[FKDownloadManager manager].timerThread withObject:nil waitUntilDone:NO];
+            [self stopTimer];
+            [self runTimer];
         }
     }
 }
 
 - (void)runTimer {
-    self.timer = [NSTimer timerWithTimeInterval:[FKDownloadManager manager].configure.speedRefreshInterval
-                                         target:self
-                                       selector:@selector(refreshSpeed)
-                                       userInfo:nil
-                                        repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, [FKDownloadManager manager].timerQueue);
+    dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
+    dispatch_source_set_event_handler(self.timer, ^{
+        [self refreshSpeed];
+    });
+    dispatch_resume(self.timer);
 }
 
 - (void)stopTimer {
-    [self.timer invalidate];
+    dispatch_source_cancel(self.timer);
     self.timer = nil;
 }
 
@@ -132,6 +133,9 @@ NS_ASSUME_NONNULL_END
     return [self.identifier hash];
 }
 
+- (void)dealloc {
+    NSLog(@"dealloc");
+}
 
 #pragma mark - Operation
 - (void)restore:(NSURLSessionDownloadTask *)task {
@@ -141,9 +145,9 @@ NS_ASSUME_NONNULL_END
     
     switch (task.state) {
         case NSURLSessionTaskStateRunning: {
-            self.status = TaskStatusExecuting;
             // !!!: 先暂停再继续, 以防止直接取消后再开始就报错的问题
             [self suspendWithComplete:^{ [self resume]; }];
+            self.status = TaskStatusExecuting;
         } break;
             
         case NSURLSessionTaskStateSuspended:
@@ -344,20 +348,6 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)suspend {
-    switch (self.status) {
-        case TaskStatusNone:        return;
-        case TaskStatusPrepare:     return;
-        case TaskStatusIdle:        return;
-        case TaskStatusExecuting:   break;
-        case TaskStatusFinish:      return;
-        case TaskStatusSuspend:     return;
-        case TaskStatusResuming:    return;
-        case TaskStatusChecksumming:return;
-        case TaskStatusChecksummed: return;
-        case TaskStatusCancelld:    return;
-        case TaskStatusUnknowError: return;
-    }
-    
     if (self.isFinish) {
         [self sendFinishInfo];
         return;
@@ -1030,9 +1020,9 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)clearSpeedTimer {
-    if (self.timer || (self.timer.isValid == YES)) {
+    if (self.timer) {
         FKLog(@"清除定时器")
-        [self performSelector:@selector(stopTimer) onThread:[FKDownloadManager manager].timerThread withObject:nil waitUntilDone:NO];
+        [self stopTimer];
     }
 }
 
