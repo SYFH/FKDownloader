@@ -52,14 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)groupProgress:(nullable void (^)(double))progressBlock {
     if (progressBlock == nil) { return; }
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        @synchronized (self) {
-            double progress = [[self valueForKeyPath:@"@avg.progress.fractionCompleted"] doubleValue];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                progressBlock(progress);
-            });
-        }
-    });
+    double progress = [[self valueForKeyPath:@"@avg.progress.fractionCompleted"] doubleValue];
+    progressBlock(progress);
 }
 
 @end
