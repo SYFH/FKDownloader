@@ -16,6 +16,8 @@
 @property (nonatomic, strong) NSArray<NSString *> *urls;
 @property (nonatomic, strong) UITableView *listView;
 
+@property (nonatomic, strong) dispatch_source_t groupTimer;
+
 @end
 
 @implementation TaskListController
@@ -58,15 +60,14 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             strong.totalProgressView.progress = progress.fractionCompleted;
         });
-        /** 注意: 当任务过多时(>1000), 频繁调用控制台打印语句会造成 CPU 占用过高(>110%), 请直接使用进度值
-        [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(double progress) {
-            FKLog(@"group_task_01 progress: %.6f", progress);
-        }];
-        [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(double progress) {
-            FKLog(@"group_task_02 progress: %.6f", progress);
-        }];
-         */
     };
+    
+    self.groupTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, [FKDownloadManager manager].timerQueue);
+    dispatch_source_set_timer(self.groupTimer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
+    dispatch_source_set_event_handler(self.groupTimer, ^{
+        [self groupProgressChange];
+    });
+    dispatch_resume(self.groupTimer);
     
     self.listView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     [self.listView registerClass:[TaskViewCell class] forCellReuseIdentifier:NSStringFromClass([TaskViewCell class])];
@@ -88,6 +89,12 @@
         });
     };
      */
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    dispatch_source_cancel(self.groupTimer);
 }
 
 - (void)viewWillLayoutSubviews {
@@ -127,6 +134,16 @@
 - (void)suspendDidTap:(UIBarButtonItem *)sender {
     [[FKDownloadManager manager].taskHub.allTask forEach:^(FKTask *task, NSUInteger idx) {
         [[FKDownloadManager manager] suspend:task.url];
+    }];
+}
+
+- (void)groupProgressChange {
+    // 注意: 当任务过多时(>1000), 频繁调用控制台打印语句会造成 CPU 占用过高(>110%), 请直接使用进度值
+    [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(double progress) {
+        FKLog(@"group_task_01 progress: %.6f", progress);
+    }];
+    [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(double progress) {
+        FKLog(@"group_task_02 progress: %.6f", progress);
     }];
 }
 

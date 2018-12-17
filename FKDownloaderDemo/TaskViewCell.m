@@ -60,6 +60,9 @@
     [super prepareForReuse];
     
     // 重用时设置初始状态
+    self.speedLable.text = @"速度";
+    self.remainingLable.text = @"剩余时间";
+    
     [self.operationButton setTitle:@"开始" forState:UIControlStateNormal];
     self.operationButton.enabled = YES;
     
