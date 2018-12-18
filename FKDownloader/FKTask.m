@@ -172,13 +172,6 @@ NS_ASSUME_NONNULL_END
 - (void)settingInfo:(NSDictionary *)info {
     self.info = [NSDictionary dictionaryWithDictionary:info];
     
-    if ([info.allKeys containsObject:FKTaskInfoURL]) {
-        id url = info[FKTaskInfoURL];
-        if ([url isKindOfClass:[NSString class]]) {
-            self.url = url;
-        }
-    }
-    
     if ([info.allKeys containsObject:FKTaskInfoFileName]) {
         id fileName = info[FKTaskInfoFileName];
         if ([fileName isKindOfClass:[NSString class]]) {
@@ -252,13 +245,19 @@ NS_ASSUME_NONNULL_END
             }
         }
     }
+    
+    if ([info.allKeys containsObject:FKTaskInfoURL]) {
+        id url = info[FKTaskInfoURL];
+        if ([url isKindOfClass:[NSString class]]) {
+            self.url = url;
+        }
+    }
 }
 
 - (void)reday {
     FKLog(@"开始准备: %@", self)
     
     if (self.isFinish) {
-        self.progress.totalUnitCount = 1;
         [self sendFinishInfo];
         return;
     }
@@ -332,6 +331,7 @@ NS_ASSUME_NONNULL_END
     }
     
     [self sendWillExecutingInfo];
+    [self setupTimer];
     
     if (self.isFinish) {
         FKLog(@"文件早已下载完成: %@", self)
@@ -354,6 +354,11 @@ NS_ASSUME_NONNULL_END
     }
     
     if (self.status == TaskStatusResuming || self.status == TaskStatusCancelld) {
+        return;
+    }
+    
+    if (self.status == TaskStatusIdle) {
+        [self cancel];
         return;
     }
     
@@ -746,6 +751,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendFinishInfo {
+    self.progress.completedUnitCount = self.progress.totalUnitCount;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     self.status = TaskStatusFinish;
@@ -1035,6 +1041,7 @@ NS_ASSUME_NONNULL_END
     _url = url;
     
     self.identifier = [url SHA256];
+    if (self.isFinish) { [self sendFinishInfo]; }
 }
 
 - (void)setDelegate:(id<FKTaskDelegate>)delegate {
@@ -1150,7 +1157,7 @@ NS_ASSUME_NONNULL_END
     if (!_progress) {
         [FKDownloadManager manager].progress.totalUnitCount += 100;
         [[FKDownloadManager manager].progress becomeCurrentWithPendingUnitCount:100];
-        _progress = [NSProgress progressWithTotalUnitCount:0];
+        _progress = [NSProgress progressWithTotalUnitCount:100];
         [[FKDownloadManager manager].progress resignCurrent];
     }
     return _progress;
