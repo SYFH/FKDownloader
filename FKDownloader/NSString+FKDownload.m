@@ -109,7 +109,12 @@
 }
 
 - (NSString *)encodeEscapedString {
-    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    // !!!: 识别 URL 是否已经过 URL Encode
+    if ([[self stringByRemovingPercentEncoding] isEqualToString:self]) {
+        return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    } else {
+        return self;
+    }
 }
 
 - (NSString *)decodeEscapedString {
