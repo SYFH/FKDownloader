@@ -188,7 +188,7 @@
 - (NSArray<NSString *> *)urls {
     if (!_urls) {
         // 可以将测试数量增大, 如 500, 1000, 5000...
-        NSUInteger count = 1;
+        NSUInteger count = 5;
         NSMutableArray *urls = [NSMutableArray arrayWithCapacity:count];
         
         [urls addObjectsFromArray:@[@"http://m4.pc6.com/cjh3/deliver259.dmg",
