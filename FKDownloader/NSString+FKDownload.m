@@ -116,7 +116,7 @@
 // 递归式 URL Decode
 - (NSString *)decodeEscapedString {
     NSString *decode = [self stringByRemovingPercentEncoding];
-    if (decode.length) {
+    if (decode.length && ![decode isEqualToString:self]) {
         return [decode decodeEscapedString];
     } else {
         return decode;
