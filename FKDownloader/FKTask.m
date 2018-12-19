@@ -26,18 +26,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSData  *resumeData;
 
 @property (nonatomic, strong, nullable) dispatch_source_t timer;
-
 @property (nonatomic, assign) NSTimeInterval    prevTime;
 @property (nonatomic, assign) int64_t           prevReceivedBytes;
 @property (nonatomic, strong) NSNumber          *estimatedTimeRemaining;
 @property (nonatomic, strong) NSNumber          *bytesPerSecondSpeed;
 
 @property (nonatomic, copy  ) NSDictionary      *info;
-
 @property (nonatomic, assign) uint64_t          number;
-
 @property (nonatomic, assign) BOOL              isPassChecksum;
-
 @property (nonatomic, copy  ) NSMutableSet      *tags;
 
 @end
@@ -57,7 +53,6 @@ NS_ASSUME_NONNULL_END
     return self;
 }
 
-// TODO: 重复创建任务会重复创建 timer 导致 timer 线程 cpu 占用飙升
 - (void)setupTimer {
     if ([FKDownloadManager manager].configure.isCalculateSpeedWithEstimated) {
         if (self.timer == nil) {
@@ -72,17 +67,21 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)runTimer {
-    self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, [FKDownloadManager manager].timerQueue);
-    dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
-    dispatch_source_set_event_handler(self.timer, ^{
-        [self refreshSpeed];
-    });
-    dispatch_resume(self.timer);
+    if (self.timer == nil) {
+        self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, [FKDownloadManager manager].timerQueue);
+        dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, [FKDownloadManager manager].configure.speedRefreshInterval * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
+        dispatch_source_set_event_handler(self.timer, ^{
+            [self refreshSpeed];
+        });
+        dispatch_resume(self.timer);
+    }
 }
 
 - (void)stopTimer {
-    dispatch_source_cancel(self.timer);
-    self.timer = nil;
+    if (self.timer) {
+        dispatch_source_cancel(self.timer);
+        self.timer = nil;
+    }
 }
 
 
@@ -115,7 +114,6 @@ NS_ASSUME_NONNULL_END
         [self settingInfo:[aDecoder decodeObjectForKey:@"info"] ?: @{}];
         
         [self setupTimer];
-        // TODO: 更新路径属性, 沙盒路径在模拟器中每次运行都会更新
     }
     return self;
 }
@@ -210,7 +208,7 @@ NS_ASSUME_NONNULL_END
     }
     
     if ([info.allKeys containsObject:FKTaskInfoResumeSavePath]) {
-        id resumeSavePath = info[FKTaskInfoResumeSavePath];
+        id resumeSavePath = [self updateSavePath:info[FKTaskInfoResumeSavePath]];
         if ([resumeSavePath isKindOfClass:[NSString class]]) {
             if ([self.manager.fileManager fileExistsAtPath:resumeSavePath] == NO) {
                 [self.manager.fileManager createDirectoryAtPath:resumeSavePath
@@ -224,7 +222,7 @@ NS_ASSUME_NONNULL_END
     }
     
     if ([info.allKeys containsObject:FKTaskInfoSavePath]) {
-        id savePath = info[FKTaskInfoSavePath];
+        id savePath = [self updateSavePath:info[FKTaskInfoSavePath]];
         if ([savePath isKindOfClass:[NSString class]]) {
             if ([self.manager.fileManager fileExistsAtPath:savePath] == NO) {
                 [self.manager.fileManager createDirectoryAtPath:savePath
@@ -417,14 +415,19 @@ NS_ASSUME_NONNULL_END
         return;
     }
     
-    [self removeProgressObserver];
-    self.downloadTask = [self.manager.session downloadTaskWithResumeData:self.resumeData];
-    [self clearResumeData];
-    [self addProgressObserver];
-    [self.downloadTask resume];
-    [self setupTimer];
-    
-    [self sendExecutingInfo];
+    if (self.isHasResumeData) {
+        [self removeProgressObserver];
+        self.downloadTask = [self.manager.session downloadTaskWithResumeData:self.resumeData];
+        [self clearResumeData];
+        [self addProgressObserver];
+        [self.downloadTask resume];
+        [self setupTimer];
+        
+        [self sendExecutingInfo];
+    } else {
+        [self reday];
+        [self execute];
+    }
 }
 
 - (void)cancel {
@@ -752,8 +755,13 @@ NS_ASSUME_NONNULL_END
 
 - (void)sendFinishInfo {
     self.progress.completedUnitCount = self.progress.totalUnitCount;
-    self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
-    self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+    if (self.bytesPerSecondSpeed.doubleValue == 0) {
+        self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+        self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
+    } else {
+        self.bytesPerSecondSpeed = @(self.progress.totalUnitCount);
+        [self sendSpeedInfo];
+    }
     self.status = TaskStatusFinish;
     [self clearSpeedTimer];
     
@@ -1036,6 +1044,20 @@ NS_ASSUME_NONNULL_END
     return NSTemporaryDirectory();
 }
 
+- (NSString *)updateSavePath:(NSString *)old {
+    NSArray *arr = [NSURL fileURLWithPath:old].pathComponents;
+    __block NSUInteger index = 0;
+    [arr enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSString *component, NSUInteger idx, BOOL *stop) {
+        if ([[NSUUID alloc] initWithUUIDString:component]) {
+            index = idx;
+            *stop = YES;
+        }
+    }];
+    NSString *relativePath = [[arr subarrayWithRange:NSMakeRange(index + 1, arr.count - (index + 1))] componentsJoinedByString:@"/"];
+    return [NSHomeDirectory() stringByAppendingPathComponent:relativePath];
+}
+
+
 #pragma mark - Getter/Setter
 - (void)setUrl:(NSString *)url {
     _url = url;
@@ -1114,7 +1136,7 @@ NS_ASSUME_NONNULL_END
             return nil;
         } else {
             if ([FKResumeHelper checkUsable:resumeData]) {
-                return resumeData;
+                return [FKResumeHelper correctResumeData:resumeData];
             } else {
                 [self clearResumeData];
                 return nil;
