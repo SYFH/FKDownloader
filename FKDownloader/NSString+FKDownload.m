@@ -109,16 +109,18 @@
 }
 
 - (NSString *)encodeEscapedString {
-    // !!!: 识别 URL 是否已经过 URL Encode
-    if ([[self stringByRemovingPercentEncoding] isEqualToString:self]) {
-        return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    } else {
-        return self;
-    }
+    NSString *decode = [self decodeEscapedString];
+    return [decode stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 }
 
+// 递归式 URL Decode
 - (NSString *)decodeEscapedString {
-    return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *decode = [self stringByRemovingPercentEncoding];
+    if (decode.length) {
+        return [decode decodeEscapedString];
+    } else {
+        return decode;
+    }
 }
 
 @end
