@@ -299,6 +299,10 @@ static FKDownloadManager *_instance = nil;
 }
 
 - (void)addTasksWithArray:(NSArray *)array {
+    [self addTasksWithArray:array added:^{}];
+}
+
+- (void)addTasksWithArray:(NSArray *)array added:(FKAddedTasks)added {
     NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
         return ([evaluatedObject isKindOfClass:NSString.class] ||
                 [evaluatedObject isKindOfClass:NSURL.class] ||
@@ -324,6 +328,7 @@ static FKDownloadManager *_instance = nil;
     [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
     
     if (self.addedBlock) { self.addedBlock(); }
+    if (added) { added(); }
 }
 
 - (void)addTasksWithArray:(NSArray *)array tag:(NSString *)tag {
@@ -372,6 +377,55 @@ static FKDownloadManager *_instance = nil;
         if (self.addedBlock) { self.addedBlock(); }
     } else {
         [self addTasksWithArray:array];
+    }
+}
+
+- (void)addTasksWithArray:(NSArray *)array tag:(NSString *)tag added:(FKAddedTasks)added {
+    if (tag.length) {
+        NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            return ([evaluatedObject isKindOfClass:NSString.class] ||
+                    [evaluatedObject isKindOfClass:NSURL.class] ||
+                    [evaluatedObject isKindOfClass:NSDictionary.class]);
+        }];
+        NSArray *flatArray = [[array flatten] filteredArrayUsingPredicate:predicate];
+        
+        uint64_t currentAutonumber = [self readAutonumber];
+        [flatArray forEach:^(id obj, NSUInteger idx) {
+            if ([obj isKindOfClass:[NSString class]]) {
+                NSString *url = obj;
+                NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
+                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+            }
+            
+            if ([obj isKindOfClass:[NSURL class]]) {
+                NSString *url = [(NSURL *)obj absoluteString];
+                NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
+                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+            }
+            
+            if ([obj isKindOfClass:[NSDictionary class]]) {
+                NSMutableDictionary *info = [(NSDictionary *)obj mutableCopy];
+                id tags = [info valueForKey:FKTaskInfoTags];
+                if (tags) {
+                    if ([tags isKindOfClass:[NSArray class]]) {
+                        [info setObject:[@[tag] arrayByAddingObjectsFromArray:tags] forKey:FKTaskInfoTags];
+                    } else if ([tags isKindOfClass:[NSSet class]]) {
+                        NSMutableSet *tagsSet = [NSMutableSet setWithSet:tags];
+                        [tagsSet unionSet:[NSSet setWithObject:tag]];
+                        [info setObject:tagsSet forKey:FKTaskInfoTags];
+                    }
+                } else {
+                    [info setObject:@[tag] forKey:FKTaskInfoTags];
+                }
+                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+            }
+        }];
+        [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
+        
+        if (self.addedBlock) { self.addedBlock(); }
+        if (added) { added(); }
+    } else {
+        [self addTasksWithArray:array added:added];
     }
 }
 
