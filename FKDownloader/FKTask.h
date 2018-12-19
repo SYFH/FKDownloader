@@ -191,7 +191,7 @@ NS_SWIFT_NAME(Task)
 /**
  开始准备任务, 如创建 task, 添加 KVO, 持久化等
  */
-- (void)reday;
+- (void)readay;
 
 /**
  执行任务

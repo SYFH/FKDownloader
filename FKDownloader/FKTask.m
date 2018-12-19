@@ -252,7 +252,7 @@ NS_ASSUME_NONNULL_END
     }
 }
 
-- (void)reday {
+- (void)readay {
     FKLog(@"开始准备: %@", self)
     
     if (self.isFinish) {
@@ -300,6 +300,7 @@ NS_ASSUME_NONNULL_END
     [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))];
 }
 
+// TODO: 目前 task 任务激活时没有判断最大可执行任务数量
 - (void)execute {
     FKLog(@"执行: %@", self)
     
@@ -339,7 +340,7 @@ NS_ASSUME_NONNULL_END
         [self resume];
     } else {
         FKLog(@"没有恢复数据: %@", self)
-        if (self.downloadTask == nil) { [self reday]; }
+        if (self.downloadTask == nil) { [self readay]; }
         [self.downloadTask resume];
         [self sendExecutingInfo];
     }
@@ -425,7 +426,7 @@ NS_ASSUME_NONNULL_END
         
         [self sendExecutingInfo];
     } else {
-        [self reday];
+        [self readay];
         [self execute];
     }
 }
