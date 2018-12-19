@@ -182,6 +182,9 @@
         if (resumeDictionary == nil) {
             return nil;
         }
+        if ([resumeDictionary.allKeys containsObject:FKResumeDataByteRange]) {
+            [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
+        }
         resumeDictionary[FKResumeDataCurrentRequest] = [self correctRequestData:resumeDictionary[FKResumeDataCurrentRequest]];
         resumeDictionary[FKResumeDataOriginalRequest] = [self correctRequestData:resumeDictionary[FKResumeDataOriginalRequest]];
         NSData *result = [NSPropertyListSerialization dataWithPropertyList:resumeDictionary
@@ -197,6 +200,14 @@
         if ([resumeDictionary.allKeys containsObject:FKResumeDataByteRange]) {
             [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
         }
+        
+        if ([[resumeDictionary valueForKey:FKResumeDataInfoVersion] integerValue] == 1) {
+            // !!!: FKResumeDataInfoLocalPath 字段会因为沙盒目录不断更新而失效, 需要更新路径
+            NSURL *fileURL = [NSURL fileURLWithPath:[resumeDictionary valueForKey:FKResumeDataInfoLocalPath]];
+            NSString *updateTempFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileURL.lastPathComponent];
+            [resumeDictionary setObject:updateTempFilePath forKey:FKResumeDataInfoLocalPath];
+        }
+        
         NSData *result = [self packetResumeData:[NSDictionary dictionaryWithDictionary:resumeDictionary]];
         return result;
     }
