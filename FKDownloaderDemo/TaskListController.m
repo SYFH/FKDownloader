@@ -36,7 +36,9 @@
                                FKTaskInfoVerificationType: @(VerifyTypeMD5),
                                FKTaskInfoVerification: @"5f75fe52c15566a12b012db21808ad8c",
                                FKTaskInfoRequestHeader: @{},
-                               FKTaskInfoTags: @[@"group_task_01"] }];
+                               FKTaskInfoTags: @[@"group_task_01"],
+                               FKTaskInfoSavePath: [FKDownloadManager manager].configure.savePath,
+                               FKTaskInfoResumeSavePath: [FKDownloadManager manager].configure.resumeSavePath }];
         } else {
             [tasks addObject:@{FKTaskInfoURL: url,
                                FKTaskInfoTags: @[@"group_task_02"]}];
