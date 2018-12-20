@@ -757,11 +757,11 @@ NS_ASSUME_NONNULL_END
 - (void)sendFinishInfo {
     self.progress.completedUnitCount = self.progress.totalUnitCount;
     if (self.bytesPerSecondSpeed.doubleValue == 0) {
-        self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
-        self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
-    } else {
         self.bytesPerSecondSpeed = @(self.progress.totalUnitCount);
         [self sendSpeedInfo];
+    } else {
+        self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
+        self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     }
     self.status = TaskStatusFinish;
     [self clearSpeedTimer];
@@ -1045,6 +1045,12 @@ NS_ASSUME_NONNULL_END
     return NSTemporaryDirectory();
 }
 
+/**
+ 更新变动的沙盒路径
+
+ @param old 现有路径
+ @return 更新后正确路径
+ */
 - (NSString *)updateSavePath:(NSString *)old {
     NSArray *arr = [NSURL fileURLWithPath:old].pathComponents;
     __block NSUInteger index = 0;
