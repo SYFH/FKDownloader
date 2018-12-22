@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
 typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
 typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
-typedef void(^FKAddedTasks) (void); // 添加任务组完成后 Block
+typedef void(^FKVoidDone)   (void); // 完成后 Block
 typedef void(^FKTotalProgress) (NSProgress *progress);  // 总进度变动 Block
 NS_ASSUME_NONNULL_END
 

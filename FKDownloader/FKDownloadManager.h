@@ -58,7 +58,7 @@ NS_SWIFT_NAME(Downloader)
  添加任务组完成后事件 Block, 可能会在子线程内执行, 注意线程的切换
  当在主线程上添加大量(>500)任务时, 可在子线程上添加避免 UI 卡顿, 这时可以使用该 Block 执行 UI 相关的操作
  */
-@property (nonatomic, copy  ) FKAddedTasks addedBlock;
+@property (nonatomic, copy  ) FKVoidDone addedBlock;
 
 /**
  网络状态检测
@@ -102,7 +102,7 @@ NS_SWIFT_NAME(Downloader)
  @param array 数组
  */
 - (void)addTasksWithArray:(NSArray *)array;
-- (void)addTasksWithArray:(NSArray *)array added:(FKAddedTasks)added;
+- (void)addTasksWithArray:(NSArray *)array added:(FKVoidDone)added;
 
 /**
  通过数组批量添加任务, 元素限定: NSString, NSURL, NSDictionary, NSMutableDictionary
@@ -112,7 +112,7 @@ NS_SWIFT_NAME(Downloader)
  @param tag 标签
  */
 - (void)addTasksWithArray:(NSArray *)array tag:(nullable NSString *)tag;
-- (void)addTasksWithArray:(NSArray *)array tag:(nullable NSString *)tag added:(FKAddedTasks)added;;
+- (void)addTasksWithArray:(NSArray *)array tag:(nullable NSString *)tag added:(FKVoidDone)added;;
 
 /**
  开始任务, 如果下载链接对应的任务不存在, 则返回的 task 为 nil

@@ -302,7 +302,7 @@ static FKDownloadManager *_instance = nil;
     [self addTasksWithArray:array added:^{}];
 }
 
-- (void)addTasksWithArray:(NSArray *)array added:(FKAddedTasks)added {
+- (void)addTasksWithArray:(NSArray *)array added:(FKVoidDone)added {
     NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
         return ([evaluatedObject isKindOfClass:NSString.class] ||
                 [evaluatedObject isKindOfClass:NSURL.class] ||
@@ -380,7 +380,7 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
-- (void)addTasksWithArray:(NSArray *)array tag:(NSString *)tag added:(FKAddedTasks)added {
+- (void)addTasksWithArray:(NSArray *)array tag:(NSString *)tag added:(FKVoidDone)added {
     if (tag.length) {
         NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             return ([evaluatedObject isKindOfClass:NSString.class] ||
@@ -538,7 +538,6 @@ static FKDownloadManager *_instance = nil;
     if (!existedTask) { return; }
     
     if (existedTask.status == TaskStatusExecuting) { [existedTask cancel]; }
-    [existedTask clear];
     
     if (self.configure.isDeleteFinishFile && existedTask.status == TaskStatusFinish) {
         NSString *filePath = existedTask.filePath;
@@ -558,6 +557,7 @@ static FKDownloadManager *_instance = nil;
     }
     
     [existedTask sendWillRemoveInfo];
+    [existedTask clear];
     [self.taskHub removeTask:existedTask];
     [existedTask sendRemoveInfo];
     
