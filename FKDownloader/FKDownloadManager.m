@@ -76,7 +76,6 @@ static FKDownloadManager *_instance = nil;
         [self setupPath];
         [self setupNotification];
         [self setupProgress];
-        [self setupThread];
         [self setupAutonumber];
     }
     return self;
@@ -189,17 +188,6 @@ static FKDownloadManager *_instance = nil;
 
 - (void)setupProgress {
     [self.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)setupThread {
-    self.timerQueue = dispatch_queue_create("com.fk.downloader.timer.queue", DISPATCH_QUEUE_CONCURRENT);
-}
-
-- (void)runTimerThread {
-    @autoreleasepool {
-        [[NSRunLoop currentRunLoop] addPort:[NSPort port] forMode:NSDefaultRunLoopMode];
-        [[NSRunLoop currentRunLoop] run];
-    }
 }
 
 - (void)setupAutonumber {
@@ -488,6 +476,7 @@ static FKDownloadManager *_instance = nil;
     */
 }
 
+// TODO: 开始/暂停/继续/取消添加对应的组方法, 并进行标记以防止因为时间差导致不该执行时开始执行任务
 - (void)startNextIdleTask {
     FKLog(@"开始执行下一个等待中任务")
     if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
@@ -811,6 +800,13 @@ static FKDownloadManager *_instance = nil;
 
 - (NSFileManager *)fileManager {
     return [NSFileManager defaultManager];
+}
+
+- (dispatch_queue_t)timerQueue {
+    if (!_timerQueue) {
+        _timerQueue = dispatch_queue_create("com.fk.downloader.timer.queue", DISPATCH_QUEUE_CONCURRENT);
+    }
+    return _timerQueue;
 }
 
 

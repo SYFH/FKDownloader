@@ -44,32 +44,19 @@ NS_ASSUME_NONNULL_END
 @synthesize resumeData = _resumeData;
 
 
-#pragma mark - Init
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        [self setupTimer];
-    }
-    return self;
-}
-
 - (void)setupTimer {
     if ([FKDownloadManager manager].configure.isCalculateSpeedWithEstimated) {
         if (self.timer == nil) {
             FKLog(@"开始计时")
-            [self runTimer];
-        } else {
-            FKLog(@"重建定时器")
-            [self stopTimer];
             [self runTimer];
         }
     }
 }
 
 - (void)runTimer {
-    if (self.timer == nil) {
-        self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, [FKDownloadManager manager].timerQueue);
-        dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, [FKDownloadManager manager].configure.speedRefreshInterval * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
+    self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, [FKDownloadManager manager].timerQueue);
+    if (self.timer) {
+        dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, [FKDownloadManager manager].configure.speedRefreshInterval * NSEC_PER_SEC, (1ull * NSEC_PER_SEC) / 10);
         dispatch_source_set_event_handler(self.timer, ^{
             [self refreshSpeed];
         });
@@ -112,8 +99,6 @@ NS_ASSUME_NONNULL_END
         
         [self addTags:[aDecoder decodeObjectForKey:@"tags"] ?: [NSSet set]];
         [self settingInfo:[aDecoder decodeObjectForKey:@"info"] ?: @{}];
-        
-        [self setupTimer];
     }
     return self;
 }
@@ -132,7 +117,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)dealloc {
-    NSLog(@"dealloc");
+    FKLog(@"%@ dealloc", self.description);
 }
 
 #pragma mark - Operation
@@ -362,7 +347,6 @@ NS_ASSUME_NONNULL_END
     }
     
     [self suspendWithComplete:^{}];
-    [self clearSpeedTimer];
 }
 
 - (void)suspendWithComplete:(void (^)(void))complete {
