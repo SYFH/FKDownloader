@@ -119,9 +119,10 @@ NS_SWIFT_NAME(Downloader)
  任务状态变动为 TaskStatusNone -> TaskStatusPrepare -> TaskStatusExecuting
 
  @param url 下载地址
- @return 任务实例
  */
-- (nonnull FKTask *)start:(NSString *)url;
+- (void)start:(NSString *)url;
+- (void)startWithAll;
+- (void)startWithTag:(NSString *)tag;
 
 /**
  取消任务
@@ -129,6 +130,8 @@ NS_SWIFT_NAME(Downloader)
  @param url 下载链接
  */
 - (void)cancel:(NSString *)url;
+- (void)cancelWithAll;
+- (void)cancelWithTag:(NSString *)tag;
 
 /**
  暂停任务
@@ -136,6 +139,8 @@ NS_SWIFT_NAME(Downloader)
  @param url 下载链接
  */
 - (void)suspend:(NSString *)url;
+- (void)suspendWithAll;
+- (void)suspendWithTag:(NSString *)tag;
 
 /**
  恢复任务
@@ -143,6 +148,8 @@ NS_SWIFT_NAME(Downloader)
  @param url 下载链接
  */
 - (void)resume:(NSString *)url;
+- (void)resumeWithAll;
+- (void)resumeWithTag:(NSString *)tag;
 
 /**
  移除任务
@@ -150,6 +157,8 @@ NS_SWIFT_NAME(Downloader)
  @param url 下载链接
  */
 - (void)remove:(NSString *)url;
+- (void)removeWithAll;
+- (void)removeWithTag:(NSString *)tag;
 
 /**
  更新任务的下载链接

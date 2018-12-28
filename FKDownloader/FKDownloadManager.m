@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) dispatch_queue_t      timerQueue;
 @property (nonatomic, strong) FKReachability        *reachability;
 @property (nonatomic, assign) BOOL                  isDidEnterBackground;
+@property (nonatomic, assign) BOOL                  isControlTasks;
 
 // 原子自增编号
 @property (nonatomic, strong) NSString              *autonumberFilePath;
@@ -444,20 +445,17 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
-- (FKTask *)start:(NSString *)url {
+- (void)start:(NSString *)url {
     FKLog(@"开始任务: %@", url)
     checkURL(url);
     
     FKTask *existedTask = [self acquire:url];
     if (existedTask.status == TaskStatusExecuting) {
-        return existedTask;
+        return;
     }
     
     if (existedTask) {
         [self executeTask:existedTask];
-        return existedTask;
-    } else {
-        return nil;
     }
     /*
     FKTask *task = [self createPreserveTask:url];
@@ -476,13 +474,31 @@ static FKDownloadManager *_instance = nil;
     */
 }
 
+- (void)startWithAll {
+    self.isControlTasks = YES;
+    [self.taskHub.allTask forEach:^(FKTask *task, NSUInteger idx) {
+        [self start:task.url];
+    }];
+    self.isControlTasks = NO;
+}
+
+- (void)startWithTag:(NSString *)tag {
+    self.isControlTasks = YES;
+    [[self.taskHub taskForTag:tag] forEach:^(FKTask *task, NSUInteger idx) {
+        [self start:task.url];
+    }];
+    self.isControlTasks = NO;
+}
+
 // TODO: 开始/暂停/继续/取消添加对应的组方法, 并进行标记以防止因为时间差导致不该执行时开始执行任务
 - (void)startNextIdleTask {
     FKLog(@"开始执行下一个等待中任务")
-    if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
-        FKTask *nextTask = [[[FKDownloadManager manager] filterTaskWithStatus:TaskStatusIdle] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"number" ascending:YES]]].firstObject;
-        if (nextTask) {
-            [nextTask execute];
+    if (self.isControlTasks == NO) {
+        if ([self filterTaskWithStatus:TaskStatusExecuting].count < self.configure.maximumExecutionTask) {
+            FKTask *nextTask = [[[FKDownloadManager manager] filterTaskWithStatus:TaskStatusIdle] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"number" ascending:YES]]].firstObject;
+            if (nextTask) {
+                [nextTask execute];
+            }
         }
     }
 }
@@ -497,6 +513,22 @@ static FKDownloadManager *_instance = nil;
     [task cancel];
 }
 
+- (void)cancelWithAll {
+    self.isControlTasks = YES;
+    [self.taskHub.allTask forEach:^(FKTask *task, NSUInteger idx) {
+        [self cancel:task.url];
+    }];
+    self.isControlTasks = NO;
+}
+
+- (void)cancelWithTag:(NSString *)tag {
+    self.isControlTasks = YES;
+    [[self.taskHub taskForTag:tag] forEach:^(FKTask *task, NSUInteger idx) {
+        [self cancel:task.url];
+    }];
+    self.isControlTasks = NO;
+}
+
 - (void)suspend:(NSString *)url {
     FKLog(@"暂停任务: %@", url)
     checkURL(url);
@@ -506,6 +538,22 @@ static FKDownloadManager *_instance = nil;
     if (existedTask.status == TaskStatusSuspend) { return; }
     
     [existedTask suspend];
+}
+
+- (void)suspendWithAll {
+    self.isControlTasks = YES;
+    [self.taskHub.allTask forEach:^(FKTask *task, NSUInteger idx) {
+        [self suspend:task.url];
+    }];
+    self.isControlTasks = NO;
+}
+
+- (void)suspendWithTag:(NSString *)tag {
+    self.isControlTasks = YES;
+    [[self.taskHub taskForTag:tag] forEach:^(FKTask *task, NSUInteger idx) {
+        [self suspend:task.url];
+    }];
+    self.isControlTasks = NO;
 }
 
 - (void)resume:(NSString *)url {
@@ -519,7 +567,27 @@ static FKDownloadManager *_instance = nil;
     [existedTask resume];
 }
 
+- (void)resumeWithAll {
+    self.isControlTasks = YES;
+    [self.taskHub.allTask forEach:^(FKTask *task, NSUInteger idx) {
+        [self resume:task.url];
+    }];
+    self.isControlTasks = NO;
+}
+
+- (void)resumeWithTag:(NSString *)tag {
+    self.isControlTasks = YES;
+    [[self.taskHub taskForTag:tag] forEach:^(FKTask *task, NSUInteger idx) {
+        [self resume:task.url];
+    }];
+    self.isControlTasks = NO;
+}
+
 - (void)remove:(NSString *)url {
+    [self remove:url save:YES];
+}
+
+- (void)remove:(NSString *)url save:(BOOL)save {
     FKLog(@"移除任务: %@", url)
     checkURL(url);
     
@@ -550,6 +618,26 @@ static FKDownloadManager *_instance = nil;
     [self.taskHub removeTask:existedTask];
     [existedTask sendRemoveInfo];
     
+    if (save) {
+        [self saveTasks];
+    }
+}
+
+- (void)removeWithAll {
+    self.isControlTasks = YES;
+    [self.taskHub.allTask forEach:^(FKTask *task, NSUInteger idx) {
+        [self remove:task.url save:NO];
+    }];
+    self.isControlTasks = NO;
+    [self saveTasks];
+}
+
+- (void)removeWithTag:(NSString *)tag {
+    self.isControlTasks = YES;
+    [[self.taskHub taskForTag:tag] forEach:^(FKTask *task, NSUInteger idx) {
+        [self remove:task.url save:NO];
+    }];
+    self.isControlTasks = NO;
     [self saveTasks];
 }
 
