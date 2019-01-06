@@ -675,7 +675,7 @@ static FKDownloadManager *_instance = nil;
 
 - (void)restory:(NSArray<NSURLSessionDownloadTask *> *)tasks {
     [tasks forEach:^(NSURLSessionDownloadTask *downloadTask, NSUInteger idx) {
-        NSString *url = downloadTask.currentRequest.URL.absoluteString;
+        NSString *url = downloadTask.originalRequest.URL.absoluteString;
         FKTask *task = [self acquire:url];
         if (task) {
             [task restore:downloadTask];
@@ -684,7 +684,7 @@ static FKDownloadManager *_instance = nil;
             [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
                 if ([FKResumeHelper checkUsable:resumeData]) {
                     FKLog(@"%@", [FKResumeHelper pockResumeData:resumeData])
-                    NSString *identifier = downloadTask.currentRequest.URL.absoluteString.identifier;
+                    NSString *identifier = downloadTask.originalRequest.URL.absoluteString.identifier;
                     NSString *resumeFielPath = [self.configure.resumeSavePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.resume", identifier]];
                     [[FKResumeHelper correctResumeData:resumeData] writeToFile:resumeFielPath atomically:YES];
                 }

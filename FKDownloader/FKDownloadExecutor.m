@@ -24,11 +24,11 @@
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    if (task.currentRequest.URL.absoluteString.length == 0) {
+    if (task.originalRequest.URL.absoluteString.length == 0) {
         return;
     }
     
-    FKTask *downloadTask = [[FKDownloadManager manager] acquire:task.currentRequest.URL.absoluteString.decodeEscapedString];
+    FKTask *downloadTask = [[FKDownloadManager manager] acquire:task.originalRequest.URL.absoluteString.decodeEscapedString];
     if (downloadTask == nil) {
         // !!!: kill app 后可能有任务会被系统取消, 再次启动时将恢复数据保存到默认文件中.
         if (error.code == NSURLErrorCancelled && error.userInfo[NSURLSessionDownloadTaskResumeData]) {
@@ -46,7 +46,7 @@
         if (statusCode < 200 || statusCode > 300) {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
                                                  code:NSURLErrorUnknown
-                                             userInfo:@{NSFilePathErrorKey: task.currentRequest.URL.absoluteString,
+                                             userInfo:@{NSFilePathErrorKey: task.originalRequest.URL.absoluteString,
                                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
             [downloadTask sendErrorInfo:error];
             return;
@@ -79,7 +79,7 @@
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     
     [[FKDownloadManager manager] setupPath];
-    FKTask *task = [[FKDownloadManager manager] acquire:downloadTask.currentRequest.URL.absoluteString];
+    FKTask *task = [[FKDownloadManager manager] acquire:downloadTask.originalRequest.URL.absoluteString];
     if (task == nil) {
         return;
     }
@@ -90,7 +90,7 @@
         if (statusCode < 200 || statusCode > 300) {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
                                                  code:NSURLErrorUnknown
-                                             userInfo:@{NSFilePathErrorKey: downloadTask.currentRequest.URL.absoluteString,
+                                             userInfo:@{NSFilePathErrorKey: downloadTask.originalRequest.URL.absoluteString,
                                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
             [task sendErrorInfo:error];
             return;
@@ -128,7 +128,7 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
     
-    FKTask *task = [[FKDownloadManager manager] acquire:downloadTask.currentRequest.URL.absoluteString];
+    FKTask *task = [[FKDownloadManager manager] acquire:downloadTask.originalRequest.URL.absoluteString];
     task.progress.completedUnitCount = fileOffset;
 }
 
