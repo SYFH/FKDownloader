@@ -174,8 +174,8 @@
 
 + (NSData *)correctResumeData:(NSData *)data {
     // !!!:https://stackoverflow.com/questions/39346231/resume-nsurlsession-on-ios10/39347461#39347461
-    if ([[FKSystemHelper currentSystemVersion] isEqualToString:@"10.0"] ||
-        [[FKSystemHelper currentSystemVersion] isEqualToString:@"10.1"]) {
+    if ([[FKSystemHelper currentSystemVersion] hasPrefix:@"10.0"] ||
+        [[FKSystemHelper currentSystemVersion] hasPrefix:@"10.1"]) {
         
         if (data == nil) { return  nil; }
         NSMutableDictionary *resumeDictionary = [[self getResumeDictionary:data] mutableCopy];
@@ -185,8 +185,14 @@
         if ([resumeDictionary.allKeys containsObject:FKResumeDataByteRange]) {
             [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
         }
-        resumeDictionary[FKResumeDataCurrentRequest] = [self correctRequestData:resumeDictionary[FKResumeDataCurrentRequest]];
-        resumeDictionary[FKResumeDataOriginalRequest] = [self correctRequestData:resumeDictionary[FKResumeDataOriginalRequest]];
+        
+        if ([resumeDictionary objectForKey:FKResumeDataCurrentRequest] == nil) {
+            resumeDictionary[FKResumeDataCurrentRequest] = [NSKeyedUnarchiver unarchiveObjectWithData:resumeDictionary[FKResumeDataCurrentRequest]];
+        }
+        if ([resumeDictionary objectForKey:FKResumeDataOriginalRequest] == nil) {
+            resumeDictionary[FKResumeDataOriginalRequest] = [NSKeyedUnarchiver unarchiveObjectWithData:resumeDictionary[FKResumeDataOriginalRequest]];
+        }
+        
         NSData *result = [NSPropertyListSerialization dataWithPropertyList:resumeDictionary
                                                                     format:NSPropertyListXMLFormat_v1_0
                                                                    options:0
