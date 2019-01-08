@@ -147,27 +147,21 @@
 }
 
 + (NSDictionary *)getResumeDictionary:(NSData *)data {
-    NSDictionary *iresumeDictionary = nil;
-    id root = nil;
-    id keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-    @try {
-        if (@available(iOS 9.0, *)) {
-            root = [keyedUnarchiver decodeTopLevelObjectForKey:@"NSKeyedArchiveRootObjectKey" error:nil];
+    NSMutableDictionary *iresumeDictionary;
+    if ([[NSProcessInfo processInfo] operatingSystemVersion].majorVersion >= 10) {
+        NSMutableDictionary *root;
+        NSKeyedUnarchiver *keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+        NSError *error = nil;
+        root = [keyedUnarchiver decodeTopLevelObjectForKey:@"NSKeyedArchiveRootObjectKey" error:&error];
+        if (!root) {
+            root = [keyedUnarchiver decodeTopLevelObjectForKey:NSKeyedArchiveRootObjectKey error:&error];
         }
-        if (root == nil) {
-            if (@available(iOS 9.0, *)) {
-                root = [keyedUnarchiver decodeTopLevelObjectForKey:NSKeyedArchiveRootObjectKey error:nil];
-            }
-        }
-    } @catch(NSException *exception) { }
-    [keyedUnarchiver finishDecoding];
-    iresumeDictionary = [NSDictionary dictionaryWithDictionary:root];
+        [keyedUnarchiver finishDecoding];
+        iresumeDictionary = root;
+    }
     
-    if (iresumeDictionary == nil) {
-        iresumeDictionary = [NSPropertyListSerialization propertyListWithData:data
-                                                                      options:NSPropertyListMutableContainersAndLeaves
-                                                                       format:nil
-                                                                        error:nil];
+    if (!iresumeDictionary) {
+        iresumeDictionary = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:nil];
     }
     return iresumeDictionary;
 }
@@ -186,12 +180,8 @@
             [resumeDictionary removeObjectForKey:FKResumeDataByteRange];
         }
         
-        if ([resumeDictionary objectForKey:FKResumeDataCurrentRequest] == nil) {
-            resumeDictionary[FKResumeDataCurrentRequest] = [NSKeyedUnarchiver unarchiveObjectWithData:resumeDictionary[FKResumeDataCurrentRequest]];
-        }
-        if ([resumeDictionary objectForKey:FKResumeDataOriginalRequest] == nil) {
-            resumeDictionary[FKResumeDataOriginalRequest] = [NSKeyedUnarchiver unarchiveObjectWithData:resumeDictionary[FKResumeDataOriginalRequest]];
-        }
+        resumeDictionary[FKResumeDataCurrentRequest] = [FKResumeHelper correctRequestData:resumeDictionary[FKResumeDataCurrentRequest]];
+        resumeDictionary[FKResumeDataOriginalRequest] = [FKResumeHelper correctRequestData:resumeDictionary[FKResumeDataOriginalRequest]];
         
         NSData *result = [NSPropertyListSerialization dataWithPropertyList:resumeDictionary
                                                                     format:NSPropertyListXMLFormat_v1_0

@@ -251,8 +251,8 @@ NS_ASSUME_NONNULL_END
     [self.requestHeader enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [request setValue:value forHTTPHeaderField:key];
     }];
+    [self removeProgressObserver];
     if (self.isHasResumeData) {
-        [self removeProgressObserver];
         NSData *resumeData = [self resumeData];
         if (resumeData) {
             self.downloadTask = [self.manager.session downloadTaskWithResumeData:resumeData];
@@ -363,6 +363,7 @@ NS_ASSUME_NONNULL_END
             FKLog(@"%@", [FKResumeHelper pockResumeData:resumeData])
             strong.resumeData = [FKResumeHelper correctResumeData:resumeData];
         }
+        [strong sendSuspendInfo];
         if (complete) {
             // !!!: 此处使用 dispatch_after 是为了唤醒下载线程和防止写入恢复数据/读取回复数据冲突导致 fix 后台下载进度失败
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -678,6 +679,7 @@ NS_ASSUME_NONNULL_END
     self.estimatedTimeRemaining = [NSNumber numberWithLongLong:0];
     [self clearResumeData];
     [self.downloadTask cancel];
+    [self removeProgressObserver];
     self.downloadTask = nil;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didCancelldTask:)]) {

@@ -126,10 +126,4 @@
     }
 }
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
-    
-    FKTask *task = [[FKDownloadManager manager] acquire:downloadTask.originalRequest.URL.absoluteString];
-    task.progress.completedUnitCount = fileOffset;
-}
-
 @end
