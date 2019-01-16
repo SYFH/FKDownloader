@@ -24,11 +24,15 @@
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    if (task.originalRequest.URL.absoluteString.length == 0) {
+    NSURL *url = task.originalRequest.URL;
+    if (url == nil) {
+        url = task.currentRequest.URL;
+    }
+    if (url.absoluteString.length == 0) {
         return;
     }
     
-    FKTask *downloadTask = [[FKDownloadManager manager] acquire:task.originalRequest.URL.absoluteString.decodeEscapedString];
+    FKTask *downloadTask = [[FKDownloadManager manager] acquire:url.absoluteString.decodeEscapedString];
     if (downloadTask == nil) {
         // !!!: kill app 后可能有任务会被系统取消, 再次启动时将恢复数据保存到默认文件中.
         if (error.code == NSURLErrorCancelled && error.userInfo[NSURLSessionDownloadTaskResumeData]) {
@@ -46,7 +50,7 @@
         if (statusCode < 200 || statusCode > 300) {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
                                                  code:NSURLErrorUnknown
-                                             userInfo:@{NSFilePathErrorKey: task.originalRequest.URL.absoluteString,
+                                             userInfo:@{NSFilePathErrorKey: url.absoluteString,
                                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
             [downloadTask sendErrorInfo:error];
             return;
@@ -78,8 +82,13 @@
 #pragma mark - NSURLSessionDownloadDelegate
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     
+    NSURL *url = downloadTask.originalRequest.URL;
+    if (url == nil) {
+        url = downloadTask.currentRequest.URL;
+    }
+    
     [[FKDownloadManager manager] setupPath];
-    FKTask *task = [[FKDownloadManager manager] acquire:downloadTask.originalRequest.URL.absoluteString];
+    FKTask *task = [[FKDownloadManager manager] acquire:url.absoluteString];
     if (task == nil) {
         return;
     }
@@ -90,7 +99,7 @@
         if (statusCode < 200 || statusCode > 300) {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
                                                  code:NSURLErrorUnknown
-                                             userInfo:@{NSFilePathErrorKey: downloadTask.originalRequest.URL.absoluteString,
+                                             userInfo:@{NSFilePathErrorKey: url.absoluteString,
                                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
             [task sendErrorInfo:error];
             return;
