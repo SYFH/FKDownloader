@@ -23,15 +23,6 @@
 #define rac_keywordify try {} @catch (...) {}
 #endif
 
-#define metamacro_concat(A, B) \
-    metamacro_concat_(A, B)
-
-#define metamacro_concat_(A, B) A ## B
-
-#define onExit \
-    rac_keywordify \
-    __strong rac_cleanupBlock_t metamacro_concat(rac_exitBlock_, __LINE__) __attribute__((cleanup(rac_executeCleanupBlock), unused)) = ^
-
 extern void checkURL(NSString *address);
 extern void onWait(dispatch_queue_t queue, dispatch_block_t block);
 
@@ -86,7 +77,6 @@ extern FKResumeDataKey const FKResumeDataInfoVersion;
 extern FKResumeDataKey const FKResumeDataOriginalRequest;
 extern FKResumeDataKey const FKResumeDataServerDownloadDate;
 
-// TODO: 可添加连接服务器中的状态, 以填补网络环境太差的空缺
 typedef NS_ENUM(NSInteger, TaskStatus) {
     TaskStatusNone = 0,     // 无状态, 仅表示已加入队列
     TaskStatusPrepare,      // 预处理
@@ -136,10 +126,3 @@ typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
 typedef void(^FKVoidDone)   (void); // 完成后 Block
 typedef void(^FKTotalProgress) (NSProgress *progress);  // 总进度变动 Block
 NS_ASSUME_NONNULL_END
-
-
-// ReactiveCocoa
-typedef void (^rac_cleanupBlock_t)(void);
-static inline void rac_executeCleanupBlock (__strong rac_cleanupBlock_t *block) {
-    (*block)();
-}

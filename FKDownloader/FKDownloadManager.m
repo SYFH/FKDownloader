@@ -296,8 +296,7 @@ static FKDownloadManager *_instance = nil;
     NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
         return ([evaluatedObject isKindOfClass:NSString.class] ||
                 [evaluatedObject isKindOfClass:NSURL.class] ||
-                [evaluatedObject isKindOfClass:NSDictionary.class] ||
-                [evaluatedObject isKindOfClass:NSMutableDictionary.class]);
+                [evaluatedObject isKindOfClass:NSDictionary.class]);
     }];
     NSArray *flatArray = [[array flatten] filteredArrayUsingPredicate:predicate];
     
@@ -326,8 +325,7 @@ static FKDownloadManager *_instance = nil;
         NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             return ([evaluatedObject isKindOfClass:NSString.class] ||
                     [evaluatedObject isKindOfClass:NSURL.class] ||
-                    [evaluatedObject isKindOfClass:NSDictionary.class] ||
-                    [evaluatedObject isKindOfClass:NSMutableDictionary.class]);
+                    [evaluatedObject isKindOfClass:NSDictionary.class]);
         }];
         NSArray *flatArray = [[array flatten] filteredArrayUsingPredicate:predicate];
         
