@@ -263,6 +263,7 @@ NS_ASSUME_NONNULL_END
     } else {
         self.downloadTask = [self.manager.session downloadTaskWithRequest:request];
     }
+    self.downloadTask.taskDescription = self.url;
     
     [self addProgressObserver];
     self.prevTime = 1;
@@ -404,6 +405,7 @@ NS_ASSUME_NONNULL_END
     if (self.isHasResumeData) {
         [self removeProgressObserver];
         self.downloadTask = [self.manager.session downloadTaskWithResumeData:self.resumeData];
+        self.downloadTask.taskDescription = self.url;
         [self clearResumeData];
         [self addProgressObserver];
         [self.downloadTask resume];

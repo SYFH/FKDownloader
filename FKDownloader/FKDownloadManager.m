@@ -92,13 +92,14 @@ static FKDownloadManager *_instance = nil;
             config.timeoutIntervalForRequest = self.configure.timeoutInterval;
             config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
             config.allowsCellularAccess = YES;
-            config.discretionary = YES;
+            config.discretionary = NO;
             self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
         } else {
             NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
             config.timeoutIntervalForRequest = self.configure.timeoutInterval;
             config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
             config.allowsCellularAccess = YES;
+            config.discretionary = NO;
             self.session = [NSURLSession sessionWithConfiguration:config delegate:self.executor delegateQueue:nil];
         }
     }

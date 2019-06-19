@@ -24,14 +24,7 @@
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    NSURL *url = task.originalRequest.URL;
-    if (url == nil) {
-        url = task.currentRequest.URL;
-    }
-    if (url.absoluteString.length == 0) {
-        return;
-    }
-    
+    NSURL *url = [NSURL URLWithString:task.taskDescription];
     FKTask *downloadTask = [[FKDownloadManager manager] acquire:url.absoluteString.decodeEscapedString];
     if (downloadTask == nil) {
         // !!!: kill app 后可能有任务会被系统取消, 再次启动时将恢复数据保存到默认文件中.
@@ -82,11 +75,7 @@
 #pragma mark - NSURLSessionDownloadDelegate
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     
-    NSURL *url = downloadTask.originalRequest.URL;
-    if (url == nil) {
-        url = downloadTask.currentRequest.URL;
-    }
-    
+    NSURL *url = [NSURL URLWithString:downloadTask.taskDescription];
     [[FKDownloadManager manager] setupPath];
     FKTask *task = [[FKDownloadManager manager] acquire:url.absoluteString];
     if (task == nil) {
