@@ -15,6 +15,7 @@
 @property (nonatomic, copy  ) NSMutableSet<FKTask *> *tasks;
 @property (nonatomic, copy  ) NSMutableDictionary<NSString *, FKTask *> *taskMap;
 @property (nonatomic, copy  ) NSMutableDictionary<NSString *, NSMutableSet<FKTask *> *> *tagMap;
+@property (nonatomic, copy  ) NSMutableDictionary<NSString *, NSProgress *> *tagProgress;   // 每个 tag 的 progress
 
 @end
 
@@ -37,6 +38,12 @@
             }
             [[self.tagMap objectForKey:tag] addObject:task];
         }
+        
+        @synchronized (self.tagProgress) {
+            if ([self.tagProgress objectForKey:tag] == nil) {
+                [self.tagProgress setObject:[[NSProgress alloc] init] forKey:tag];
+            }
+        }
     }
 }
 
@@ -56,6 +63,12 @@
                     [self.tagMap setObject:[NSMutableSet set] forKey:tag];
                 }
                 [[self.tagMap objectForKey:tag] addObject:task];
+            }
+            
+            @synchronized (self.tagProgress) {
+                if ([self.tagProgress objectForKey:tag] == nil) {
+                    [self.tagProgress setObject:[[NSProgress alloc] init] forKey:tag];
+                }
             }
         }
     }
@@ -94,6 +107,14 @@
 - (void)removeTag:(NSString *)tag from:(FKTask *)task {
     @synchronized ([self.tagMap objectForKey:tag]) {
         [[self.tagMap objectForKey:tag] removeObject:task];
+    }
+}
+
+
+#pragma mark - Progress
+- (NSProgress *)progressWithTag:(NSString *)tag {
+    @synchronized (self.tagProgress) {
+        return [self.tagProgress objectForKey:tag];
     }
 }
 
@@ -155,6 +176,13 @@
         _tagMap = [NSMutableDictionary dictionary];
     }
     return _tagMap;
+}
+
+- (NSMutableDictionary<NSString *,NSProgress *> *)tagProgress {
+    if (!_tagProgress) {
+        _tagProgress = [NSMutableDictionary dictionary];
+    }
+    return _tagProgress;
 }
 
 @end

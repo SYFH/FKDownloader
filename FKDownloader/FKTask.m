@@ -527,9 +527,6 @@ NS_ASSUME_NONNULL_END
             [self.tags subtractSet:tags];
         }
     }
-    for (NSString *tag in tags) {
-        [self.manager.taskHub removeTag:tag from:self];
-    }
 }
 
 
@@ -1174,7 +1171,20 @@ NS_ASSUME_NONNULL_END
     if (!_progress) {
         [FKDownloadManager manager].progress.totalUnitCount += 100;
         [[FKDownloadManager manager].progress becomeCurrentWithPendingUnitCount:100];
+        
+        for (NSString *tag in self.tags.allObjects) {
+            NSProgress *progress = [[FKDownloadManager manager].taskHub progressWithTag:tag];
+            progress.totalUnitCount += 100;
+            [progress becomeCurrentWithPendingUnitCount:100];
+        }
+        
         _progress = [NSProgress progressWithTotalUnitCount:100];
+        
+        for (NSString *tag in self.tags.allObjects) {
+            NSProgress *progress = [[FKDownloadManager manager].taskHub progressWithTag:tag];
+            [progress resignCurrent];
+        }
+        
         [[FKDownloadManager manager].progress resignCurrent];
     }
     return _progress;

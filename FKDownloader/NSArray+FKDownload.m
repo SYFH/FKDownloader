@@ -50,11 +50,5 @@ NS_ASSUME_NONNULL_BEGIN
     return array;
 }
 
-- (void)groupProgress:(nullable void (^)(double))progressBlock {
-    if (progressBlock == nil) { return; }
-    double progress = [[self valueForKeyPath:@"@avg.progress.fractionCompleted"] doubleValue];
-    progressBlock(progress);
-}
-
 @end
 NS_ASSUME_NONNULL_END

@@ -17,9 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addTask:(FKTask *)task withTags:(NSArray<NSString *> *)tags;
 - (void)removeTask:(FKTask *)task;
 
-#pragma mark - Tag
-- (void)addTag:(NSString *)tag to:(FKTask *)task;
-- (void)removeTag:(NSString *)tag from:(FKTask *)task;
+#pragma mark - Progress
+- (NSProgress *)progressWithTag:(NSString *)tag;
 
 #pragma mark - Operation
 - (NSArray<FKTask *> *)allTask;

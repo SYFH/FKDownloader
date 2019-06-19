@@ -241,24 +241,6 @@ NS_SWIFT_NAME(Task)
 - (void)updateURL:(NSString *)url UNAVAILABLE_ATTRIBUTE;
 
 
-#pragma mark - Tags Group
-/**
- 添加标签
- 内部操作会取并集, 忽略重复标签
-
- @param tags 标签
- */
-- (void)addTags:(NSSet *)tags;
-
-/**
- 移除标签
- 内部操作会做差集, 忽略重复标签
-
- @param tags 标签
- */
-- (void)removeTags:(NSSet *)tags;
-
-
 #pragma mark - Send Info
 /**
  发送 TaskStatusIdle 状态信息

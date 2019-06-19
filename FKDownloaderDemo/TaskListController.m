@@ -129,13 +129,11 @@
 }
 
 - (void)groupProgressChange {
-    // 注意: 当任务过多时(>1000), 频繁调用控制台打印语句会造成 CPU 占用过高(>110%), 请直接使用进度值
-    [[[FKDownloadManager manager] acquireWithTag:@"group_task_01"] groupProgress:^(double progress) {
-        FKLog(@"group_task_01 progress: %.6f", progress);
-    }];
-    [[[FKDownloadManager manager] acquireWithTag:@"group_task_02"] groupProgress:^(double progress) {
-        FKLog(@"group_task_02 progress: %.6f", progress);
-    }];
+    NSProgress *progress1 = [[FKDownloadManager manager].taskHub progressWithTag:@"group_task_01"];
+    FKLog(@"group_task_01 progress: %.6f", progress1.fractionCompleted);
+    
+    NSProgress *progress2 = [[FKDownloadManager manager].taskHub progressWithTag:@"group_task_02"];
+    FKLog(@"group_task_02 progress: %.6f", progress2.fractionCompleted);
 }
 
 #pragma mark - UITableViewDataSource, UITableViewDelegate>

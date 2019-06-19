@@ -17,13 +17,5 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)disorderEach:(void (^)(ObjectType obj, NSUInteger idx))block;
 - (NSArray *)flatten;
 
-/**
- 计算一组 FKTask 的进度
- 注意: 频繁段时间间隔调用可能会提高 CPU 占用
-
- @param progressBlock 进度Block
- */
-- (void)groupProgress:(nullable void(^)(double progress))progressBlock;
-
 @end
 NS_ASSUME_NONNULL_END
