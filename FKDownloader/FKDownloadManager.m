@@ -230,7 +230,7 @@ static FKDownloadManager *_instance = nil;
     return [self.taskHub taskForTag:tag];
 }
 
-- (FKTask *)createPreserveTask:(NSString *)url number:(NSUInteger)number{
+- (FKTask *)createPreserveTask:(NSString *)url number:(uint64_t)number {
     FKLog(@"创建并保存 FKTask:%@", url)
     FKTask *existTask = [self.taskHub taskWithIdentifier:url.identifier];
     if (existTask) {
@@ -417,7 +417,7 @@ static FKDownloadManager *_instance = nil;
     }
 }
 
-- (FKTask *)add:(NSString *)url number:(NSUInteger)number {
+- (FKTask *)add:(NSString *)url number:(uint64_t)number {
     FKLog(@"添加任务: %@", url)
     checkURL(url);
     
@@ -427,7 +427,7 @@ static FKDownloadManager *_instance = nil;
     return task;
 }
 
-- (FKTask *)addInfo:(NSDictionary *)info number:(NSUInteger)number {
+- (FKTask *)addInfo:(NSDictionary *)info number:(uint64_t)number {
     if ([info.allKeys containsObject:FKTaskInfoURL]) {
         NSString *url = info[FKTaskInfoURL];
         FKLog(@"添加任务: %@", url)
