@@ -152,9 +152,11 @@
         NSMutableDictionary *root;
         NSKeyedUnarchiver *keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
         NSError *error = nil;
-        root = [keyedUnarchiver decodeTopLevelObjectForKey:@"NSKeyedArchiveRootObjectKey" error:&error];
-        if (!root) {
-            root = [keyedUnarchiver decodeTopLevelObjectForKey:NSKeyedArchiveRootObjectKey error:&error];
+        if (@available(iOS 9.0, *)) {
+            root = [keyedUnarchiver decodeTopLevelObjectForKey:@"NSKeyedArchiveRootObjectKey" error:&error];
+            if (!root) {
+                root = [keyedUnarchiver decodeTopLevelObjectForKey:NSKeyedArchiveRootObjectKey error:&error];
+            }
         }
         [keyedUnarchiver finishDecoding];
         iresumeDictionary = root;

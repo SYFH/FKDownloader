@@ -303,18 +303,18 @@ static FKDownloadManager *_instance = nil;
     uint64_t currentAutonumber = [self readAutonumber];
     [flatArray forEach:^(id obj, NSUInteger idx) {
         if ([obj isKindOfClass:[NSString class]]) {
-            [self add:obj number:currentAutonumber + (uint64_t)idx];
+            [self add:obj number:currentAutonumber + @(idx).unsignedLongLongValue];
         }
         
         if ([obj isKindOfClass:[NSURL class]]) {
-            [self add:[(NSURL *)obj absoluteString] number:currentAutonumber + (uint64_t)idx];
+            [self add:[(NSURL *)obj absoluteString] number:currentAutonumber + @(idx).unsignedLongLongValue];
         }
         
         if ([obj isKindOfClass:[NSDictionary class]]) {
-            [self addInfo:obj number:currentAutonumber + (uint64_t)idx];
+            [self addInfo:obj number:currentAutonumber + @(idx).unsignedLongLongValue];
         }
     }];
-    [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
+    [self saveTasksWithAutonumber:@([flatArray count]).unsignedLongLongValue];
     
     if (self.addedBlock) { self.addedBlock(); }
     if (added) { added(); }
@@ -334,13 +334,13 @@ static FKDownloadManager *_instance = nil;
             if ([obj isKindOfClass:[NSString class]]) {
                 NSString *url = obj;
                 NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
-                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+                [self addInfo:info number:currentAutonumber + @(idx).unsignedLongLongValue];
             }
             
             if ([obj isKindOfClass:[NSURL class]]) {
                 NSString *url = [(NSURL *)obj absoluteString];
                 NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
-                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+                [self addInfo:info number:currentAutonumber + @(idx).unsignedLongLongValue];
             }
             
             if ([obj isKindOfClass:[NSDictionary class]]) {
@@ -357,10 +357,10 @@ static FKDownloadManager *_instance = nil;
                 } else {
                     [info setObject:@[tag] forKey:FKTaskInfoTags];
                 }
-                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+                [self addInfo:info number:currentAutonumber + @(idx).unsignedLongLongValue];
             }
         }];
-        [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
+        [self saveTasksWithAutonumber:@([flatArray count]).unsignedLongLongValue];
         
         if (self.addedBlock) { self.addedBlock(); }
     } else {
@@ -382,13 +382,13 @@ static FKDownloadManager *_instance = nil;
             if ([obj isKindOfClass:[NSString class]]) {
                 NSString *url = obj;
                 NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
-                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+                [self addInfo:info number:currentAutonumber + @(idx).unsignedLongLongValue];
             }
             
             if ([obj isKindOfClass:[NSURL class]]) {
                 NSString *url = [(NSURL *)obj absoluteString];
                 NSDictionary *info = @{FKTaskInfoURL: url, FKTaskInfoTags: @[tag]};
-                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+                [self addInfo:info number:currentAutonumber + @(idx).unsignedLongLongValue];
             }
             
             if ([obj isKindOfClass:[NSDictionary class]]) {
@@ -405,10 +405,10 @@ static FKDownloadManager *_instance = nil;
                 } else {
                     [info setObject:@[tag] forKey:FKTaskInfoTags];
                 }
-                [self addInfo:info number:currentAutonumber + (uint64_t)idx];
+                [self addInfo:info number:currentAutonumber + @(idx).unsignedLongLongValue];
             }
         }];
-        [self saveTasksWithAutonumber:(uint64_t)[flatArray count]];
+        [self saveTasksWithAutonumber:@([flatArray count]).unsignedLongLongValue];
         
         if (self.addedBlock) { self.addedBlock(); }
         if (added) { added(); }

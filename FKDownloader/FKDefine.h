@@ -23,6 +23,8 @@
 #define rac_keywordify try {} @catch (...) {}
 #endif
 
+NS_ASSUME_NONNULL_BEGIN
+
 extern void checkURL(NSString *address);
 extern void onWait(dispatch_queue_t queue, dispatch_block_t block);
 
@@ -119,7 +121,6 @@ typedef NS_ENUM(NSInteger, TaskError) {
     TaskErrorDeleteFileFaild = 0
 };
 
-NS_ASSUME_NONNULL_BEGIN
 typedef void(^FKStatus  )   (FKTask *task); // 状态变动 Block
 typedef void(^FKProgress)   (FKTask *task); // 进度变动 Block
 typedef void(^FKSpeed   )   (FKTask *task); // 速度/预期时间 Block
