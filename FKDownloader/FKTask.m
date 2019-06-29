@@ -272,18 +272,22 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)addProgressObserver {
-    [self.downloadTask addObserver:self
-                        forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived))
-                           options:NSKeyValueObservingOptionNew
-                           context:nil];
-    [self.downloadTask addObserver:self
-                        forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive)) options:NSKeyValueObservingOptionNew
-                           context:nil];
+    @synchronized (self) {
+        [self.downloadTask addObserver:self
+                            forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived))
+                               options:NSKeyValueObservingOptionNew
+                               context:nil];
+        [self.downloadTask addObserver:self
+                            forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive)) options:NSKeyValueObservingOptionNew
+                               context:nil];
+    }
 }
 
 - (void)removeProgressObserver {
-    [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived))];
-    [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))];
+    @synchronized (self) {
+        [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived))];
+        [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))];
+    }
 }
 
 // TODO: 目前 task 任务激活时没有判断最大可执行任务数量
