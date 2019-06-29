@@ -272,18 +272,22 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)addProgressObserver {
-    [self.downloadTask addObserver:self
-                        forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived))
-                           options:NSKeyValueObservingOptionNew
-                           context:nil];
-    [self.downloadTask addObserver:self
-                        forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive)) options:NSKeyValueObservingOptionNew
-                           context:nil];
+    @synchronized (self) {
+        [self.downloadTask addObserver:self
+                            forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived))
+                               options:NSKeyValueObservingOptionNew
+                               context:nil];
+        [self.downloadTask addObserver:self
+                            forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive)) options:NSKeyValueObservingOptionNew
+                               context:nil];
+    }
 }
 
 - (void)removeProgressObserver {
-    [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived))];
-    [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))];
+    @synchronized (self) {
+        [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived))];
+        [self.downloadTask removeObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesExpectedToReceive))];
+    }
 }
 
 // TODO: 目前 task 任务激活时没有判断最大可执行任务数量
@@ -542,7 +546,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -561,7 +566,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskPrepareNotification object:nil];
@@ -578,7 +584,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskDidResumingNotification object:nil];
@@ -593,7 +600,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:FKTaskWillExecuteNotification object:nil];
@@ -610,7 +618,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -627,7 +636,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -646,7 +656,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -663,7 +674,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -689,7 +701,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -712,7 +725,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -731,7 +745,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -759,7 +774,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -786,7 +802,8 @@ NS_ASSUME_NONNULL_END
     if (self.statusBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.statusBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.statusBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -803,7 +820,8 @@ NS_ASSUME_NONNULL_END
     if (self.progressBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.progressBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.progressBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -820,7 +838,8 @@ NS_ASSUME_NONNULL_END
     if (self.speedBlock) {
         __weak typeof(self) weak = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            weak.speedBlock(weak);
+            __strong typeof(weak) strong = weak;
+            strong.speedBlock(strong);
         });
     }
     dispatch_async(dispatch_get_main_queue(), ^{
