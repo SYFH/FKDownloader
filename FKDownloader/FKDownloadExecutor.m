@@ -43,9 +43,12 @@
         if (statusCode < 200 || statusCode > 300) {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
                                                  code:NSURLErrorUnknown
-                                             userInfo:@{NSFilePathErrorKey: url.absoluteString,
+                                             userInfo:@{NSFilePathErrorKey:url.absoluteString,
                                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
             [downloadTask sendErrorInfo:error];
+            
+            // 下载链接有问题, 继续下一个任务
+            [[FKDownloadManager manager] startNextIdleTask];
             return;
         }
     }
@@ -88,7 +91,7 @@
         if (statusCode < 200 || statusCode > 300) {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
                                                  code:NSURLErrorUnknown
-                                             userInfo:@{NSFilePathErrorKey: url.absoluteString,
+                                             userInfo:@{NSFilePathErrorKey:url.absoluteString,
                                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"HTTP Status Code: %d", (int)statusCode]}];
             [task sendErrorInfo:error];
             return;
@@ -109,7 +112,7 @@
                 } else {
                     NSError *error = [NSError errorWithDomain:NSURLErrorDomain
                                                          code:NSURLErrorUnknown
-                                                     userInfo:@{NSFilePathErrorKey: task.url,
+                                                     userInfo:@{NSFilePathErrorKey:task.url,
                                                                 NSLocalizedDescriptionKey: [NSString stringWithFormat:@"File verification failed"]}];
                     [task sendErrorInfo:error];
                 }
@@ -118,7 +121,7 @@
     } else {
         NSError *error = [NSError errorWithDomain:NSPOSIXErrorDomain
                                              code:2
-                                         userInfo:@{NSFilePathErrorKey: location.path,
+                                         userInfo:@{NSFilePathErrorKey:location.path,
                                                     NSLocalizedDescriptionKey: @"The operation couldn’t be completed. No such file or directory"}];
         [task sendErrorInfo:error];
     }
