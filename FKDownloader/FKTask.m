@@ -536,6 +536,7 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - Send Info
 - (void)sendIdleInfo {
+    if (!self) return;
     self.status = TaskStatusIdle;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didIdleTask:)]) {
@@ -556,6 +557,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendPrepareInfo {
+    if (!self) return;
     self.status = TaskStatusPrepare;
     
     if ([self.delegate respondsToSelector:@selector(downloader:prepareTask:)]) {
@@ -574,6 +576,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendResumingInfo {
+    if (!self) return;
     self.status = TaskStatusResuming;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didResumingTask:)]) {
@@ -592,6 +595,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendWillExecutingInfo {
+    if (!self) return;
     if ([self.delegate respondsToSelector:@selector(downloader:willExecuteTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate downloader:self.manager willExecuteTask:self];
@@ -608,6 +612,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendExecutingInfo {
+    if (!self) return;
     self.status = TaskStatusExecuting;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didExecuteTask:)]) {
@@ -628,6 +633,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendWillSuspendInfo {
+    if (!self) return;
     if ([self.delegate respondsToSelector:@selector(downloader:willSuspendTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate downloader:self.manager willSuspendTask:self];
@@ -646,6 +652,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendSuspendInfo {
+    if (!self) return;
     self.status = TaskStatusSuspend;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didSuspendTask:)]) {
@@ -666,6 +673,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendWillCancelldInfo {
+    if (!self) return;
     if ([self.delegate respondsToSelector:@selector(downloader:willCanceldTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate downloader:self.manager willCanceldTask:self];
@@ -684,6 +692,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendCancelldInfo {
+    if (!self) return;
     self.status = TaskStatusCancelld;
     self.progress.completedUnitCount = 0;
     self.bytesPerSecondSpeed = [NSNumber numberWithLongLong:0];
@@ -715,6 +724,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendWillChecksumInfo {
+    if (!self) return;
     self.status = TaskStatusChecksumming;
     
     if ([self.delegate respondsToSelector:@selector(downloader:willChecksumTask:)]) {
@@ -735,6 +745,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendChecksumInfo {
+    if (!self) return;
     self.status = TaskStatusChecksummed;
     
     if ([self.delegate respondsToSelector:@selector(downloader:didChecksumTask:)]) {
@@ -755,6 +766,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendFinishInfo {
+    if (!self) return;
     self.progress.completedUnitCount = self.progress.totalUnitCount;
     if (self.bytesPerSecondSpeed.doubleValue == 0) {
         self.bytesPerSecondSpeed = @(self.progress.totalUnitCount);
@@ -788,6 +800,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendErrorInfo:(NSError *)error {
+    if (!self) return;
     self.error = error;
     self.status = TaskStatusUnknowError;
     [self clearResumeData];
@@ -812,6 +825,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendProgressInfo {
+    if (!self) return;
     if ([self.delegate respondsToSelector:@selector(downloader:progressingTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate downloader:self.manager progressingTask:self];
@@ -830,6 +844,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendSpeedInfo {
+    if (!self) return;
     if ([self.delegate respondsToSelector:@selector(downloader:speedInfo:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate downloader:self.manager speedInfo:self];
@@ -848,6 +863,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendWillRemoveInfo {
+    if (!self) return;
     if ([self.delegate respondsToSelector:@selector(downloader:willRemoveTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate downloader:self.manager willRemoveTask:self];
@@ -859,6 +875,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)sendRemoveInfo {
+    if (!self) return;
     if ([self.delegate respondsToSelector:@selector(downloader:didRemoveTask:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate downloader:self.manager didRemoveTask:self];
