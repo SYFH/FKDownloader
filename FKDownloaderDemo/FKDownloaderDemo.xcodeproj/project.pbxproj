@@ -1,0 +1,401 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3D66171323B75BE6008EBE8A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66171223B75BE6008EBE8A /* AppDelegate.m */; };
+		3D66171623B75BE6008EBE8A /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66171523B75BE6008EBE8A /* SceneDelegate.m */; };
+		3D66171923B75BE6008EBE8A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66171823B75BE6008EBE8A /* ViewController.m */; };
+		3D66171C23B75BE6008EBE8A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D66171A23B75BE6008EBE8A /* Main.storyboard */; };
+		3D66171E23B75BE8008EBE8A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D66171D23B75BE8008EBE8A /* Assets.xcassets */; };
+		3D66172123B75BE8008EBE8A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D66171F23B75BE8008EBE8A /* LaunchScreen.storyboard */; };
+		3D66172423B75BE8008EBE8A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66172323B75BE8008EBE8A /* main.m */; };
+		A6FB7529D2327BDAFC785FD0 /* Pods_FKDownloaderDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 776E125DA45087D7F9E095D9 /* Pods_FKDownloaderDemo.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1FB6ECB7D278981428518BA4 /* Pods-FKDownloaderDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKDownloaderDemo.release.xcconfig"; path = "Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo.release.xcconfig"; sourceTree = "<group>"; };
+		3D66170E23B75BE6008EBE8A /* FKDownloaderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKDownloaderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D66171123B75BE6008EBE8A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		3D66171223B75BE6008EBE8A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		3D66171423B75BE6008EBE8A /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		3D66171523B75BE6008EBE8A /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		3D66171723B75BE6008EBE8A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		3D66171823B75BE6008EBE8A /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		3D66171B23B75BE6008EBE8A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3D66171D23B75BE8008EBE8A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3D66172023B75BE8008EBE8A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3D66172223B75BE8008EBE8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3D66172323B75BE8008EBE8A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		776E125DA45087D7F9E095D9 /* Pods_FKDownloaderDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FKDownloaderDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7ADFB7B7079998919B00875A /* Pods-FKDownloaderDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKDownloaderDemo.debug.xcconfig"; path = "Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3D66170B23B75BE6008EBE8A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A6FB7529D2327BDAFC785FD0 /* Pods_FKDownloaderDemo.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3D66170523B75BE6008EBE8A = {
+			isa = PBXGroup;
+			children = (
+				3D66171023B75BE6008EBE8A /* FKDownloaderDemo */,
+				3D66170F23B75BE6008EBE8A /* Products */,
+				5BEE627D9BF1BB4A36459E24 /* Pods */,
+				C87CBCEEADF759846B76A2BB /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		3D66170F23B75BE6008EBE8A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3D66170E23B75BE6008EBE8A /* FKDownloaderDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3D66171023B75BE6008EBE8A /* FKDownloaderDemo */ = {
+			isa = PBXGroup;
+			children = (
+				3D66171123B75BE6008EBE8A /* AppDelegate.h */,
+				3D66171223B75BE6008EBE8A /* AppDelegate.m */,
+				3D66171423B75BE6008EBE8A /* SceneDelegate.h */,
+				3D66171523B75BE6008EBE8A /* SceneDelegate.m */,
+				3D66171723B75BE6008EBE8A /* ViewController.h */,
+				3D66171823B75BE6008EBE8A /* ViewController.m */,
+				3D66171A23B75BE6008EBE8A /* Main.storyboard */,
+				3D66171D23B75BE8008EBE8A /* Assets.xcassets */,
+				3D66171F23B75BE8008EBE8A /* LaunchScreen.storyboard */,
+				3D66172223B75BE8008EBE8A /* Info.plist */,
+				3D66172323B75BE8008EBE8A /* main.m */,
+			);
+			path = FKDownloaderDemo;
+			sourceTree = "<group>";
+		};
+		5BEE627D9BF1BB4A36459E24 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				7ADFB7B7079998919B00875A /* Pods-FKDownloaderDemo.debug.xcconfig */,
+				1FB6ECB7D278981428518BA4 /* Pods-FKDownloaderDemo.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		C87CBCEEADF759846B76A2BB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				776E125DA45087D7F9E095D9 /* Pods_FKDownloaderDemo.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3D66170D23B75BE6008EBE8A /* FKDownloaderDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D66172723B75BE8008EBE8A /* Build configuration list for PBXNativeTarget "FKDownloaderDemo" */;
+			buildPhases = (
+				7C4ECBC62816BDED58D6C7DC /* [CP] Check Pods Manifest.lock */,
+				3D66170A23B75BE6008EBE8A /* Sources */,
+				3D66170B23B75BE6008EBE8A /* Frameworks */,
+				3D66170C23B75BE6008EBE8A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FKDownloaderDemo;
+			productName = FKDownloaderDemo;
+			productReference = 3D66170E23B75BE6008EBE8A /* FKDownloaderDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3D66170623B75BE6008EBE8A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = norld;
+				TargetAttributes = {
+					3D66170D23B75BE6008EBE8A = {
+						CreatedOnToolsVersion = 11.3;
+					};
+				};
+			};
+			buildConfigurationList = 3D66170923B75BE6008EBE8A /* Build configuration list for PBXProject "FKDownloaderDemo" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3D66170523B75BE6008EBE8A;
+			productRefGroup = 3D66170F23B75BE6008EBE8A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3D66170D23B75BE6008EBE8A /* FKDownloaderDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3D66170C23B75BE6008EBE8A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D66172123B75BE8008EBE8A /* LaunchScreen.storyboard in Resources */,
+				3D66171E23B75BE8008EBE8A /* Assets.xcassets in Resources */,
+				3D66171C23B75BE6008EBE8A /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7C4ECBC62816BDED58D6C7DC /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FKDownloaderDemo-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3D66170A23B75BE6008EBE8A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D66171923B75BE6008EBE8A /* ViewController.m in Sources */,
+				3D66171323B75BE6008EBE8A /* AppDelegate.m in Sources */,
+				3D66172423B75BE8008EBE8A /* main.m in Sources */,
+				3D66171623B75BE6008EBE8A /* SceneDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		3D66171A23B75BE6008EBE8A /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3D66171B23B75BE6008EBE8A /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		3D66171F23B75BE8008EBE8A /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3D66172023B75BE8008EBE8A /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3D66172523B75BE8008EBE8A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		3D66172623B75BE8008EBE8A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3D66172823B75BE8008EBE8A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7ADFB7B7079998919B00875A /* Pods-FKDownloaderDemo.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QD5GY3MPC6;
+				INFOPLIST_FILE = FKDownloaderDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloaderDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3D66172923B75BE8008EBE8A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1FB6ECB7D278981428518BA4 /* Pods-FKDownloaderDemo.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QD5GY3MPC6;
+				INFOPLIST_FILE = FKDownloaderDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloaderDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3D66170923B75BE6008EBE8A /* Build configuration list for PBXProject "FKDownloaderDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D66172523B75BE8008EBE8A /* Debug */,
+				3D66172623B75BE8008EBE8A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D66172723B75BE8008EBE8A /* Build configuration list for PBXNativeTarget "FKDownloaderDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D66172823B75BE8008EBE8A /* Debug */,
+				3D66172923B75BE8008EBE8A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3D66170623B75BE6008EBE8A /* Project object */;
+}

@@ -1,0 +1,504 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3D36748423BD89BC0023E3A0 /* FKObserverModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D36748223BD89BC0023E3A0 /* FKObserverModel.h */; };
+		3D36748523BD89BC0023E3A0 /* FKObserverModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D36748323BD89BC0023E3A0 /* FKObserverModel.m */; };
+		3D36748823BD8FB40023E3A0 /* FKCacheModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D36748623BD8FB40023E3A0 /* FKCacheModel.h */; };
+		3D36748923BD8FB40023E3A0 /* FKCacheModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D36748723BD8FB40023E3A0 /* FKCacheModel.m */; };
+		3D613EF323BC5D75005F489F /* FKFileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D613EF123BC5D75005F489F /* FKFileManager.h */; };
+		3D613EF423BC5D75005F489F /* FKFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D613EF223BC5D75005F489F /* FKFileManager.m */; };
+		3D613EFB23BCAA78005F489F /* NSString+FKCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D613EF923BCAA78005F489F /* NSString+FKCategory.h */; };
+		3D613EFC23BCAA78005F489F /* NSString+FKCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D613EFA23BCAA78005F489F /* NSString+FKCategory.m */; };
+		3D6616FF23B75BA9008EBE8A /* FKDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D6616FD23B75BA9008EBE8A /* FKDownloader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D68DF4523BC37F50060DAEB /* FKCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D68DF4323BC37F50060DAEB /* FKCache.h */; };
+		3D68DF4623BC37F50060DAEB /* FKCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D68DF4423BC37F50060DAEB /* FKCache.m */; };
+		3D776F7123B84F4400AC6190 /* FKSessionDelegater.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D776F6F23B84F4400AC6190 /* FKSessionDelegater.h */; };
+		3D776F7223B84F4400AC6190 /* FKSessionDelegater.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D776F7023B84F4400AC6190 /* FKSessionDelegater.m */; };
+		3D933F0523BB4660006C6C95 /* FKTaskControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0323BB4660006C6C95 /* FKTaskControl.h */; };
+		3D933F0623BB4660006C6C95 /* FKTaskControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0423BB4660006C6C95 /* FKTaskControl.m */; };
+		3D933F0923BB46E9006C6C95 /* MKMiddleware.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0723BB46E9006C6C95 /* MKMiddleware.h */; };
+		3D933F0A23BB46E9006C6C95 /* MKMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0823BB46E9006C6C95 /* MKMiddleware.m */; };
+		3D933F0E23BB54C1006C6C95 /* FKSingleNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */; };
+		3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */; };
+		3DF8F74923BB214900A9E363 /* FKEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF8F74723BB214900A9E363 /* FKEngine.h */; };
+		3DF8F74A23BB214900A9E363 /* FKEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F74823BB214900A9E363 /* FKEngine.m */; };
+		3DF8F74D23BB217600A9E363 /* FKConfigure.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF8F74B23BB217600A9E363 /* FKConfigure.h */; };
+		3DF8F74E23BB217600A9E363 /* FKConfigure.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F74C23BB217600A9E363 /* FKConfigure.m */; };
+		3DF8F75123BB219900A9E363 /* FKObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF8F74F23BB219900A9E363 /* FKObserver.h */; };
+		3DF8F75223BB219900A9E363 /* FKObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F75023BB219900A9E363 /* FKObserver.m */; };
+		3DF8F75523BB21D700A9E363 /* FKMessager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF8F75323BB21D700A9E363 /* FKMessager.h */; };
+		3DF8F75623BB21D700A9E363 /* FKMessager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F75423BB21D700A9E363 /* FKMessager.m */; };
+		3DF8F75923BB229700A9E363 /* FKTaskBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF8F75723BB229700A9E363 /* FKTaskBuilder.h */; };
+		3DF8F75A23BB229700A9E363 /* FKTaskBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F75823BB229700A9E363 /* FKTaskBuilder.m */; };
+		3DF8F75F23BB2A6500A9E363 /* FKScheduler.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF8F75D23BB2A6500A9E363 /* FKScheduler.h */; };
+		3DF8F76023BB2A6500A9E363 /* FKScheduler.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F75E23BB2A6500A9E363 /* FKScheduler.m */; };
+		3DF8F76D23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF8F76B23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.h */; };
+		3DF8F76E23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F76C23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3D36748223BD89BC0023E3A0 /* FKObserverModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKObserverModel.h; sourceTree = "<group>"; };
+		3D36748323BD89BC0023E3A0 /* FKObserverModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKObserverModel.m; sourceTree = "<group>"; };
+		3D36748623BD8FB40023E3A0 /* FKCacheModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKCacheModel.h; sourceTree = "<group>"; };
+		3D36748723BD8FB40023E3A0 /* FKCacheModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKCacheModel.m; sourceTree = "<group>"; };
+		3D613EF123BC5D75005F489F /* FKFileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKFileManager.h; sourceTree = "<group>"; };
+		3D613EF223BC5D75005F489F /* FKFileManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKFileManager.m; sourceTree = "<group>"; };
+		3D613EF923BCAA78005F489F /* NSString+FKCategory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+FKCategory.h"; sourceTree = "<group>"; };
+		3D613EFA23BCAA78005F489F /* NSString+FKCategory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+FKCategory.m"; sourceTree = "<group>"; };
+		3D6616FA23B75BA9008EBE8A /* FKDownloader.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FKDownloader.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D6616FD23B75BA9008EBE8A /* FKDownloader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKDownloader.h; sourceTree = "<group>"; };
+		3D6616FE23B75BA9008EBE8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3D68DF4323BC37F50060DAEB /* FKCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKCache.h; sourceTree = "<group>"; };
+		3D68DF4423BC37F50060DAEB /* FKCache.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKCache.m; sourceTree = "<group>"; };
+		3D776F6F23B84F4400AC6190 /* FKSessionDelegater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSessionDelegater.h; sourceTree = "<group>"; };
+		3D776F7023B84F4400AC6190 /* FKSessionDelegater.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSessionDelegater.m; sourceTree = "<group>"; };
+		3D933F0323BB4660006C6C95 /* FKTaskControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKTaskControl.h; sourceTree = "<group>"; };
+		3D933F0423BB4660006C6C95 /* FKTaskControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKTaskControl.m; sourceTree = "<group>"; };
+		3D933F0723BB46E9006C6C95 /* MKMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MKMiddleware.h; sourceTree = "<group>"; };
+		3D933F0823BB46E9006C6C95 /* MKMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKMiddleware.m; sourceTree = "<group>"; };
+		3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSingleNumber.h; sourceTree = "<group>"; };
+		3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSingleNumber.m; sourceTree = "<group>"; };
+		3DF8F74723BB214900A9E363 /* FKEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKEngine.h; sourceTree = "<group>"; };
+		3DF8F74823BB214900A9E363 /* FKEngine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKEngine.m; sourceTree = "<group>"; };
+		3DF8F74B23BB217600A9E363 /* FKConfigure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKConfigure.h; sourceTree = "<group>"; };
+		3DF8F74C23BB217600A9E363 /* FKConfigure.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKConfigure.m; sourceTree = "<group>"; };
+		3DF8F74F23BB219900A9E363 /* FKObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKObserver.h; sourceTree = "<group>"; };
+		3DF8F75023BB219900A9E363 /* FKObserver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKObserver.m; sourceTree = "<group>"; };
+		3DF8F75323BB21D700A9E363 /* FKMessager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKMessager.h; sourceTree = "<group>"; };
+		3DF8F75423BB21D700A9E363 /* FKMessager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKMessager.m; sourceTree = "<group>"; };
+		3DF8F75723BB229700A9E363 /* FKTaskBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKTaskBuilder.h; sourceTree = "<group>"; };
+		3DF8F75823BB229700A9E363 /* FKTaskBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKTaskBuilder.m; sourceTree = "<group>"; };
+		3DF8F75D23BB2A6500A9E363 /* FKScheduler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKScheduler.h; sourceTree = "<group>"; };
+		3DF8F75E23BB2A6500A9E363 /* FKScheduler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKScheduler.m; sourceTree = "<group>"; };
+		3DF8F76B23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSURLSessionDownloadTask+FKCategory.h"; sourceTree = "<group>"; };
+		3DF8F76C23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSURLSessionDownloadTask+FKCategory.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3D6616F723B75BA9008EBE8A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3D36748123BD869B0023E3A0 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				3D36748223BD89BC0023E3A0 /* FKObserverModel.h */,
+				3D36748323BD89BC0023E3A0 /* FKObserverModel.m */,
+				3D36748623BD8FB40023E3A0 /* FKCacheModel.h */,
+				3D36748723BD8FB40023E3A0 /* FKCacheModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		3D6616F023B75BA9008EBE8A = {
+			isa = PBXGroup;
+			children = (
+				3D6616FC23B75BA9008EBE8A /* FKDownloader */,
+				3D6616FB23B75BA9008EBE8A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3D6616FB23B75BA9008EBE8A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3D6616FA23B75BA9008EBE8A /* FKDownloader.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3D6616FC23B75BA9008EBE8A /* FKDownloader */ = {
+			isa = PBXGroup;
+			children = (
+				3D36748123BD869B0023E3A0 /* Model */,
+				3D933F0B23BB549A006C6C95 /* Utils */,
+				3DF8F76A23BB2C1600A9E363 /* Extension */,
+				3DF8F76123BB2B7900A9E363 /* Process */,
+				3DF8F75C23BB2A0100A9E363 /* Middleware */,
+				3DF8F75B23BB29E600A9E363 /* Control */,
+				3D6616FD23B75BA9008EBE8A /* FKDownloader.h */,
+				3D6616FE23B75BA9008EBE8A /* Info.plist */,
+			);
+			path = FKDownloader;
+			sourceTree = "<group>";
+		};
+		3D933F0B23BB549A006C6C95 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */,
+				3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */,
+				3D613EF123BC5D75005F489F /* FKFileManager.h */,
+				3D613EF223BC5D75005F489F /* FKFileManager.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		3DF8F75B23BB29E600A9E363 /* Control */ = {
+			isa = PBXGroup;
+			children = (
+				3DF8F74B23BB217600A9E363 /* FKConfigure.h */,
+				3DF8F74C23BB217600A9E363 /* FKConfigure.m */,
+				3DF8F74723BB214900A9E363 /* FKEngine.h */,
+				3DF8F74823BB214900A9E363 /* FKEngine.m */,
+				3DF8F75D23BB2A6500A9E363 /* FKScheduler.h */,
+				3DF8F75E23BB2A6500A9E363 /* FKScheduler.m */,
+				3D68DF4323BC37F50060DAEB /* FKCache.h */,
+				3D68DF4423BC37F50060DAEB /* FKCache.m */,
+				3DF8F75723BB229700A9E363 /* FKTaskBuilder.h */,
+				3DF8F75823BB229700A9E363 /* FKTaskBuilder.m */,
+				3D933F0323BB4660006C6C95 /* FKTaskControl.h */,
+				3D933F0423BB4660006C6C95 /* FKTaskControl.m */,
+			);
+			path = Control;
+			sourceTree = "<group>";
+		};
+		3DF8F75C23BB2A0100A9E363 /* Middleware */ = {
+			isa = PBXGroup;
+			children = (
+				3D933F0723BB46E9006C6C95 /* MKMiddleware.h */,
+				3D933F0823BB46E9006C6C95 /* MKMiddleware.m */,
+			);
+			path = Middleware;
+			sourceTree = "<group>";
+		};
+		3DF8F76123BB2B7900A9E363 /* Process */ = {
+			isa = PBXGroup;
+			children = (
+				3D776F6F23B84F4400AC6190 /* FKSessionDelegater.h */,
+				3D776F7023B84F4400AC6190 /* FKSessionDelegater.m */,
+				3DF8F74F23BB219900A9E363 /* FKObserver.h */,
+				3DF8F75023BB219900A9E363 /* FKObserver.m */,
+				3DF8F75323BB21D700A9E363 /* FKMessager.h */,
+				3DF8F75423BB21D700A9E363 /* FKMessager.m */,
+			);
+			path = Process;
+			sourceTree = "<group>";
+		};
+		3DF8F76A23BB2C1600A9E363 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				3DF8F76B23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.h */,
+				3DF8F76C23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.m */,
+				3D613EF923BCAA78005F489F /* NSString+FKCategory.h */,
+				3D613EFA23BCAA78005F489F /* NSString+FKCategory.m */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3D6616F523B75BA9008EBE8A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D6616FF23B75BA9008EBE8A /* FKDownloader.h in Headers */,
+				3D36748423BD89BC0023E3A0 /* FKObserverModel.h in Headers */,
+				3D776F7123B84F4400AC6190 /* FKSessionDelegater.h in Headers */,
+				3D933F0923BB46E9006C6C95 /* MKMiddleware.h in Headers */,
+				3D613EF323BC5D75005F489F /* FKFileManager.h in Headers */,
+				3DF8F76D23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.h in Headers */,
+				3D36748823BD8FB40023E3A0 /* FKCacheModel.h in Headers */,
+				3DF8F75523BB21D700A9E363 /* FKMessager.h in Headers */,
+				3D68DF4523BC37F50060DAEB /* FKCache.h in Headers */,
+				3DF8F75F23BB2A6500A9E363 /* FKScheduler.h in Headers */,
+				3D933F0523BB4660006C6C95 /* FKTaskControl.h in Headers */,
+				3DF8F74923BB214900A9E363 /* FKEngine.h in Headers */,
+				3D933F0E23BB54C1006C6C95 /* FKSingleNumber.h in Headers */,
+				3DF8F75923BB229700A9E363 /* FKTaskBuilder.h in Headers */,
+				3DF8F74D23BB217600A9E363 /* FKConfigure.h in Headers */,
+				3D613EFB23BCAA78005F489F /* NSString+FKCategory.h in Headers */,
+				3DF8F75123BB219900A9E363 /* FKObserver.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		3D6616F923B75BA9008EBE8A /* FKDownloader */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D66170223B75BA9008EBE8A /* Build configuration list for PBXNativeTarget "FKDownloader" */;
+			buildPhases = (
+				3D6616F523B75BA9008EBE8A /* Headers */,
+				3D6616F623B75BA9008EBE8A /* Sources */,
+				3D6616F723B75BA9008EBE8A /* Frameworks */,
+				3D6616F823B75BA9008EBE8A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FKDownloader;
+			productName = FKDownloader;
+			productReference = 3D6616FA23B75BA9008EBE8A /* FKDownloader.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3D6616F123B75BA9008EBE8A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = norld;
+				TargetAttributes = {
+					3D6616F923B75BA9008EBE8A = {
+						CreatedOnToolsVersion = 11.3;
+					};
+				};
+			};
+			buildConfigurationList = 3D6616F423B75BA9008EBE8A /* Build configuration list for PBXProject "FKDownloader" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3D6616F023B75BA9008EBE8A;
+			productRefGroup = 3D6616FB23B75BA9008EBE8A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3D6616F923B75BA9008EBE8A /* FKDownloader */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3D6616F823B75BA9008EBE8A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3D6616F623B75BA9008EBE8A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D613EFC23BCAA78005F489F /* NSString+FKCategory.m in Sources */,
+				3D36748523BD89BC0023E3A0 /* FKObserverModel.m in Sources */,
+				3DF8F75A23BB229700A9E363 /* FKTaskBuilder.m in Sources */,
+				3D68DF4623BC37F50060DAEB /* FKCache.m in Sources */,
+				3DF8F75223BB219900A9E363 /* FKObserver.m in Sources */,
+				3DF8F75623BB21D700A9E363 /* FKMessager.m in Sources */,
+				3D613EF423BC5D75005F489F /* FKFileManager.m in Sources */,
+				3D933F0A23BB46E9006C6C95 /* MKMiddleware.m in Sources */,
+				3D776F7223B84F4400AC6190 /* FKSessionDelegater.m in Sources */,
+				3DF8F76E23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.m in Sources */,
+				3DF8F74E23BB217600A9E363 /* FKConfigure.m in Sources */,
+				3DF8F76023BB2A6500A9E363 /* FKScheduler.m in Sources */,
+				3D933F0623BB4660006C6C95 /* FKTaskControl.m in Sources */,
+				3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */,
+				3DF8F74A23BB214900A9E363 /* FKEngine.m in Sources */,
+				3D36748923BD8FB40023E3A0 /* FKCacheModel.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3D66170023B75BA9008EBE8A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		3D66170123B75BA9008EBE8A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		3D66170323B75BA9008EBE8A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = QD5GY3MPC6;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = FKDownloader/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloader;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3D66170423B75BA9008EBE8A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = QD5GY3MPC6;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = FKDownloader/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloader;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3D6616F423B75BA9008EBE8A /* Build configuration list for PBXProject "FKDownloader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D66170023B75BA9008EBE8A /* Debug */,
+				3D66170123B75BA9008EBE8A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D66170223B75BA9008EBE8A /* Build configuration list for PBXNativeTarget "FKDownloader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D66170323B75BA9008EBE8A /* Debug */,
+				3D66170423B75BA9008EBE8A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3D6616F123B75BA9008EBE8A /* Project object */;
+}

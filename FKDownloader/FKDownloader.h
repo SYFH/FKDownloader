@@ -2,20 +2,29 @@
 //  FKDownloader.h
 //  FKDownloader
 //
-//  Created by Norld on 2018/11/12.
-//  Copyright © 2018 Norld. All rights reserved.
+//  Created by norld on 2019/12/28.
+//  Copyright © 2019 norld. All rights reserved.
 //
 
-#import "FKConfigure.h"
-#import "FKDefine.h"
-#import "FKReachability.h"
-#import "FKDownloadManager.h"
-#import "FKTask.h"
-#import "FKTaskStorage.h"
-#import "FKHashHelper.h"
-#import "FKResumeHelper.h"
-#import "FKMapHub.h"
-#import "NSString+FKDownload.h"
-#import "NSArray+FKDownload.h"
-#import "NSData+FKDownload.h"
-#import "NSMutableSet+FKDownload.h"
+#import <Foundation/Foundation.h>
+
+//! Project version number for FKDownloader.
+FOUNDATION_EXPORT double FKDownloaderVersionNumber;
+
+//! Project version string for FKDownloader.
+FOUNDATION_EXPORT const unsigned char FKDownloaderVersionString[];
+
+// In this header, you should import all the public headers of your framework using statements like #import <FKDownloader/PublicHeader.h>
+
+// Control
+#import <FKDownloader/FKTaskBuilder.h>
+#import <FKDownloader/FKTaskControl.h>
+
+// Process
+#import <FKDownloader/FKMessager.h>
+
+// Middleware
+#import <FKDownloader/MKMiddleware.h>
+
+// Utails
+#import <FKDownloader/FKSingleNumber.h>
