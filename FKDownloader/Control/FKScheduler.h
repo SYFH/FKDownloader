@@ -18,11 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)shared;
 
-- (void)startWithTask:(NSString *)taskID;
-- (void)cancelWithTask:(NSString *)taskID;
-- (void)suspendWithTask:(NSString *)taskID;
-- (void)resumeWithTask:(NSString *)taskID;
-
 @end
 
 NS_ASSUME_NONNULL_END

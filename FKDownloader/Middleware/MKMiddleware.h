@@ -15,38 +15,41 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-/// 管理者中间件协议, 在下载前调用, 进行处理 NSURLRequest
-@protocol FKScheduleMiddlewareProtocol <NSObject>
+/// 请求中间件协议, 在下载前调用, 进行处理 NSURLRequest
+@protocol FKRequestMiddlewareProtocol <NSObject>
 
 @required
 
 /// 优先级, 数字越小, 优先级越高, 数字相同时则随机顺序
-@property (nonatomic, assign) unsigned int priority;
++ (NSUInteger)priority;
 
 /// 处理
 /// @param task 下载请求
-- (NSMutableURLRequest *)processDownloadTask:(NSMutableURLRequest *)task;
++ (NSMutableURLRequest *)processRequest:(NSMutableURLRequest *)task;
 
 @end
 
 
-/// 响应者中间件协议, 在下载返回响应后调用, 进行处理 NSURLResponse
+/// 响应中间件协议, 在下载返回响应后调用, 进行处理 NSURLResponse
 @protocol FKResponseMiddlewareProtocol <NSObject>
 
 @required
 
 /// 优先级, 数字越小, 优先级越高, 数字相同时则随机顺序
-@property (nonatomic, assign) unsigned int priority;
++ (NSUInteger)priority;
 
 /// 处理
 /// @param task 下载请求
-- (NSURLResponse *)processDownloadTask:(NSURLResponse *)task;
++ (NSURLResponse *)processResponse:(NSURLResponse *)task;
 
 @end
 
 @interface MKMiddleware : NSObject
 
 + (instancetype)shared;
+
+- (void)registeRequestMiddleware:(id<FKRequestMiddlewareProtocol>)middleware;
+- (void)registeResponseMiddleware:(id<FKResponseMiddlewareProtocol>)middleware;
 
 @end
 

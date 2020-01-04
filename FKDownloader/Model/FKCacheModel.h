@@ -14,20 +14,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FKCacheTaskModel : NSObject<NSCoding>
-
-@property (nonatomic, strong) NSString *taskID;
-@property (nonatomic, strong) NSArray<NSString *> *urls;
-
-@end
-
 @interface FKCacheRequestModel : NSObject<NSCoding>
 
+@property (nonatomic, strong) NSString *requestID;
 @property (nonatomic, strong) NSString *url;
-@property (nonatomic, strong) NSDictionary *header;
+@property (nonatomic, strong) NSMutableURLRequest *request;
 @property (nonatomic, assign) NSInteger state;
 @property (nonatomic, assign) NSInteger dataLength;
-@property (nonatomic, strong) NSData *resumeData;
+@property (nonatomic, strong, nullable) NSData *resumeData;
 
 @end
 

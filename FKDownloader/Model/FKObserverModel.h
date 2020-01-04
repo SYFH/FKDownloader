@@ -12,18 +12,13 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, FKState) {
-    FKStatePrepare  = 0, // 准备
-    FKStateIdel     = 1, // 等待
-    FKStateAction   = 2, // 执行
-    FKStateSuspend  = 3, // 暂停
-    FKStateCancel   = 4, // 取消
-};
+#import "FKCommonHeader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FKObserverModel : NSObject
 
+@property (nonatomic, strong) NSString *requestID;
 @property (nonatomic, assign) double progress;
 @property (nonatomic, assign) FKState state;
 

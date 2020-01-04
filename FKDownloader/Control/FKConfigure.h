@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKConfigure : NSObject
 
+@property (nonatomic, assign) NSTimeInterval timeoutTimeInterval;
+
 + (instancetype)configure;
 
 @end

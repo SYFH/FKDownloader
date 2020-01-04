@@ -1,17 +1,15 @@
 //
-//  FKMessager.m
+//  FKControl.m
 //  FKDownloader
 //
 //  Created by norld on 2019/12/31.
 //  Copyright © 2019 norld. All rights reserved.
 //
 
-#import "FKMessager.h"
+#import "FKControl.h"
 
-@interface FKMessager ()
+#import "FKEngine.h"
 
-@end
-
-@implementation FKMessager
+@implementation FKControl
 
 @end

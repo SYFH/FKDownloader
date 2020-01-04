@@ -7,7 +7,7 @@
 //
 
 /**
- 负责创建顺序不重复的编号
+ 负责创建顺序不重复的编号, 以主程序生存周期为始终点
  */
 
 #import <Foundation/Foundation.h>
@@ -18,8 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)shared;
 
-/// 初始原子数字, 务必在主线程中使用, 子线程中不保证初始化为原子性
 - (void)initialNumber;
+- (void)initialNumberWithNumber:(unsigned long long)number;
+- (unsigned long long)curren;
 - (unsigned long long)number;
 
 @end

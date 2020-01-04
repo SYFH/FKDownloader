@@ -13,8 +13,6 @@
 
 @interface FKScheduler ()
 
-@property (nonatomic, strong) NSOperationQueue *queue;
-
 @end
 
 @implementation FKScheduler
@@ -26,41 +24,6 @@
         instance = [[FKScheduler alloc] init];
     });
     return instance;
-}
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.queue.maxConcurrentOperationCount = 1;
-    }
-    return self;
-}
-
-- (void)startWithTask:(NSString *)taskID {
-    [self.queue addOperationWithBlock:^{
-        
-    }];
-}
-
-- (void)cancelWithTask:(NSString *)taskID {
-    
-}
-
-- (void)suspendWithTask:(NSString *)taskID {
-    
-}
-
-- (void)resumeWithTask:(NSString *)taskID {
-    
-}
-
-
-#pragma mark - Getter/Setter
-- (NSOperationQueue *)queue {
-    if (!_queue) {
-        _queue = [[NSOperationQueue alloc] init];
-    }
-    return _queue;
 }
 
 @end

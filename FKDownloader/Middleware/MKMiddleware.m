@@ -10,7 +10,7 @@
 
 @interface MKMiddleware ()
 
-@property (nonatomic, strong) NSHashTable<id<FKScheduleMiddlewareProtocol>> *scheduleMiddlewares;
+@property (nonatomic, strong) NSHashTable<id<FKRequestMiddlewareProtocol>> *scheduleMiddlewares;
 @property (nonatomic, strong) NSHashTable<id<FKResponseMiddlewareProtocol>> *responseMiddlewares;
 
 @end

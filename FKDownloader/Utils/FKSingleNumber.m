@@ -30,6 +30,14 @@
     self.atomicNumber = ATOMIC_VAR_INIT(0ull);
 }
 
+- (void)initialNumberWithNumber:(unsigned long long)number {
+    self.atomicNumber = ATOMIC_VAR_INIT(number);
+}
+
+- (unsigned long long)curren {
+    return self.atomicNumber;
+}
+
 - (unsigned long long)number {
     @synchronized (self) {
         unsigned long long num = self.atomicNumber;

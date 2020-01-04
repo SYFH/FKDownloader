@@ -25,28 +25,23 @@
     return instance;
 }
 
-- (void)startWithTask:(NSString *)taskID {
-    [[FKScheduler shared] startWithTask:taskID];
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.ioQueue.maxConcurrentOperationCount = 1;
+        self.ioQueue.maxConcurrentOperationCount = 1;
+    }
+    return self;
 }
 
-- (void)cancelWithTask:(NSString *)taskID {
-    [[FKScheduler shared] cancelWithTask:taskID];
-}
 
-- (void)suspendWithTask:(NSString *)taskID {
-    [[FKScheduler shared] suspendWithTask:taskID];
-}
-
-- (void)resumeWithTask:(NSString *)taskID {
-    [[FKScheduler shared] resumeWithTask:taskID];
-}
-
-- (void)processRequest:(NSMutableURLRequest *)request {
-    // 检测是否有中间件
-    
-    // 将 request 进行下载
-    
-    // 添加 KVO
+#pragma mark - Getter/Setter
+- (NSOperationQueue *)ioQueue {
+    if (!_ioQueue) {
+        _ioQueue = [[NSOperationQueue alloc] init];
+        _ioQueue.name = @"com.fk.queue.cache.io";
+    }
+    return _ioQueue;
 }
 
 @end

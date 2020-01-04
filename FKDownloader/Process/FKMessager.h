@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKMessager : NSObject
 
-+ (instancetype)messagerWithTaskID:(NSString *)taskID;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -16,16 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKEngine : NSObject
 
+/// I/O线程, 串行
+@property (nonatomic, strong) NSOperationQueue *ioQueue;
+
 + (instancetype)engine;
-
-// 任务入口
-- (void)startWithTask:(NSString *)taskID;
-- (void)cancelWithTask:(NSString *)taskID;
-- (void)suspendWithTask:(NSString *)taskID;
-- (void)resumeWithTask:(NSString *)taskID;
-
-// 请求入口
-- (void)processRequest:(NSMutableURLRequest *)request;
 
 @end
 
