@@ -19,7 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// I/O线程, 串行
 @property (nonatomic, strong) NSOperationQueue *ioQueue;
 
+/// 计时器线程, 串行
+@property (nonatomic, strong) NSOperationQueue *timerQueue;
+
 + (instancetype)engine;
+
+/// 配置 Session
+- (void)configtureSession;
 
 @end
 

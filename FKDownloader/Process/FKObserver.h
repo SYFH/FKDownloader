@@ -18,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)observer;
 
-- (void)addObserverWithRequest:(NSMutableURLRequest *)request;
+- (void)observerDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
+- (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
 
 @end
 

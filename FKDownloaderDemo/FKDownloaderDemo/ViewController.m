@@ -21,4 +21,9 @@
     
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    FKBuilder *builder = [FKBuilder buildWithURL:@"https://images.unsplash.com/photo-1578126074645-2b0affa37c0c?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9"];
+    [builder prepare];
+}
+
 @end

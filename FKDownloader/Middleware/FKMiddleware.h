@@ -1,5 +1,5 @@
 //
-//  MKMiddleware.h
+//  FKMiddleware.h
 //  FKDownloader
 //
 //  Created by norld on 2019/12/31.
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 
 /// 优先级, 数字越小, 优先级越高, 数字相同时则随机顺序
-+ (NSUInteger)priority;
+@property (nonatomic, assign) NSUInteger priority;
 
 /// 处理
 /// @param task 下载请求
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 
 /// 优先级, 数字越小, 优先级越高, 数字相同时则随机顺序
-+ (NSUInteger)priority;
+@property (nonatomic, assign) NSUInteger priority;
 
 /// 处理
 /// @param task 下载请求
@@ -44,12 +44,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface MKMiddleware : NSObject
+@interface FKMiddleware : NSObject
 
 + (instancetype)shared;
 
 - (void)registeRequestMiddleware:(id<FKRequestMiddlewareProtocol>)middleware;
 - (void)registeResponseMiddleware:(id<FKResponseMiddlewareProtocol>)middleware;
+
+/// 使用中间件处理请求
+/// @param request 请求信息
+/// @param complete 回调
+- (void)processRequest:(NSMutableURLRequest *)request complete:(void(^)(NSMutableURLRequest *request))complete;
+
+/// 获取所有请求中间件
+- (NSArray<id<FKRequestMiddlewareProtocol>> *)requestMiddlewareArray;
+
+/// 获取所有响应中间件
+- (NSArray<id<FKResponseMiddlewareProtocol>> *)responseMiddlewareArray;
 
 @end
 

@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, FKState) {
     FKStateSuspend  = 3, // 暂停
     FKStateCancel   = 4, // 取消
     FKStateError    = 5, // 错误
+    FKStateComplete = 6, // 完成
 };
 
 #endif /* FKCommonHeader_h */

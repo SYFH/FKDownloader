@@ -8,6 +8,14 @@
 
 #import "FKConfigure.h"
 
+#import "FKEngine.h"
+
+@interface FKConfigure ()
+
+@property (nonatomic, strong) NSURLSessionConfiguration *templateBackgroundConfiguration;
+
+@end
+
 @implementation FKConfigure
 
 + (instancetype)configure {
@@ -17,6 +25,19 @@
         instance = [[FKConfigure alloc] init];
     });
     return instance;
+}
+
+- (void)take {
+    [[FKEngine engine] configtureSession];
+}
+
+
+#pragma mark - Getter/Setter
+- (NSURLSessionConfiguration *)templateBackgroundConfiguration {
+    if (!_templateBackgroundConfiguration) {
+        _templateBackgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"com.fk.downloader.background.session.config"];
+    }
+    return _templateBackgroundConfiguration;
 }
 
 @end

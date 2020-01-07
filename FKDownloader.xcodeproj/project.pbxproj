@@ -20,10 +20,12 @@
 		3D68DF4623BC37F50060DAEB /* FKCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D68DF4423BC37F50060DAEB /* FKCache.m */; };
 		3D776F7123B84F4400AC6190 /* FKSessionDelegater.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D776F6F23B84F4400AC6190 /* FKSessionDelegater.h */; };
 		3D776F7223B84F4400AC6190 /* FKSessionDelegater.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D776F7023B84F4400AC6190 /* FKSessionDelegater.m */; };
+		3D82358223C1DF4800FE1D89 /* FKDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D82358123C1DF4800FE1D89 /* FKDownloaderTests.m */; };
+		3D82358423C1DF4800FE1D89 /* FKDownloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D6616FA23B75BA9008EBE8A /* FKDownloader.framework */; };
 		3D933F0523BB4660006C6C95 /* FKControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0323BB4660006C6C95 /* FKControl.h */; };
 		3D933F0623BB4660006C6C95 /* FKControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0423BB4660006C6C95 /* FKControl.m */; };
-		3D933F0923BB46E9006C6C95 /* MKMiddleware.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0723BB46E9006C6C95 /* MKMiddleware.h */; };
-		3D933F0A23BB46E9006C6C95 /* MKMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0823BB46E9006C6C95 /* MKMiddleware.m */; };
+		3D933F0923BB46E9006C6C95 /* FKMiddleware.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0723BB46E9006C6C95 /* FKMiddleware.h */; };
+		3D933F0A23BB46E9006C6C95 /* FKMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0823BB46E9006C6C95 /* FKMiddleware.m */; };
 		3D933F0E23BB54C1006C6C95 /* FKSingleNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */; };
 		3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */; };
 		3DEC509323C03A5E009F7489 /* FKCommonHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DEC509223C03A5E009F7489 /* FKCommonHeader.h */; };
@@ -43,6 +45,16 @@
 		3DF8F76E23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F76C23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		3D82358523C1DF4800FE1D89 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3D6616F123B75BA9008EBE8A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D6616F923B75BA9008EBE8A;
+			remoteInfo = FKDownloader;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		3D36748223BD89BC0023E3A0 /* FKObserverModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKObserverModel.h; sourceTree = "<group>"; };
 		3D36748323BD89BC0023E3A0 /* FKObserverModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKObserverModel.m; sourceTree = "<group>"; };
@@ -59,10 +71,13 @@
 		3D68DF4423BC37F50060DAEB /* FKCache.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKCache.m; sourceTree = "<group>"; };
 		3D776F6F23B84F4400AC6190 /* FKSessionDelegater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSessionDelegater.h; sourceTree = "<group>"; };
 		3D776F7023B84F4400AC6190 /* FKSessionDelegater.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSessionDelegater.m; sourceTree = "<group>"; };
+		3D82357F23C1DF4800FE1D89 /* FKDownloaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FKDownloaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D82358123C1DF4800FE1D89 /* FKDownloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKDownloaderTests.m; sourceTree = "<group>"; };
+		3D82358323C1DF4800FE1D89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D933F0323BB4660006C6C95 /* FKControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKControl.h; sourceTree = "<group>"; };
 		3D933F0423BB4660006C6C95 /* FKControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKControl.m; sourceTree = "<group>"; };
-		3D933F0723BB46E9006C6C95 /* MKMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MKMiddleware.h; sourceTree = "<group>"; };
-		3D933F0823BB46E9006C6C95 /* MKMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKMiddleware.m; sourceTree = "<group>"; };
+		3D933F0723BB46E9006C6C95 /* FKMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKMiddleware.h; sourceTree = "<group>"; };
+		3D933F0823BB46E9006C6C95 /* FKMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKMiddleware.m; sourceTree = "<group>"; };
 		3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSingleNumber.h; sourceTree = "<group>"; };
 		3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSingleNumber.m; sourceTree = "<group>"; };
 		3DEC509223C03A5E009F7489 /* FKCommonHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKCommonHeader.h; sourceTree = "<group>"; };
@@ -90,6 +105,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3D82357C23C1DF4800FE1D89 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D82358423C1DF4800FE1D89 /* FKDownloader.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -108,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				3D6616FC23B75BA9008EBE8A /* FKDownloader */,
+				3D82358023C1DF4800FE1D89 /* FKDownloaderTests */,
 				3D6616FB23B75BA9008EBE8A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -116,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				3D6616FA23B75BA9008EBE8A /* FKDownloader.framework */,
+				3D82357F23C1DF4800FE1D89 /* FKDownloaderTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,6 +158,15 @@
 				3D6616FE23B75BA9008EBE8A /* Info.plist */,
 			);
 			path = FKDownloader;
+			sourceTree = "<group>";
+		};
+		3D82358023C1DF4800FE1D89 /* FKDownloaderTests */ = {
+			isa = PBXGroup;
+			children = (
+				3D82358123C1DF4800FE1D89 /* FKDownloaderTests.m */,
+				3D82358323C1DF4800FE1D89 /* Info.plist */,
+			);
+			path = FKDownloaderTests;
 			sourceTree = "<group>";
 		};
 		3D933F0B23BB549A006C6C95 /* Utils */ = {
@@ -169,8 +203,8 @@
 		3DF8F75C23BB2A0100A9E363 /* Middleware */ = {
 			isa = PBXGroup;
 			children = (
-				3D933F0723BB46E9006C6C95 /* MKMiddleware.h */,
-				3D933F0823BB46E9006C6C95 /* MKMiddleware.m */,
+				3D933F0723BB46E9006C6C95 /* FKMiddleware.h */,
+				3D933F0823BB46E9006C6C95 /* FKMiddleware.m */,
 			);
 			path = Middleware;
 			sourceTree = "<group>";
@@ -210,7 +244,7 @@
 				3DEC509323C03A5E009F7489 /* FKCommonHeader.h in Headers */,
 				3D36748423BD89BC0023E3A0 /* FKObserverModel.h in Headers */,
 				3D776F7123B84F4400AC6190 /* FKSessionDelegater.h in Headers */,
-				3D933F0923BB46E9006C6C95 /* MKMiddleware.h in Headers */,
+				3D933F0923BB46E9006C6C95 /* FKMiddleware.h in Headers */,
 				3D613EF323BC5D75005F489F /* FKFileManager.h in Headers */,
 				3DF8F76D23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.h in Headers */,
 				3D36748823BD8FB40023E3A0 /* FKCacheModel.h in Headers */,
@@ -248,6 +282,24 @@
 			productReference = 3D6616FA23B75BA9008EBE8A /* FKDownloader.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		3D82357E23C1DF4800FE1D89 /* FKDownloaderTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D82358923C1DF4800FE1D89 /* Build configuration list for PBXNativeTarget "FKDownloaderTests" */;
+			buildPhases = (
+				3D82357B23C1DF4800FE1D89 /* Sources */,
+				3D82357C23C1DF4800FE1D89 /* Frameworks */,
+				3D82357D23C1DF4800FE1D89 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3D82358623C1DF4800FE1D89 /* PBXTargetDependency */,
+			);
+			name = FKDownloaderTests;
+			productName = FKDownloaderTests;
+			productReference = 3D82357F23C1DF4800FE1D89 /* FKDownloaderTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -258,6 +310,9 @@
 				ORGANIZATIONNAME = norld;
 				TargetAttributes = {
 					3D6616F923B75BA9008EBE8A = {
+						CreatedOnToolsVersion = 11.3;
+					};
+					3D82357E23C1DF4800FE1D89 = {
 						CreatedOnToolsVersion = 11.3;
 					};
 				};
@@ -276,12 +331,20 @@
 			projectRoot = "";
 			targets = (
 				3D6616F923B75BA9008EBE8A /* FKDownloader */,
+				3D82357E23C1DF4800FE1D89 /* FKDownloaderTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		3D6616F823B75BA9008EBE8A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D82357D23C1DF4800FE1D89 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -302,7 +365,7 @@
 				3DF8F75223BB219900A9E363 /* FKObserver.m in Sources */,
 				3DF8F75623BB21D700A9E363 /* FKMessager.m in Sources */,
 				3D613EF423BC5D75005F489F /* FKFileManager.m in Sources */,
-				3D933F0A23BB46E9006C6C95 /* MKMiddleware.m in Sources */,
+				3D933F0A23BB46E9006C6C95 /* FKMiddleware.m in Sources */,
 				3D776F7223B84F4400AC6190 /* FKSessionDelegater.m in Sources */,
 				3DF8F76E23BB2C4200A9E363 /* NSURLSessionDownloadTask+FKCategory.m in Sources */,
 				3DF8F74E23BB217600A9E363 /* FKConfigure.m in Sources */,
@@ -314,7 +377,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3D82357B23C1DF4800FE1D89 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D82358223C1DF4800FE1D89 /* FKDownloaderTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3D82358623C1DF4800FE1D89 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D6616F923B75BA9008EBE8A /* FKDownloader */;
+			targetProxy = 3D82358523C1DF4800FE1D89 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3D66170023B75BA9008EBE8A /* Debug */ = {
@@ -481,6 +560,42 @@
 			};
 			name = Release;
 		};
+		3D82358723C1DF4800FE1D89 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QD5GY3MPC6;
+				INFOPLIST_FILE = FKDownloaderTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloaderTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3D82358823C1DF4800FE1D89 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QD5GY3MPC6;
+				INFOPLIST_FILE = FKDownloaderTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloaderTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -498,6 +613,15 @@
 			buildConfigurations = (
 				3D66170323B75BA9008EBE8A /* Debug */,
 				3D66170423B75BA9008EBE8A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D82358923C1DF4800FE1D89 /* Build configuration list for PBXNativeTarget "FKDownloaderTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D82358723C1DF4800FE1D89 /* Debug */,
+				3D82358823C1DF4800FE1D89 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

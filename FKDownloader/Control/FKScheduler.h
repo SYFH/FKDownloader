@@ -12,11 +12,15 @@
 
 #import <Foundation/Foundation.h>
 
+@class FKCacheRequestModel;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FKScheduler : NSObject
 
 + (instancetype)shared;
+
+- (void)prepareRequest:(FKCacheRequestModel *)request;
 
 @end
 

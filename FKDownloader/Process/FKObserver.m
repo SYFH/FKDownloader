@@ -28,13 +28,32 @@
     return instance;
 }
 
-- (void)addObserverWithRequest:(NSMutableURLRequest *)request {
+- (void)observerDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
+    [downloadTask addObserver:[FKObserver observer]
+                   forKeyPath:@"countOfBytesReceived"
+                      options:NSKeyValueObservingOptionNew
+                      context:nil]; // 已接收字节
     
+    [downloadTask addObserver:[FKObserver observer]
+                   forKeyPath:@"countOfBytesExpectedToReceive"
+                      options:NSKeyValueObservingOptionNew
+                      context:nil]; // 总大小
+}
+
+- (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
+    [downloadTask removeObserver:[FKObserver observer]
+                      forKeyPath:@"countOfBytesReceived"
+                         context:nil];
+    
+    [downloadTask removeObserver:[FKObserver observer]
+                      forKeyPath:@"countOfBytesExpectedToReceive"
+                         context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     
-    
+    NSURLSessionDownloadTask *downloadTask = object;
+    NSString *requestID = downloadTask.taskDescription;
 }
 
 

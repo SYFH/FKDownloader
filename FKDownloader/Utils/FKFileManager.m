@@ -8,7 +8,6 @@
 
 #import "FKFileManager.h"
 
-#import "NSURLSessionDownloadTask+FKCategory.h"
 #import "NSString+FKCategory.h"
 
 #import "FKEngine.h"
@@ -76,7 +75,7 @@
     return self.workPath;
 }
 
-- (void)createRequestWithRequestID:(NSString *)request {
+- (void)createRequestFinderWithRequestID:(NSString *)request {
     __weak typeof(self) weak = self;
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         __strong typeof(weak) self = weak;
@@ -88,13 +87,40 @@
     }];
 }
 
-- (void)createRequestWithRequest:(FKCacheRequestModel *)model {
+- (void)createRequestFileWithRequest:(FKCacheRequestModel *)request {
     __weak typeof(self) weak = self;
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         __strong typeof(weak) self = weak;
-        NSString *requestPath = [self.workPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@/%@.%@", model.url.SHA256, model.url.SHA256, self.requestFileExtension]];
-        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:model];
+        NSString *requestPath = [self.workPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@/%@.%@", request.url.SHA256, request.url.SHA256, self.requestFileExtension]];
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:request];
         [self.fileManager createFileAtPath:requestPath contents:data attributes:nil];
+    }];
+}
+
+- (void)updateRequestFileWithRequest:(FKCacheRequestModel *)request {
+    __weak typeof(self) weak = self;
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        __strong typeof(weak) self = weak;
+        NSString *requestPath = [self.workPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@/%@.%@", request.url.SHA256, request.url.SHA256, self.requestFileExtension]];
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:request];
+        [data writeToFile:requestPath atomically:YES];
+    }];
+}
+
+- (BOOL)existRequestWithRequest:(FKCacheRequestModel *)request {
+    NSString *requestPath = [self.workPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@/%@.%@", request.url.SHA256, request.url.SHA256, self.requestFileExtension]];
+    return [self.fileManager fileExistsAtPath:requestPath];
+}
+
+- (void)loadLocalRequestWithURL:(NSString *)url complete:(void (^)(FKCacheRequestModel * _Nullable request))complete {
+    __weak typeof(self) weak = self;
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        __strong typeof(weak) self = weak;
+        NSString *requestPath = [self.workPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@/%@.%@", url.SHA256, url.SHA256, self.requestFileExtension]];
+        FKCacheRequestModel *request = [NSKeyedUnarchiver unarchiveObjectWithFile:requestPath];
+        if (complete) {
+            complete(request);
+        }
     }];
 }
 

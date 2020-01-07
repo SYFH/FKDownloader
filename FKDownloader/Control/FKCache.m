@@ -18,6 +18,9 @@
 /// 请求表, 包含所有请求信息, {SingleNumber_SHA256(Request.URL): Cache.Request.Model}
 @property (nonatomic, strong) NSMapTable<NSString *, FKCacheRequestModel *> *requestMap;
 
+/// 任务表, 包含所有下载任务, {SingleNumber_SHA256(Request.URL): Download.Task}
+@property (nonatomic, strong) NSMapTable<NSString *, NSURLSessionDownloadTask *> *taskMap;
+
 /// 请求索引表, {SHA256(Request.URL): SingleNumber_SHA256(Request.URL)}
 @property (nonatomic, strong) NSMapTable<NSString *, NSString *> *requestIndexMap;
 
@@ -65,6 +68,58 @@
     }];
 }
 
+- (void)updateRequestWithModel:(FKCacheRequestModel *)model {
+    __weak typeof(self) weak = self;
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        __strong typeof(weak) self = weak;
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:model.requestID];
+        [self.requestMap setObject:model forKey:requestSingleID];
+    }];
+}
+
+- (void)actionRequestCountWithComplete:(void (^)(NSUInteger))complete {
+    __weak typeof(self) weak = self;
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        __strong typeof(weak) self = weak;
+        
+        NSUInteger count = 0;
+        for (FKCacheRequestModel *request in self.requestMap.objectEnumerator) {
+            if (request.state == FKStateAction) {
+                count += 1;
+            }
+        }
+        
+        if (complete) {
+            complete(count);
+        }
+    }];
+}
+
+- (NSArray<FKCacheRequestModel *> *)requestArray {
+    return self.requestMap.objectEnumerator.allObjects;
+}
+
+- (void)addDownloadTask:(NSURLSessionDownloadTask *)downloadtTask {
+    __weak typeof(self) weak = self;
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        __strong typeof(weak) self = weak;
+        NSString *requestID = downloadtTask.taskDescription;
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+        [self.taskMap setObject:downloadtTask forKey:requestSingleID];
+    }];
+}
+
+- (void)existDownloadTaskWithRequestID:(NSString *)requestID complete:(void (^)(BOOL))complete {
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+    NSURLSessionDownloadTask *downloadTask = [self.taskMap objectForKey:requestSingleID];
+    BOOL isExist = NO;
+    if (downloadTask) { isExist = YES; }
+    
+    if (complete) {
+        complete(isExist);
+    }
+}
+
 
 #pragma mark - Getter/Setter
 - (NSMapTable<NSString *,FKCacheRequestModel *> *)requestMap {
@@ -74,6 +129,16 @@
                                                 valueOptions:NSPointerFunctionsStrongMemory];
         }
         return _requestMap;
+    }
+}
+
+- (NSMapTable<NSString *,NSURLSessionDownloadTask *> *)taskMap {
+    @synchronized (self) {
+        if (!_taskMap) {
+            _taskMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsWeakMemory
+                                             valueOptions:NSPointerFunctionsWeakMemory];
+        }
+        return _taskMap;
     }
 }
 
