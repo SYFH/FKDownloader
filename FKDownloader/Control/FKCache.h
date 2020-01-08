@@ -44,8 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<FKCacheRequestModel *> *)requestArray;
 
 /// 添加下载任务
-/// @param downloadtTask 下载任务
-- (void)addDownloadTask:(NSURLSessionDownloadTask *)downloadtTask;
+/// @param downloadTask 下载任务
+- (void)addDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
+
+/// 移除下载任务, 取消或完成下载的任务将从缓存队列中移除
+/// @param downloadTask 下载任务
+- (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
 
 /// 检查下载任务是否已存在
 /// @param requestID 请求编号

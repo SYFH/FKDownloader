@@ -63,18 +63,14 @@
     __weak typeof(self) weak = self;
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         __strong typeof(weak) self = weak;
-        [self.requestMap setObject:model forKey:model.requestID];
-        [self.requestIndexMap setObject:model.requestID forKey:model.url.SHA256];
+        [self.requestMap setObject:model forKey:model.requestSingleID];
+        [self.requestIndexMap setObject:model.requestSingleID forKey:model.requestID];
     }];
 }
 
 - (void)updateRequestWithModel:(FKCacheRequestModel *)model {
-    __weak typeof(self) weak = self;
-    [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        __strong typeof(weak) self = weak;
-        NSString *requestSingleID = [self.requestIndexMap objectForKey:model.requestID];
-        [self.requestMap setObject:model forKey:requestSingleID];
-    }];
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:model.requestID];
+    [self.requestMap setObject:model forKey:requestSingleID];
 }
 
 - (void)actionRequestCountWithComplete:(void (^)(NSUInteger))complete {
@@ -99,13 +95,19 @@
     return self.requestMap.objectEnumerator.allObjects;
 }
 
-- (void)addDownloadTask:(NSURLSessionDownloadTask *)downloadtTask {
+- (void)addDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
+    NSString *requestID = downloadTask.taskDescription;
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+    [self.taskMap setObject:downloadTask forKey:requestSingleID];
+}
+
+- (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
     __weak typeof(self) weak = self;
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         __strong typeof(weak) self = weak;
-        NSString *requestID = downloadtTask.taskDescription;
+        NSString *requestID = downloadTask.taskDescription;
         NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
-        [self.taskMap setObject:downloadtTask forKey:requestSingleID];
+        [self.taskMap removeObjectForKey:requestSingleID];
     }];
 }
 
@@ -135,8 +137,8 @@
 - (NSMapTable<NSString *,NSURLSessionDownloadTask *> *)taskMap {
     @synchronized (self) {
         if (!_taskMap) {
-            _taskMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsWeakMemory
-                                             valueOptions:NSPointerFunctionsWeakMemory];
+            _taskMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                             valueOptions:NSPointerFunctionsStrongMemory];
         }
         return _taskMap;
     }

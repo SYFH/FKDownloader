@@ -48,11 +48,11 @@
 }
 
 - (NSArray<id<FKRequestMiddlewareProtocol>> *)requestMiddlewareArray {
-    return self.requestMiddlewareArray.objectEnumerator.allObjects;
+    return self.requestMiddlewares.objectEnumerator.allObjects;
 }
 
 - (NSArray<id<FKResponseMiddlewareProtocol>> *)responseMiddlewareArray {
-    return self.responseMiddlewareArray.objectEnumerator.allObjects;
+    return self.responseMiddlewares.objectEnumerator.allObjects;
 }
 
 

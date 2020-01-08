@@ -15,10 +15,8 @@
 #import "FKScheduler.h"
 #import "FKMiddleware.h"
 #import "FKObserver.h"
-
-static void taskCleanup(__strong NSURLSessionDownloadTask **task) {
-    [[FKObserver observer] removeDownloadTask:*task];
-}
+#import "FKLogger.h"
+#import "FKSessionDelegater.h"
 
 @interface FKEngine ()
 
@@ -59,7 +57,8 @@ static void taskCleanup(__strong NSURLSessionDownloadTask **task) {
 
 - (void)configtureSession {
     NSURLSessionConfiguration *backgroundConfiguration = [[FKConfigure configure].templateBackgroundConfiguration copy];
-    self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration];
+    self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:[FKSessionDelegater delegater] delegateQueue:nil];
+    [FKLogger info:@"根据配置生成后台下载 Session"];
 }
 
 - (void)configtureTimer {
@@ -85,24 +84,42 @@ static void taskCleanup(__strong NSURLSessionDownloadTask **task) {
 }
 
 - (void)timerAction {
+    [FKLogger info:@"定时器触发"];
     // 任务: 执行下一个请求
     __weak typeof(self) weak = self;
     [[FKCache cache] actionRequestCountWithComplete:^(NSUInteger count) {
         __strong typeof(weak) self = weak;
         if (self.isProcessingNextRequest) { return; }
         
+        // 判断已执行任务数量是否到达上限
         if (count < [FKConfigure configure].maxAction) {
             self.processingNextRequest = YES;
-            // 排序待执行请求
+            // 排序待执行请求, 拿到第一个待执行任务
             NSSortDescriptor *requestSort = [NSSortDescriptor sortDescriptorWithKey:@"idx" ascending:YES];
-            FKCacheRequestModel *requestModel = [[[[FKCache cache] requestArray] sortedArrayUsingDescriptors:@[requestSort]] firstObject];
+            NSArray<FKCacheRequestModel *> *requestArray = [[[FKCache cache] requestArray] sortedArrayUsingDescriptors:@[requestSort]];
+            FKCacheRequestModel *requestModel = nil;
+            for (FKCacheRequestModel *model in requestArray) {
+                if (model.state == FKStateIdel) {
+                    requestModel = model;
+                    break;
+                }
+            }
+            if (!requestModel) {
+                self.processingNextRequest = NO;
+                [FKLogger info:@"没有待执行任务"];
+                return;
+            }
             
-            // 检查是否存在下载任务
+            // 检查请求是否已存在下载任务
             __block BOOL isExistDownloadTasl = NO;
             [[FKCache cache] existDownloadTaskWithRequestID:requestModel.requestID complete:^(BOOL exist) {
                 isExistDownloadTasl = exist;
             }];
-            if (isExistDownloadTasl) { return; }
+            if (isExistDownloadTasl) {
+                self.processingNextRequest = NO;
+                [FKLogger info:@"此请求已存在下载任务: %@", requestModel.url];
+                return;
+            }
             
             // 排序请求中间件
             NSSortDescriptor *requestMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
@@ -115,19 +132,31 @@ static void taskCleanup(__strong NSURLSessionDownloadTask **task) {
                     request = [middleware processRequest:request];
                 }
             }
+            [FKLogger info:@"请求中间件处理"];
             
             // 执行请求, 添加释放时调用方法以删除 KVO
-            NSURLSessionDownloadTask *downloadTask __attribute__((cleanup(taskCleanup))) = [self.backgroundSession downloadTaskWithRequest:request];
+            NSURLSessionDownloadTask *downloadTask = [self.backgroundSession downloadTaskWithRequest:request];
             downloadTask.taskDescription = [NSString stringWithFormat:@"%@", requestModel.requestID];
+            [downloadTask resume];
+            [FKLogger info:@"根据请求创建下载任务"];
+            
+            // 更新请求缓存
+            requestModel.state = FKStateAction;
+            [[FKCache cache] updateRequestWithModel:requestModel];
+            [FKLogger info:@"idel -> action, 更新请求缓存"];
             
             // 缓存请求任务
             [[FKCache cache] addDownloadTask:downloadTask];
+            [FKLogger info:@"保存下载任务"];
             
             // 添加 KVO
             [[FKObserver observer] observerDownloadTask:downloadTask];
-            
-            self.processingNextRequest = NO;
+            [FKLogger info:@"监听下载任务信息"];
+        } else {
+            [FKLogger info:@"执行任务数量已到达上限"];
         }
+        
+        self.processingNextRequest = NO;
     }];
     
     // 信息: 执行信息分发回调

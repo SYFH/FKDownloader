@@ -33,6 +33,16 @@
 
 
 #pragma mark - Getter/Setter
+- (void)setMaxAction:(unsigned int)maxAction {
+    if (maxAction > 6) {
+        _maxAction = 6;
+    } else if (maxAction < 1) {
+        _maxAction = 1;
+    } else {
+        _maxAction = maxAction;
+    }
+}
+
 - (NSURLSessionConfiguration *)templateBackgroundConfiguration {
     if (!_templateBackgroundConfiguration) {
         _templateBackgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"com.fk.downloader.background.session.config"];

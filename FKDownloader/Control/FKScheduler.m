@@ -13,6 +13,7 @@
 #import "FKCache.h"
 #import "FKCacheModel.h"
 #import "FKFileManager.h"
+#import "FKLogger.h"
 
 @interface FKScheduler ()
 
@@ -41,7 +42,7 @@
             dispatch_semaphore_signal(existSemaphore);
         }];
         dispatch_semaphore_wait(existSemaphore, DISPATCH_TIME_FOREVER);
-        if (isExist) { return; }
+        if (isExist) { [FKLogger info:@"请求已存在: %@", request.url]; return; }
     }
     
     // 检查本地是否存在请求信息
@@ -55,19 +56,25 @@
         }];
         dispatch_semaphore_wait(localSemaphore, DISPATCH_TIME_FOREVER);
         if (localRequest) {
+            // TODO: 重新检测请求状态, 是否已完成
             [[FKCache cache] addRequestWithModel:localRequest];
         }
+        [FKLogger info:@"请求文件已在本地存在, 直接添加到缓存队列"];
     } else {
         // 创建任务相关文件与文件夹
         [[FKFileManager manager] createRequestFinderWithRequestID:request.url.SHA256];
         [[FKFileManager manager] createRequestFileWithRequest:request];
+        [FKLogger info:@"创建请求相关文件夹和文件"];
         
         // 添加到缓存表
+        request.state = FKStateIdel;
         [[FKCache cache] addRequestWithModel:request];
+        [FKLogger info:@"prepare -> idel, 添加到缓存列表: %@", request];
     }
     
     // 保存唯一编号到磁盘
     [[FKFileManager manager] saveSingleNumber];
+    [FKLogger info:@"保存唯一编号"];
 }
 
 @end

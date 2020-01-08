@@ -13,6 +13,7 @@
 #import "FKSingleNumber.h"
 #import "FKCacheModel.h"
 #import "FKScheduler.h"
+#import "FKLogger.h"
 
 @interface FKBuilder ()
 
@@ -31,16 +32,20 @@
         if (self.prepared) { return; }
         self.prepared = YES;
         
+        // 计算Hash
+        NSString *urlHash = self.URL.absoluteString.SHA256;
+        
         // 创建请求编号
-        NSString *requestID = [NSString stringWithFormat:@"%09llu_%@", FKSingleNumber.shared.number, self.URL.absoluteString.SHA256];
+        NSString *requestSingleID = [NSString stringWithFormat:@"%09llu_%@", FKSingleNumber.shared.number, urlHash];
+        [FKLogger info:@"创建唯一请求编号: %@", requestSingleID];
         
         // 创建缓存模型
         FKCacheRequestModel *model = [[FKCacheRequestModel alloc] init];
-        model.requestID = requestID;
+        model.requestID = urlHash;
+        model.requestSingleID = requestSingleID;
         model.url = self.URL.absoluteString;
         model.request = [self copy];
-        
-        // 进行中间件处理
+        [FKLogger info:@"创建缓存请求模型: %@", model];
         
         // 进行预处理
         [[FKScheduler shared] prepareRequest:model];

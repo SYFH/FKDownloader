@@ -8,6 +8,7 @@
 
 #import "FKObserver.h"
 
+#import "FKLogger.h"
 
 @interface FKObserver ()
 
@@ -29,31 +30,42 @@
 }
 
 - (void)observerDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    [downloadTask addObserver:[FKObserver observer]
+    [downloadTask addObserver:self
                    forKeyPath:@"countOfBytesReceived"
                       options:NSKeyValueObservingOptionNew
                       context:nil]; // 已接收字节
+    [FKLogger info:@"监听下载任务属性: countOfBytesReceived"];
     
-    [downloadTask addObserver:[FKObserver observer]
+    [downloadTask addObserver:self
                    forKeyPath:@"countOfBytesExpectedToReceive"
                       options:NSKeyValueObservingOptionNew
                       context:nil]; // 总大小
+    [FKLogger info:@"监听下载任务属性: countOfBytesExpectedToReceive"];
 }
 
 - (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    [downloadTask removeObserver:[FKObserver observer]
+    [downloadTask removeObserver:self
                       forKeyPath:@"countOfBytesReceived"
                          context:nil];
+    [FKLogger info:@"移除监听下载任务属性: countOfBytesReceived"];
     
-    [downloadTask removeObserver:[FKObserver observer]
+    [downloadTask removeObserver:self
                       forKeyPath:@"countOfBytesExpectedToReceive"
                          context:nil];
+    [FKLogger info:@"移除监听下载任务属性: countOfBytesExpectedToReceive"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     
     NSURLSessionDownloadTask *downloadTask = object;
-    NSString *requestID = downloadTask.taskDescription;
+    
+    if ([keyPath isEqualToString:@"countOfBytesReceived"]) {
+        NSLog(@"%lld", downloadTask.countOfBytesReceived);
+    }
+    
+    if ([keyPath isEqualToString:@"countOfBytesExpectedToReceive"]) {
+        NSLog(@"%lld", downloadTask.countOfBytesExpectedToReceive);
+    }
 }
 
 

@@ -17,6 +17,7 @@ FOUNDATION_EXPORT const unsigned char FKDownloaderVersionString[];
 // In this header, you should import all the public headers of your framework using statements like #import <FKDownloader/PublicHeader.h>
 
 // Control
+#import <FKDownloader/FKConfigure.h>
 #import <FKDownloader/FKBuilder.h>
 #import <FKDownloader/FKControl.h>
 
@@ -24,7 +25,4 @@ FOUNDATION_EXPORT const unsigned char FKDownloaderVersionString[];
 #import <FKDownloader/FKMessager.h>
 
 // Middleware
-#import <FKDownloader/MKMiddleware.h>
-
-// Utails
-#import <FKDownloader/FKSingleNumber.h>
+#import <FKDownloader/FKMiddleware.h>

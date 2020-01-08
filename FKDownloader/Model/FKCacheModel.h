@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FKCacheRequestModel : NSObject<NSCoding>
 
 @property (nonatomic, strong) NSString *requestID; // 请求标识, SHA256(URL)
+@property (nonatomic, strong) NSString *requestSingleID; // 唯一请求标识, SingleNumber_SHA256(URL)
 @property (nonatomic, assign) unsigned long long idx; // 唯一可排序编号
 @property (nonatomic, strong) NSString *url; // 原始请求链接
 @property (nonatomic, strong) NSMutableURLRequest *request; // 请求

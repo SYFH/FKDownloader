@@ -18,6 +18,8 @@
 		3D6616FF23B75BA9008EBE8A /* FKDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D6616FD23B75BA9008EBE8A /* FKDownloader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D68DF4523BC37F50060DAEB /* FKCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D68DF4323BC37F50060DAEB /* FKCache.h */; };
 		3D68DF4623BC37F50060DAEB /* FKCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D68DF4423BC37F50060DAEB /* FKCache.m */; };
+		3D6A396523C571A500A97A29 /* FKLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D6A396323C571A500A97A29 /* FKLogger.h */; };
+		3D6A396623C571A500A97A29 /* FKLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D6A396423C571A500A97A29 /* FKLogger.m */; };
 		3D776F7123B84F4400AC6190 /* FKSessionDelegater.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D776F6F23B84F4400AC6190 /* FKSessionDelegater.h */; };
 		3D776F7223B84F4400AC6190 /* FKSessionDelegater.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D776F7023B84F4400AC6190 /* FKSessionDelegater.m */; };
 		3D82358223C1DF4800FE1D89 /* FKDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D82358123C1DF4800FE1D89 /* FKDownloaderTests.m */; };
@@ -69,6 +71,8 @@
 		3D6616FE23B75BA9008EBE8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D68DF4323BC37F50060DAEB /* FKCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKCache.h; sourceTree = "<group>"; };
 		3D68DF4423BC37F50060DAEB /* FKCache.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKCache.m; sourceTree = "<group>"; };
+		3D6A396323C571A500A97A29 /* FKLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKLogger.h; sourceTree = "<group>"; };
+		3D6A396423C571A500A97A29 /* FKLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKLogger.m; sourceTree = "<group>"; };
 		3D776F6F23B84F4400AC6190 /* FKSessionDelegater.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSessionDelegater.h; sourceTree = "<group>"; };
 		3D776F7023B84F4400AC6190 /* FKSessionDelegater.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSessionDelegater.m; sourceTree = "<group>"; };
 		3D82357F23C1DF4800FE1D89 /* FKDownloaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FKDownloaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -177,6 +181,8 @@
 				3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */,
 				3D613EF123BC5D75005F489F /* FKFileManager.h */,
 				3D613EF223BC5D75005F489F /* FKFileManager.m */,
+				3D6A396323C571A500A97A29 /* FKLogger.h */,
+				3D6A396423C571A500A97A29 /* FKLogger.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -257,6 +263,7 @@
 				3DF8F75923BB229700A9E363 /* FKBuilder.h in Headers */,
 				3DF8F74D23BB217600A9E363 /* FKConfigure.h in Headers */,
 				3D613EFB23BCAA78005F489F /* NSString+FKCategory.h in Headers */,
+				3D6A396523C571A500A97A29 /* FKLogger.h in Headers */,
 				3DF8F75123BB219900A9E363 /* FKObserver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -363,6 +370,7 @@
 				3DF8F75A23BB229700A9E363 /* FKBuilder.m in Sources */,
 				3D68DF4623BC37F50060DAEB /* FKCache.m in Sources */,
 				3DF8F75223BB219900A9E363 /* FKObserver.m in Sources */,
+				3D6A396623C571A500A97A29 /* FKLogger.m in Sources */,
 				3DF8F75623BB21D700A9E363 /* FKMessager.m in Sources */,
 				3D613EF423BC5D75005F489F /* FKFileManager.m in Sources */,
 				3D933F0A23BB46E9006C6C95 /* FKMiddleware.m in Sources */,
