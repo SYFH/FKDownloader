@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 检查请求是否已存在
 /// @param url 链接
-/// @param complete 回调
 - (BOOL)existRequestWithURL:(NSString *)url;
 
 /// 添加请求缓存
@@ -35,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateRequestWithModel:(FKCacheRequestModel *)model;
 
 /// 当前进行中任务数量
-/// @param complete 回调
 - (NSUInteger)actionRequestCount;
 
 /// 获取当前所有请求
@@ -54,7 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 检查下载任务是否已存在
 /// @param requestID 请求编号
-/// @param complete 回调
 - (BOOL)existDownloadTaskWithRequestID:(NSString *)requestID;
 
 @end

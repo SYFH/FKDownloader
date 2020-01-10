@@ -13,13 +13,15 @@
 #import <Foundation/Foundation.h>
 
 #import "FKCommonHeader.h"
+#import "FKMessager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FKObserverModel : NSObject
 
 @property (nonatomic, strong) NSString *requestID; // SHA256(Request.URL)
-@property (nonatomic, assign) double progress;
+@property (nonatomic, assign) int64_t countOfBytesReceived;
+@property (nonatomic, assign) int64_t countOfBytesExpectedToReceive;
 @property (nonatomic, assign) FKState state;
 
 + (instancetype)model;

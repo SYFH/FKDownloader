@@ -22,6 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 计时器线程, 串行
 @property (nonatomic, strong) dispatch_queue_t timerQueue;
 
+/// 信息分发线程, 并行
+@property (nonatomic, strong) NSOperationQueue *messagerQueue;
+
 + (instancetype)engine;
 
 /// 配置 Session

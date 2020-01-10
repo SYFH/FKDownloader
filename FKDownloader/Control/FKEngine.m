@@ -57,6 +57,7 @@
 
 - (void)configtureQueue {
     self.ioQueue.maxConcurrentOperationCount = 1;
+    self.messagerQueue.maxConcurrentOperationCount = 6;
     
     self.timerQueue = dispatch_queue_create("com.fk.queue.cache.timer", DISPATCH_QUEUE_SERIAL);
 }
@@ -92,6 +93,13 @@
 - (void)timerAction {
     [FKLogger info:@"定时器触发"];
     // 任务: 执行下一个请求
+    [self actionNextRequest];
+    
+    // 信息: 执行信息分发回调
+    [self distributeRequestInfo];
+}
+
+- (void)actionNextRequest {
     [self.ioQueue addOperationWithBlock:^{
         if (self.isProcessingNextRequest) { return; }
         
@@ -148,8 +156,12 @@
             self.processingNextRequest = NO;
         }
     }];
-    
-    // 信息: 执行信息分发回调
+}
+
+- (void)distributeRequestInfo {
+    [self.messagerQueue addOperationWithBlock:^{
+        [[FKObserver observer] execRequestInfoBlock];
+    }];
 }
 
 
@@ -158,6 +170,14 @@
     if (!_ioQueue) {
         _ioQueue = [[NSOperationQueue alloc] init];
         _ioQueue.name = @"com.fk.queue.cache.io";
+    }
+    return _ioQueue;
+}
+
+- (NSOperationQueue *)messagerQueue {
+    if (!_ioQueue) {
+        _ioQueue = [[NSOperationQueue alloc] init];
+        _ioQueue.name = @"com.fk.queue.cache.messager";
     }
     return _ioQueue;
 }

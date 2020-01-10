@@ -24,8 +24,13 @@
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    FKBuilder *builder = [FKBuilder buildWithURL:@"https://images.unsplash.com/photo-1556742095-adaf2611556c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9"];
+    NSString *url = @"https://images.unsplash.com/photo-1556742095-adaf2611556c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9";
+    FKBuilder *builder = [FKBuilder buildWithURL:url];
     [builder prepare];
+    
+    [FKMessager messagerWithURL:url info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive, FKState state) {
+        printf("%lld, %lld, %ld\n", countOfBytesReceived, countOfBytesExpectedToReceive, state);
+    }];
 }
 
 @end

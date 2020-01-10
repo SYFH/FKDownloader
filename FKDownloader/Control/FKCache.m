@@ -43,6 +43,7 @@
         // 显式初始化
         NSUInteger count = self.requestMap.count;
         count = self.requestIndexMap.count;
+        count = self.taskMap.count;
     }
     return self;
 }
@@ -113,33 +114,27 @@
 
 #pragma mark - Getter/Setter
 - (NSMapTable<NSString *,FKCacheRequestModel *> *)requestMap {
-    @synchronized (self) {
-        if (!_requestMap) {
-            _requestMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                                valueOptions:NSPointerFunctionsStrongMemory];
-        }
-        return _requestMap;
+    if (!_requestMap) {
+        _requestMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                            valueOptions:NSPointerFunctionsStrongMemory];
     }
+    return _requestMap;
 }
 
 - (NSMapTable<NSString *,NSURLSessionDownloadTask *> *)taskMap {
-    @synchronized (self) {
-        if (!_taskMap) {
-            _taskMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                             valueOptions:NSPointerFunctionsStrongMemory];
-        }
-        return _taskMap;
+    if (!_taskMap) {
+        _taskMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                         valueOptions:NSPointerFunctionsStrongMemory];
     }
+    return _taskMap;
 }
 
 - (NSMapTable<NSString *,NSString *> *)requestIndexMap {
-    @synchronized (self) {
-        if (!_requestIndexMap) {
-            _requestIndexMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                                     valueOptions:NSPointerFunctionsStrongMemory];
-        }
-        return _requestIndexMap;
+    if (!_requestIndexMap) {
+        _requestIndexMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                                 valueOptions:NSPointerFunctionsStrongMemory];
     }
+    return _requestIndexMap;
 }
 
 @end

@@ -12,9 +12,18 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FKCommonHeader.h"
+
+typedef void(^InfoBlock)(int64_t countOfBytesReceived,
+                         int64_t countOfBytesExpectedToReceive,
+                         FKState state);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FKMessager : NSObject
+
++ (instancetype)messagerWithURL:(NSString *)url
+                           info:(InfoBlock)info;
 
 @end
 
