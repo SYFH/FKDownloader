@@ -36,6 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当前进行中任务数量
 - (NSUInteger)actionRequestCount;
 
+/// 根据请求编号获取缓存请求信息
+/// @param requestID 请求编号
+- (FKCacheRequestModel *)requestWithRequestID:(NSString *)requestID;
+
 /// 获取当前所有请求
 - (NSArray<FKCacheRequestModel *> *)requestArray;
 

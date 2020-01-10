@@ -31,7 +31,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// 添加信息回调到指定请求
 /// @param block 信息回调
 /// @param requestID 请求标识
-- (void)addBlock:(InfoBlock)block requestID:(NSString *)requestID;
+- (void)addBlock:(MessagerInfoBlock)block requestID:(NSString *)requestID;
+
+/// 添加一个链接集合
+/// @param label 集合名
+/// @param urls 多个链接
+- (void)addBarrel:(NSString *)label urls:(NSArray<NSString *> *)urls;
+
+/// 添加一个信息集合回调
+/// @param barrel 集合名
+/// @param info 信息回调
+- (void)addBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info;
 
 /// 执行现有请求的信息回调
 - (void)execRequestInfoBlock;

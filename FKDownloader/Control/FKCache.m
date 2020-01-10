@@ -73,6 +73,10 @@
     return count;
 }
 
+- (FKCacheRequestModel *)requestWithRequestID:(NSString *)requestID {
+    return [self.requestMap objectForKey:requestID];
+}
+
 - (NSArray<FKCacheRequestModel *> *)requestArray {
     return self.requestMap.objectEnumerator.allObjects;
 }

@@ -12,27 +12,38 @@
 
 #import "FKObserver.h"
 
-@interface FKMessager ()
-
-@property (nonatomic, strong) NSString *requestID;
-@property (nonatomic, strong) InfoBlock info;
-
-@end
-
 @implementation FKMessager
 
-- (instancetype)initWithURL:(NSString *)url info:(InfoBlock)info {
+- (instancetype)initWithBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
     self = [super init];
     if (self) {
-        self.requestID = url.SHA256;
-        self.info = info;
-        [[FKObserver observer] addBlock:info requestID:self.requestID];
+        [[FKObserver observer] addBarrel:barrel info:info];
     }
     return self;
 }
 
-+ (instancetype)messagerWithURL:(NSString *)url info:(InfoBlock)info {
+- (instancetype)initWithURL:(NSString *)url info:(MessagerInfoBlock)info {
+    self = [super init];
+    if (self) {
+        [[FKObserver observer] addBlock:info requestID:url.SHA256];
+    }
+    return self;
+}
+
++ (instancetype)messagerWithURL:(NSString *)url info:(MessagerInfoBlock)info {
     return [[FKMessager alloc] initWithURL:url info:info];
+}
+
++ (void)addMessagerWithURLs:(NSArray<NSString *> *)urls barrel:(NSString *)barrel {
+    NSMutableArray<NSString *> *urlsTemp = [NSMutableArray arrayWithCapacity:urls.count];
+    for (NSString *url in urls) {
+        [urlsTemp addObject:url.SHA256];
+    }
+    [[FKObserver observer] addBarrel:barrel urls:[NSArray arrayWithArray:urlsTemp]];
+}
+
++ (instancetype)messagerWithBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
+    return [[FKMessager alloc] initWithBarrel:barrel info:info];
 }
 
 @end
