@@ -11,6 +11,7 @@
 @implementation FKLogger
 
 + (void)info:(NSString *)info, ... NS_FORMAT_FUNCTION(1,2) {
+#if DEBUG
     va_list args;
     
     va_start(args, info);
@@ -18,6 +19,7 @@
     va_end(args);
     
     printf("%s\n", [str cStringUsingEncoding:NSUTF8StringEncoding]);
+#endif
 }
 
 @end

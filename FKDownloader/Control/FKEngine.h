@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSOperationQueue *ioQueue;
 
 /// 计时器线程, 串行
-@property (nonatomic, strong) NSOperationQueue *timerQueue;
+@property (nonatomic, strong) dispatch_queue_t timerQueue;
 
 + (instancetype)engine;
 

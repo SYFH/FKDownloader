@@ -31,19 +31,9 @@
 }
 
 - (void)prepareRequest:(FKCacheRequestModel *)request {
-    @synchronized (self) {
-        // 检查是否已存在请求
-        __block BOOL isExist = NO;
-        dispatch_semaphore_t existSemaphore = dispatch_semaphore_create(0);
-        [[FKCache cache] existRequestWithURL:request.url complete:^(BOOL exist) {
-            if (exist) {
-                isExist = exist;
-            }
-            dispatch_semaphore_signal(existSemaphore);
-        }];
-        dispatch_semaphore_wait(existSemaphore, DISPATCH_TIME_FOREVER);
-        if (isExist) { [FKLogger info:@"请求已存在: %@", request.url]; return; }
-    }
+    // 检查是否已存在请求
+    BOOL isExist = [[FKCache cache] existRequestWithURL:request.url];
+    if (isExist) { [FKLogger info:@"请求已存在: %@", request.url]; return; }
     
     // 检查本地是否存在请求信息
     if ([[FKFileManager manager] existRequestWithRequest:request]) {

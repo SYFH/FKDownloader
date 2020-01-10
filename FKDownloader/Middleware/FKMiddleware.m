@@ -48,11 +48,17 @@
 }
 
 - (NSArray<id<FKRequestMiddlewareProtocol>> *)requestMiddlewareArray {
-    return self.requestMiddlewares.objectEnumerator.allObjects;
+    NSArray<id<FKRequestMiddlewareProtocol>> *allRequestMiddleware = self.requestMiddlewares.objectEnumerator.allObjects;
+    NSSortDescriptor *requestMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
+    NSArray<id<FKRequestMiddlewareProtocol>> *middlewares = [allRequestMiddleware sortedArrayUsingDescriptors:@[requestMiddlewareSort]];
+    return middlewares;
 }
 
 - (NSArray<id<FKResponseMiddlewareProtocol>> *)responseMiddlewareArray {
-    return self.responseMiddlewares.objectEnumerator.allObjects;
+    NSArray<id<FKResponseMiddlewareProtocol>> *allResponseMiddleware = self.responseMiddlewares.objectEnumerator.allObjects;
+    NSSortDescriptor *responseMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
+    NSArray<id<FKResponseMiddlewareProtocol>> *middlewares = [allResponseMiddleware sortedArrayUsingDescriptors:@[responseMiddlewareSort]];
+    return middlewares;
 }
 
 

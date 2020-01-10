@@ -8,13 +8,14 @@
 
 #import "FKObserver.h"
 
+#import "FKObserverModel.h"
 #import "FKLogger.h"
 
 @interface FKObserver ()
 
 /// 请求信息
-/// 结构: {"SHA1(Request.URL)":{"progress":0, "state":0}}
-@property (nonatomic, strong) NSMapTable *infoMap;
+/// 结构: {"SHA1(Request.URL)": Observer.Model}
+@property (nonatomic, strong) NSMapTable<NSString *, FKObserverModel *> *infoMap;
 
 @end
 

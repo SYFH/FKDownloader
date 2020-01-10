@@ -56,10 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param complete 回调
 - (void)processRequest:(NSMutableURLRequest *)request complete:(void(^)(NSMutableURLRequest *request))complete;
 
-/// 获取所有请求中间件
+/// 获取所有请求中间件, 按照优先级排序
 - (NSArray<id<FKRequestMiddlewareProtocol>> *)requestMiddlewareArray;
 
-/// 获取所有响应中间件
+/// 获取所有响应中间件, 按照优先级排序
 - (NSArray<id<FKResponseMiddlewareProtocol>> *)responseMiddlewareArray;
 
 @end

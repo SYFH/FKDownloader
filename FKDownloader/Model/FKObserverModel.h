@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKObserverModel : NSObject
 
-@property (nonatomic, strong) NSString *requestID;
+@property (nonatomic, strong) NSString *requestID; // SHA256(Request.URL)
 @property (nonatomic, assign) double progress;
 @property (nonatomic, assign) FKState state;
 

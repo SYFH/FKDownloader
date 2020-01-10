@@ -47,25 +47,14 @@
     return self;
 }
 
-- (void)existRequestWithURL:(NSString *)url complete:(void (^)(BOOL))complete {
-    __weak typeof(self) weak = self;
-    [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        __strong typeof(weak) self = weak;
-        NSString *requestID = [self.requestIndexMap objectForKey:url.SHA256];
-        
-        if (complete) {
-            complete(requestID.length > 0);
-        }
-    }];
+- (BOOL)existRequestWithURL:(NSString *)url {
+    NSString *requestID = [self.requestIndexMap objectForKey:url.SHA256];
+    return requestID.length > 0;
 }
 
 - (void)addRequestWithModel:(FKCacheRequestModel *)model {
-    __weak typeof(self) weak = self;
-    [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        __strong typeof(weak) self = weak;
-        [self.requestMap setObject:model forKey:model.requestSingleID];
-        [self.requestIndexMap setObject:model.requestSingleID forKey:model.requestID];
-    }];
+    [self.requestMap setObject:model forKey:model.requestSingleID];
+    [self.requestIndexMap setObject:model.requestSingleID forKey:model.requestID];
 }
 
 - (void)updateRequestWithModel:(FKCacheRequestModel *)model {
@@ -73,26 +62,32 @@
     [self.requestMap setObject:model forKey:requestSingleID];
 }
 
-- (void)actionRequestCountWithComplete:(void (^)(NSUInteger))complete {
-    __weak typeof(self) weak = self;
-    [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        __strong typeof(weak) self = weak;
-        
-        NSUInteger count = 0;
-        for (FKCacheRequestModel *request in self.requestMap.objectEnumerator) {
-            if (request.state == FKStateAction) {
-                count += 1;
-            }
+- (NSUInteger)actionRequestCount {
+    NSUInteger count = 0;
+    for (FKCacheRequestModel *request in self.requestMap.objectEnumerator) {
+        if (request.state == FKStateAction) {
+            count += 1;
         }
-        
-        if (complete) {
-            complete(count);
-        }
-    }];
+    }
+    return count;
 }
 
 - (NSArray<FKCacheRequestModel *> *)requestArray {
     return self.requestMap.objectEnumerator.allObjects;
+}
+
+- (FKCacheRequestModel *)firstIdelRequest {
+    NSSortDescriptor *requestSort = [NSSortDescriptor sortDescriptorWithKey:@"idx" ascending:YES];
+    NSArray<FKCacheRequestModel *> *allRequestArray = self.requestMap.objectEnumerator.allObjects;
+    NSArray<FKCacheRequestModel *> *requestArray = [allRequestArray sortedArrayUsingDescriptors:@[requestSort]];
+    FKCacheRequestModel *requestModel = nil;
+    for (FKCacheRequestModel *model in requestArray) {
+        if (model.state == FKStateIdel) {
+            requestModel = model;
+            break;
+        }
+    }
+    return requestModel;
 }
 
 - (void)addDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
@@ -102,24 +97,17 @@
 }
 
 - (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    __weak typeof(self) weak = self;
-    [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        __strong typeof(weak) self = weak;
-        NSString *requestID = downloadTask.taskDescription;
-        NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
-        [self.taskMap removeObjectForKey:requestSingleID];
-    }];
+    NSString *requestID = downloadTask.taskDescription;
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+    [self.taskMap removeObjectForKey:requestSingleID];
 }
 
-- (void)existDownloadTaskWithRequestID:(NSString *)requestID complete:(void (^)(BOOL))complete {
+- (BOOL)existDownloadTaskWithRequestID:(NSString *)requestID {
     NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
     NSURLSessionDownloadTask *downloadTask = [self.taskMap objectForKey:requestSingleID];
     BOOL isExist = NO;
     if (downloadTask) { isExist = YES; }
-    
-    if (complete) {
-        complete(isExist);
-    }
+    return isExist;
 }
 
 

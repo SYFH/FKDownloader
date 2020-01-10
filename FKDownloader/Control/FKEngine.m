@@ -46,13 +46,19 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.ioQueue.maxConcurrentOperationCount = 1;
-        self.timerQueue.maxConcurrentOperationCount = 1;
+        // 配置线程
+        [self configtureQueue];
         
         // 配置计时器
         [self configtureTimer];
     }
     return self;
+}
+
+- (void)configtureQueue {
+    self.ioQueue.maxConcurrentOperationCount = 1;
+    
+    self.timerQueue = dispatch_queue_create("com.fk.queue.cache.timer", DISPATCH_QUEUE_SERIAL);
 }
 
 - (void)configtureSession {
@@ -63,7 +69,7 @@
 
 - (void)configtureTimer {
     __weak typeof(self) weak = self;
-    self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.timerQueue);
     dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
     dispatch_source_set_event_handler(self.timer, ^{
         __strong typeof(weak) self = weak;
@@ -86,24 +92,15 @@
 - (void)timerAction {
     [FKLogger info:@"定时器触发"];
     // 任务: 执行下一个请求
-    __weak typeof(self) weak = self;
-    [[FKCache cache] actionRequestCountWithComplete:^(NSUInteger count) {
-        __strong typeof(weak) self = weak;
+    [self.ioQueue addOperationWithBlock:^{
         if (self.isProcessingNextRequest) { return; }
         
         // 判断已执行任务数量是否到达上限
-        if (count < [FKConfigure configure].maxAction) {
+        if ([[FKCache cache] actionRequestCount] < [FKConfigure configure].maxAction) {
             self.processingNextRequest = YES;
-            // 排序待执行请求, 拿到第一个待执行任务
-            NSSortDescriptor *requestSort = [NSSortDescriptor sortDescriptorWithKey:@"idx" ascending:YES];
-            NSArray<FKCacheRequestModel *> *requestArray = [[[FKCache cache] requestArray] sortedArrayUsingDescriptors:@[requestSort]];
-            FKCacheRequestModel *requestModel = nil;
-            for (FKCacheRequestModel *model in requestArray) {
-                if (model.state == FKStateIdel) {
-                    requestModel = model;
-                    break;
-                }
-            }
+            
+            // 拿到第一个待执行任务
+            FKCacheRequestModel *requestModel = [[FKCache cache] firstIdelRequest];
             if (!requestModel) {
                 self.processingNextRequest = NO;
                 [FKLogger info:@"没有待执行任务"];
@@ -111,23 +108,15 @@
             }
             
             // 检查请求是否已存在下载任务
-            __block BOOL isExistDownloadTasl = NO;
-            [[FKCache cache] existDownloadTaskWithRequestID:requestModel.requestID complete:^(BOOL exist) {
-                isExistDownloadTasl = exist;
-            }];
-            if (isExistDownloadTasl) {
+            if ([[FKCache cache] existDownloadTaskWithRequestID:requestModel.requestID]) {
                 self.processingNextRequest = NO;
                 [FKLogger info:@"此请求已存在下载任务: %@", requestModel.url];
                 return;
             }
             
-            // 排序请求中间件
-            NSSortDescriptor *requestMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
-            NSArray<id<FKRequestMiddlewareProtocol>> *middlewares = [[FKMiddleware shared].requestMiddlewareArray sortedArrayUsingDescriptors:@[requestMiddlewareSort]];
-            
             // 处理请求
             NSMutableURLRequest *request = requestModel.request;
-            for (id<FKRequestMiddlewareProtocol> middleware in middlewares) {
+            for (id<FKRequestMiddlewareProtocol> middleware in [FKMiddleware shared].requestMiddlewareArray) {
                 if ([middleware respondsToSelector:@selector(processRequest:)]) {
                     request = [middleware processRequest:request];
                 }
@@ -152,11 +141,12 @@
             // 添加 KVO
             [[FKObserver observer] observerDownloadTask:downloadTask];
             [FKLogger info:@"监听下载任务信息"];
+            
+            self.processingNextRequest = NO;
         } else {
             [FKLogger info:@"执行任务数量已到达上限"];
+            self.processingNextRequest = NO;
         }
-        
-        self.processingNextRequest = NO;
     }];
     
     // 信息: 执行信息分发回调
@@ -170,14 +160,6 @@
         _ioQueue.name = @"com.fk.queue.cache.io";
     }
     return _ioQueue;
-}
-
-- (NSOperationQueue *)timerQueue {
-    if (!_timerQueue) {
-        _timerQueue = [[NSOperationQueue alloc] init];
-        _timerQueue.name = @"com.fk.queue.cache.timer";
-    }
-    return _timerQueue;
 }
 
 @end
