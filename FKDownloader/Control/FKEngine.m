@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "FKEngine.h"
 
+#import "NSString+FKCategory.h"
+
 #import "FKCache.h"
 #import "FKCacheModel.h"
 #import "FKConfigure.h"
@@ -17,6 +19,7 @@
 #import "FKObserver.h"
 #import "FKLogger.h"
 #import "FKSessionDelegater.h"
+#import "FKFileManager.h"
 
 @interface FKEngine ()
 
@@ -162,6 +165,42 @@
     [self.messagerQueue addOperationWithBlock:^{
         [[FKObserver observer] execRequestInfoBlock];
     }];
+}
+
+- (void)processCompleteDownload:(NSURLSessionDownloadTask *)downloadTask location:(NSURL *)location {
+    // 移动文件到请求文件夹
+    NSString *extension = @"";
+    NSString *fileExtension = downloadTask.response.MIMEType.toExtension;
+    if (fileExtension.length) {
+        extension = [NSString stringWithFormat:@".%@", fileExtension];
+    }
+    NSString *fileName = [NSString stringWithFormat:@"%@%@", downloadTask.taskDescription, extension];
+    [[FKFileManager manager] moveFile:location toRequestFinder:downloadTask.taskDescription fileName:fileName];
+    [FKLogger info:@"移动缓存文件: %@ 到请求文件: %@", location.absoluteURL, fileName];
+    
+    // 移除监听
+    [[FKObserver observer] removeDownloadTask:downloadTask];
+    [FKLogger info:@"移除请求监听"];
+    
+    // 更新本地请求缓存
+    // FIXME: 无法获取请求缓存信息
+    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:downloadTask.taskDescription];
+    info.state = FKStateComplete;
+    info.extension = extension;
+    [[FKFileManager manager] updateRequestFileWithRequest:info];
+    [FKLogger info:@"更新本地任务信息"];
+    
+    // 移除缓存任务进行释放
+    [[FKCache cache] removeDownloadTask:downloadTask];
+    [FKLogger info:@"清除任务缓存"];
+    
+    // 处理响应
+    for (id<FKResponseMiddlewareProtocol> middleware in [FKMiddleware shared].responseMiddlewareArray) {
+        if ([middleware respondsToSelector:@selector(processResponse:)]) {
+            [middleware processResponse:downloadTask.response];
+        }
+    }
+    [FKLogger info:@"响应中间件处理"];
 }
 
 

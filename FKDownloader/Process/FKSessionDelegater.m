@@ -8,7 +8,7 @@
 
 #import "FKSessionDelegater.h"
 
-#import "FKCache.h"
+#import "FKEngine.h"
 #import "FKObserver.h"
 
 @implementation FKSessionDelegater
@@ -104,12 +104,7 @@
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
                               didFinishDownloadingToURL:(NSURL *)location {
     
-    // 移动文件到请求文件夹
-    
-    // 移除监听
-    [[FKObserver observer] removeDownloadTask:downloadTask];
-    // 移除缓存任务进行释放
-    [[FKCache cache] removeDownloadTask:downloadTask];
+    [[FKEngine engine] processCompleteDownload:downloadTask location:location];
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask

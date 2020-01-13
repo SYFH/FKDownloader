@@ -36,6 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param barrel 集合名字, 最好唯一, 否则会被覆盖
 + (void)addMessagerWithURLs:(NSArray<NSString *> *)urls barrel:(NSString *)barrel;
 
+/// 移除集合标记
+/// @param barrel 集合名
++ (void)removeMessagerBarrel:(NSString *)barrel;
+
 /// 获取链接集合对应的下载信息
 /// @param barrel 集合名
 /// @param info 下载信息

@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKFileManager : NSObject
 
+@property (nonatomic, strong, readonly) NSString *requestFileExtension;
+
 + (instancetype)manager;
 
 - (void)saveSingleNumber;
@@ -39,12 +41,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 检查请求文件是否存在
 /// @param request 请求信息
-- (BOOL)existRequestWithRequest:(FKCacheRequestModel *)request;
+- (BOOL)existLocalRequestWithRequest:(FKCacheRequestModel *)request;
 
 /// 根据请求链接读取本地信息文件
 /// @param url 请求链接
 /// @param complete 回调
 - (void)loadLocalRequestWithURL:(NSString *)url complete:(void(^)(FKCacheRequestModel * _Nullable request))complete;
+
+/// 根据请求标识读取本地信息文件
+/// @param requestID 请求标识
+- (FKCacheRequestModel* _Nullable)loadLocalRequestWithRequestID:(NSString *)requestID;
+
+/// 移动已完成任务缓存文件
+/// @param fileURL 本地缓存文件地址
+/// @param requestID 请求标识
+/// @param fileName 文件名
+- (void)moveFile:(NSURL *)fileURL toRequestFinder:(NSString *)requestID fileName:(NSString *)fileName;
+
+/// 获取文件大小
+/// @param path 文件地址
+- (unsigned long long)fileSizeWithPath:(NSString *)path;
+
+/// 获取请求文件地址
+/// @param requestID 请求标识
+/// @param extension 文件后缀
+- (NSString *)requestFielPath:(NSString *)requestID extension:(NSString *)extension;
 
 @end
 

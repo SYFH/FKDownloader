@@ -12,6 +12,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FKCommonHeader.h"
+
 @class FKBuilder;
 @class FKCacheRequestModel;
 
@@ -24,6 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 检查请求是否已存在
 /// @param url 链接
 - (BOOL)existRequestWithURL:(NSString *)url;
+
+/// 检查请求是否已存在
+/// @param requestID 请求标识
+- (BOOL)existRequestWithRequestID:(NSString *)requestID;
 
 /// 添加请求缓存
 /// @param model 请求
@@ -57,6 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 检查下载任务是否已存在
 /// @param requestID 请求编号
 - (BOOL)existDownloadTaskWithRequestID:(NSString *)requestID;
+
+/// 获取链接对应的任务状态
+/// @param requestID 任务状态
+- (FKState)stateRequestWithRequestID:(NSString *)requestID;
 
 @end
 

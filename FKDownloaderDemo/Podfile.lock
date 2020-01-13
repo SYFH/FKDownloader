@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  FKDownloader: ce25c4544ed54f5621c5fdb0baf53cec6bbc8189
+  FKDownloader: c585ec78d4b47b7f5a75ce9b20c4f98d972a1687
 
 PODFILE CHECKSUM: 2ddd6bede39c2accff7fe76b53864aac8c8051c0
 

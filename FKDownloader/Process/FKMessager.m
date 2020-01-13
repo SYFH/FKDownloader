@@ -42,6 +42,10 @@
     [[FKObserver observer] addBarrel:barrel urls:[NSArray arrayWithArray:urlsTemp]];
 }
 
++ (void)removeMessagerBarrel:(NSString *)barrel {
+    [[FKObserver observer] removeBarrel:barrel];
+}
+
 + (instancetype)messagerWithBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
     return [[FKMessager alloc] initWithBarrel:barrel info:info];
 }

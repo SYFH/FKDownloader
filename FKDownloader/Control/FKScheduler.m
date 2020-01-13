@@ -14,6 +14,7 @@
 #import "FKCacheModel.h"
 #import "FKFileManager.h"
 #import "FKLogger.h"
+#import "FKEngine.h"
 
 @interface FKScheduler ()
 
@@ -36,20 +37,15 @@
     if (isExist) { [FKLogger info:@"请求已存在: %@", request.url]; return; }
     
     // 检查本地是否存在请求信息
-    if ([[FKFileManager manager] existRequestWithRequest:request]) {
+    if ([[FKFileManager manager] existLocalRequestWithRequest:request]) {
         // 当添加的任务不在缓存表中, 但本地信息文件存在, 则重新添加到缓存表中, 不进行重复下载
-        __block FKCacheRequestModel *localRequest = nil;
-        dispatch_semaphore_t localSemaphore = dispatch_semaphore_create(0);
-        [[FKFileManager manager] loadLocalRequestWithURL:request.url complete:^(FKCacheRequestModel *request) {
-            localRequest = request;
-            dispatch_semaphore_signal(localSemaphore);
-        }];
-        dispatch_semaphore_wait(localSemaphore, DISPATCH_TIME_FOREVER);
-        if (localRequest) {
-            // TODO: 重新检测请求状态, 是否已完成
+        FKCacheRequestModel *localRequest = [[FKFileManager manager] loadLocalRequestWithRequestID:request.url];
+        if (localRequest.state == FKStateComplete) {
+            [FKLogger info:@"请求文件已在本地存在, 并且已完成下载"];
+        } else {
             [[FKCache cache] addRequestWithModel:localRequest];
+            [FKLogger info:@"请求文件已在本地存在, 直接添加到缓存队列"];
         }
-        [FKLogger info:@"请求文件已在本地存在, 直接添加到缓存队列"];
     } else {
         // 创建任务相关文件与文件夹
         [[FKFileManager manager] createRequestFinderWithRequestID:request.url.SHA256];

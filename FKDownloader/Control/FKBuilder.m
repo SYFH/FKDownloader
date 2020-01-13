@@ -43,21 +43,19 @@
 }
 
 - (void)prepare {
-    @synchronized (self) {
-        if (self.prepared) { return; }
-        self.prepared = YES;
-        
-        // 创建缓存模型
-        FKCacheRequestModel *model = [[FKCacheRequestModel alloc] init];
-        model.requestID = self.urlHash;
-        model.requestSingleID = self.requestSingleID;
-        model.url = self.URL.absoluteString;
-        model.request = [self copy];
-        [FKLogger info:@"创建缓存请求模型: %@", model];
-        
-        // 进行预处理
-        [[FKScheduler shared] prepareRequest:model];
-    }
+    if (self.prepared) { return; }
+    self.prepared = YES;
+    
+    // 创建缓存模型
+    FKCacheRequestModel *model = [[FKCacheRequestModel alloc] init];
+    model.requestID = self.urlHash;
+    model.requestSingleID = self.requestSingleID;
+    model.url = self.URL.absoluteString;
+    model.request = [self copy];
+    [FKLogger info:@"创建缓存请求模型: %@", model];
+    
+    // 进行预处理
+    [[FKScheduler shared] prepareRequest:model];
 }
 
 @end

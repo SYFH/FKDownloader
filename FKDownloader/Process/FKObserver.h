@@ -34,9 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addBlock:(MessagerInfoBlock)block requestID:(NSString *)requestID;
 
 /// 添加一个链接集合
-/// @param label 集合名
+/// @param barrel 集合名
 /// @param urls 多个链接
-- (void)addBarrel:(NSString *)label urls:(NSArray<NSString *> *)urls;
+- (void)addBarrel:(NSString *)barrel urls:(NSArray<NSString *> *)urls;
+
+/// 移除一个链接集合
+/// @param barrel 集合名
+- (void)removeBarrel:(NSString *)barrel;
 
 /// 添加一个信息集合回调
 /// @param barrel 集合名

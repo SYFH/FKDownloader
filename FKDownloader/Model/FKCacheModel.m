@@ -17,7 +17,8 @@
     [coder encodeObject:self.url forKey:@"url"];
     [coder encodeObject:self.request forKey:@"request"];
     [coder encodeInteger:self.state forKey:@"state"];
-    [coder encodeInteger:self.dataLength forKey:@"dataLength"];
+    [coder encodeInt64:self.dataLength forKey:@"dataLength"];
+    [coder encodeObject:self.extension forKey:@"extension"];
     
     if (self.resumeData) {
         [coder encodeObject:self.resumeData forKey:@"resumeData"];
@@ -33,7 +34,8 @@
         self.url = [coder decodeObjectForKey:@"url"];
         self.request = [coder decodeObjectForKey:@"request"];
         self.state = [coder decodeIntegerForKey:@"state"];
-        self.dataLength = [coder decodeIntegerForKey:@"dataLength"];
+        self.dataLength = [coder decodeInt64ForKey:@"dataLength"];
+        self.extension = [coder decodeObjectForKey:@"extension"];
         self.resumeData = [coder decodeObjectForKey:@"resumeData"];
     }
     return self;

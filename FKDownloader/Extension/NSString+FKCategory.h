@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)SHA512;
 - (NSData *)SHA512Data;
 
+/// MIMEType to file extension
+- (NSString *)toExtension;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -49,8 +49,13 @@
 }
 
 - (BOOL)existRequestWithURL:(NSString *)url {
-    NSString *requestID = [self.requestIndexMap objectForKey:url.SHA256];
-    return requestID.length > 0;
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:url.SHA256];
+    return requestSingleID.length > 0;
+}
+
+- (BOOL)existRequestWithRequestID:(NSString *)requestID {
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+    return requestSingleID.length > 0;
 }
 
 - (void)addRequestWithModel:(FKCacheRequestModel *)model {
@@ -74,7 +79,8 @@
 }
 
 - (FKCacheRequestModel *)requestWithRequestID:(NSString *)requestID {
-    return [self.requestMap objectForKey:requestID];
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+    return [self.requestMap objectForKey:requestSingleID];
 }
 
 - (NSArray<FKCacheRequestModel *> *)requestArray {
@@ -113,6 +119,12 @@
     BOOL isExist = NO;
     if (downloadTask) { isExist = YES; }
     return isExist;
+}
+
+- (FKState)stateRequestWithRequestID:(NSString *)requestID {
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+    FKCacheRequestModel *info = [self.requestMap objectForKey:requestSingleID];
+    return info.state;
 }
 
 

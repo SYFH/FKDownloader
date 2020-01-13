@@ -30,6 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// 配置 Session
 - (void)configtureSession;
 
+/// 处理下载完成流程
+/// @param downloadTask 下载任务
+/// @param location 缓存文件地址
+- (void)processCompleteDownload:(NSURLSessionDownloadTask *)downloadTask location:(NSURL *)location;
+
 @end
 
 NS_ASSUME_NONNULL_END

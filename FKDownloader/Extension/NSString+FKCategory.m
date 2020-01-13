@@ -9,6 +9,7 @@
 #import "NSString+FKCategory.h"
 
 #import <CommonCrypto/CommonDigest.h>
+#import <CoreServices/CoreServices.h>
 
 @implementation NSString (FKCategory)
 
@@ -87,6 +88,13 @@
         data[i] = 0;
     }
     return [hash copy];
+}
+
+- (NSString *)toExtension {
+    CFStringRef mimeType = (__bridge CFStringRef)self;
+    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType, NULL);
+    NSString *fileExtension = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
+    return fileExtension;
 }
 
 @end

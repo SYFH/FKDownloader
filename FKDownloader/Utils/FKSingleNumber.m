@@ -34,7 +34,7 @@
     self.atomicNumber = ATOMIC_VAR_INIT(number);
 }
 
-- (unsigned long long)curren {
+- (unsigned long long)current {
     return self.atomicNumber;
 }
 

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)initialNumber;
 - (void)initialNumberWithNumber:(unsigned long long)number;
-- (unsigned long long)curren;
+- (unsigned long long)current;
 - (unsigned long long)number;
 
 @end

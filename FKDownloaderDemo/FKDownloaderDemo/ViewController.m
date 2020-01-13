@@ -28,8 +28,7 @@
     FKBuilder *builder = [FKBuilder buildWithURL:url];
     [builder prepare];
     
-    [FKMessager addMessagerWithURLs:@[url] barrel:@"test"];
-    [FKMessager messagerWithBarrel:@"test" info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive) {
+    [FKMessager messagerWithURL:url info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive, FKState state) {
         printf("%lld, %lld\n", countOfBytesReceived, countOfBytesExpectedToReceive);
     }];
 }

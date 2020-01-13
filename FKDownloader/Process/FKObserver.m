@@ -8,9 +8,14 @@
 
 #import "FKObserver.h"
 
+#import "NSString+FKCategory.h"
 
+#import "FKCache.h"
+#import "FKCacheModel.h"
 #import "FKObserverModel.h"
 #import "FKLogger.h"
+#import "FKFileManager.h"
+#import "FKEngine.h"
 
 @interface FKObserver ()
 
@@ -117,8 +122,22 @@
 }
 
 - (void)addBlock:(MessagerInfoBlock)block requestID:(NSString *)requestID {
+    if (![[FKCache cache] existRequestWithRequestID:requestID]) {
+        [FKLogger info:@"任务不存在, 不添加监听缓存"];
+        return;
+    }
+    
+    if ([[FKCache cache] stateRequestWithRequestID:requestID] == FKStateComplete) {
+        [FKLogger info:@"任务已完成, 不添加监听缓存"];
+        return;
+    }
+    
     [self.blockMap setObject:block forKey:requestID];
     [FKLogger info:@"添加信息回调到监听缓存"];
+    
+    FKObserverModel *model = [self.infoMap objectForKey:requestID];
+    block(model.countOfBytesReceived, model.countOfBytesExpectedToReceive, model.state);
+    [FKLogger info:@"添加信息回调时进行快速响应"];
 }
 
 - (void)addBarrel:(NSString *)barrel urls:(NSArray<NSString *> *)urls {
@@ -127,6 +146,16 @@
         [self.barrelIndexMap setObject:barrel forKey:url];
     }
     [FKLogger info:@"添加任务集合: %@ 到监听缓存", barrel];
+}
+
+- (void)removeBarrel:(NSString *)barrel {
+    NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
+    for (NSString *requestID in urls) {
+        [self.barrelIndexMap removeObjectForKey:requestID];
+    }
+    [self.barrelBlockMap removeObjectForKey:barrel];
+    [self.barrelMap removeObjectForKey:barrel];
+    [FKLogger info:@"从监听缓存移除任务集合: %@", barrel];
 }
 
 - (void)addBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
@@ -139,7 +168,10 @@
     for (NSString *requestID in self.blockMap) {
         MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
         FKObserverModel *model = [self.infoMap objectForKey:requestID];
-        block(model.countOfBytesReceived, model.countOfBytesExpectedToReceive, model.state);
+        
+        if (model.state == FKStateAction) {
+            block(model.countOfBytesReceived, model.countOfBytesExpectedToReceive, model.state);
+        }
     }
     
     // 处理请求集合的信息回调
@@ -190,12 +222,35 @@
     NSString *requestID = downloadTask.taskDescription;
     FKObserverModel *info = [self.infoMap objectForKey:requestID];
     
+    // 更新下载文件后缀
+    BOOL hasUpdate = NO;
+    FKCacheRequestModel *model = [[FKCache cache] requestWithRequestID:requestID];
+    if (model.extension.length == 0) {
+        NSString *fileExtension = downloadTask.response.MIMEType.toExtension;
+        if (fileExtension.length) {
+            model.extension = [NSString stringWithFormat:@".%@", fileExtension];
+        } else {
+            model.extension = @"";
+        }
+        hasUpdate = YES;
+    }
+    
     if ([keyPath isEqualToString:@"countOfBytesReceived"]) {
         info.countOfBytesReceived = downloadTask.countOfBytesReceived;
     }
     
     if ([keyPath isEqualToString:@"countOfBytesExpectedToReceive"]) {
         info.countOfBytesExpectedToReceive = downloadTask.countOfBytesExpectedToReceive;
+        
+        // 更新下载文件大小
+        if (model.dataLength) {
+            model.dataLength = info.countOfBytesExpectedToReceive;
+            hasUpdate = YES;
+        }
+    }
+
+    if (hasUpdate) {
+        [[FKFileManager manager] updateRequestFileWithRequest:model];
     }
 }
 
