@@ -60,9 +60,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param downloadTask 下载任务
 - (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
 
+/// 替换下载任务
+/// @param downloadTask 下载任务
+- (void)repleaceDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
+
 /// 检查下载任务是否已存在
 /// @param requestID 请求编号
 - (BOOL)existDownloadTaskWithRequestID:(NSString *)requestID;
+
+/// 获取下载任务
+/// @param requestID 请求编号
+- (NSURLSessionDownloadTask *)downloadTaskWithRequestID:(NSString *)requestID;
 
 /// 获取链接对应的任务状态
 /// @param requestID 任务状态

@@ -22,6 +22,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareRequest:(FKCacheRequestModel *)request;
 
+/// 激活已取消任务
+/// @param url 请求链接
+- (void)actionRequestWithURL:(NSString *)url;
+
+/// 暂停任务
+/// @param url 请求链接
+- (void)suspendRequestWithURL:(NSString *)url;
+
+/// 继续任务
+/// @param url 请求链接
+- (void)resumeRequestWithURL:(NSString *)url;
+
+/// 取消任务
+/// @param url 请求链接
+- (void)cancelRequestWithURL:(NSString *)url;
+
 @end
 
 NS_ASSUME_NONNULL_END

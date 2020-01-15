@@ -24,9 +24,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param downloadTask 下载任务
 - (void)observerDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
 
+/// 添加监听缓存
+/// @param downloadTask 下载任务
+- (void)observerCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
+
 /// 移除不需要监听的下载任务
 /// @param downloadTask 下载任务
 - (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
+
+/// 移除监听缓存
+/// @param downloadTask 下载任务
+- (void)removeCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
 
 /// 添加信息回调到指定请求
 /// @param block 信息回调

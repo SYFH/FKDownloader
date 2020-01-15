@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *requestID; // SHA256(Request.URL)
 @property (nonatomic, assign) int64_t countOfBytesReceived;
 @property (nonatomic, assign) int64_t countOfBytesExpectedToReceive;
-@property (nonatomic, assign) FKState state;
 
 + (instancetype)model;
 

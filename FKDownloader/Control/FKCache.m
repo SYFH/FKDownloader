@@ -113,12 +113,24 @@
     [self.taskMap removeObjectForKey:requestSingleID];
 }
 
+- (void)repleaceDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
+    NSString *requestID = downloadTask.taskDescription;
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+    [self.taskMap setObject:downloadTask forKey:requestSingleID];
+}
+
 - (BOOL)existDownloadTaskWithRequestID:(NSString *)requestID {
     NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
     NSURLSessionDownloadTask *downloadTask = [self.taskMap objectForKey:requestSingleID];
     BOOL isExist = NO;
     if (downloadTask) { isExist = YES; }
     return isExist;
+}
+
+- (NSURLSessionDownloadTask *)downloadTaskWithRequestID:(NSString *)requestID {
+    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+    NSURLSessionDownloadTask *downloadTask = [self.taskMap objectForKey:requestSingleID];
+    return downloadTask;
 }
 
 - (FKState)stateRequestWithRequestID:(NSString *)requestID {

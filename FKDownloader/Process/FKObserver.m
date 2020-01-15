@@ -76,12 +76,13 @@
                       options:NSKeyValueObservingOptionNew
                       context:nil]; // 总大小
     [FKLogger info:@"监听下载任务属性: countOfBytesExpectedToReceive"];
-    
+}
+
+- (void)observerCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
     FKObserverModel *info = [[FKObserverModel alloc] init];
     info.requestID = downloadTask.taskDescription;
     info.countOfBytesReceived = 0;
     info.countOfBytesExpectedToReceive = 0;
-    info.state = FKStateAction;
     [self.infoMap setObject:info forKey:downloadTask.taskDescription];
     [FKLogger info:@"添加监听缓存"];
 }
@@ -99,23 +100,23 @@
                       forKeyPath:@"countOfBytesExpectedToReceive"
                          context:nil];
     [FKLogger info:@"移除监听下载任务属性: countOfBytesExpectedToReceive"];
+}
+
+- (void)removeCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
+    [self.infoMap removeObjectForKey:downloadTask.taskDescription];
+    [self.blockMap removeObjectForKey:downloadTask.taskDescription];
     
-    @synchronized (self) {
-        [self.infoMap removeObjectForKey:downloadTask.taskDescription];
-        [self.blockMap removeObjectForKey:downloadTask.taskDescription];
-        
-        NSString *barrel = [self.barrelIndexMap objectForKey:downloadTask.taskDescription];
-        if (barrel.length) {// 有所属集合
-            NSMutableArray<NSString *> *urls = [NSMutableArray arrayWithArray:[self.barrelMap objectForKey:barrel]];
-            [urls removeObject:downloadTask.taskDescription];
-            if (urls.count == 0) {
-                [self.barrelMap removeObjectForKey:barrel];
-                [self.barrelBlockMap removeObjectForKey:barrel];
-                [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
-            } else {
-                [self.barrelMap setObject:[NSArray arrayWithArray:urls] forKey:barrel];
-                [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
-            }
+    NSString *barrel = [self.barrelIndexMap objectForKey:downloadTask.taskDescription];
+    if (barrel.length) {// 有所属集合
+        NSMutableArray<NSString *> *urls = [NSMutableArray arrayWithArray:[self.barrelMap objectForKey:barrel]];
+        [urls removeObject:downloadTask.taskDescription];
+        if (urls.count == 0) {
+            [self.barrelMap removeObjectForKey:barrel];
+            [self.barrelBlockMap removeObjectForKey:barrel];
+            [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
+        } else {
+            [self.barrelMap setObject:[NSArray arrayWithArray:urls] forKey:barrel];
+            [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
         }
     }
     [FKLogger info:@"删除监听缓存"];
@@ -136,7 +137,9 @@
     [FKLogger info:@"添加信息回调到监听缓存"];
     
     FKObserverModel *model = [self.infoMap objectForKey:requestID];
-    block(model.countOfBytesReceived, model.countOfBytesExpectedToReceive, model.state);
+    block(model.countOfBytesReceived,
+          model.countOfBytesExpectedToReceive,
+          [[FKCache cache] stateRequestWithRequestID:requestID]);
     [FKLogger info:@"添加信息回调时进行快速响应"];
 }
 
@@ -168,10 +171,10 @@
     for (NSString *requestID in self.blockMap) {
         MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
         FKObserverModel *model = [self.infoMap objectForKey:requestID];
-        
-        if (model.state == FKStateAction) {
-            block(model.countOfBytesReceived, model.countOfBytesExpectedToReceive, model.state);
-        }
+        FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+        block(model.countOfBytesReceived,
+              model.countOfBytesExpectedToReceive,
+              state);
     }
     
     // 处理请求集合的信息回调

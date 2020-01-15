@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 信息分发线程, 并行
 @property (nonatomic, strong) NSOperationQueue *messagerQueue;
 
+/// 后台下载
+@property (nonatomic, strong, readonly) NSURLSession *backgroundSession;
+
 + (instancetype)engine;
 
 /// 配置 Session
@@ -34,6 +37,22 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param downloadTask 下载任务
 /// @param location 缓存文件地址
 - (void)processCompleteDownload:(NSURLSessionDownloadTask *)downloadTask location:(NSURL *)location;
+
+/// 激活已取消任务
+/// @param url 请求链接
+- (void)actionRequestWithURL:(NSString *)url;
+
+/// 暂停任务
+/// @param url 请求链接
+- (void)suspendRequestWithURL:(NSString *)url;
+
+/// 继续任务
+/// @param url 请求链接
+- (void)resumeRequestWithURL:(NSString *)url;
+
+/// 取消任务
+/// @param url 请求链接
+- (void)cancelRequestWithURL:(NSString *)url;
 
 @end
 

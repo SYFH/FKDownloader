@@ -27,6 +27,14 @@
     return instance;
 }
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.maxAction = 3;
+    }
+    return self;
+}
+
 - (void)take {
     [[FKEngine engine] configtureSession];
 }

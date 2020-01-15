@@ -143,7 +143,7 @@
             // 更新请求缓存
             requestModel.state = FKStateAction;
             [[FKCache cache] updateRequestWithModel:requestModel];
-            [FKLogger info:@"idel -> action, 更新请求缓存"];
+            [FKLogger info:@"idel -> action, 更新本地请求缓存"];
             
             // 缓存请求任务
             [[FKCache cache] addDownloadTask:downloadTask];
@@ -151,6 +151,7 @@
             
             // 添加 KVO
             [[FKObserver observer] observerDownloadTask:downloadTask];
+            [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
             [FKLogger info:@"监听下载任务信息"];
             
             self.processingNextRequest = NO;
@@ -180,15 +181,15 @@
     
     // 移除监听
     [[FKObserver observer] removeDownloadTask:downloadTask];
+    [[FKObserver observer] removeCacheWithDownloadTask:downloadTask];
     [FKLogger info:@"移除请求监听"];
     
     // 更新本地请求缓存
-    // FIXME: 无法获取请求缓存信息
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:downloadTask.taskDescription];
     info.state = FKStateComplete;
     info.extension = extension;
     [[FKFileManager manager] updateRequestFileWithRequest:info];
-    [FKLogger info:@"更新本地任务信息"];
+    [FKLogger info:@"action -> complete, 更新本地任务信息"];
     
     // 移除缓存任务进行释放
     [[FKCache cache] removeDownloadTask:downloadTask];
@@ -201,6 +202,22 @@
         }
     }
     [FKLogger info:@"响应中间件处理"];
+}
+
+- (void)actionRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] actionRequestWithURL:url];
+}
+
+- (void)suspendRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] suspendRequestWithURL:url];
+}
+
+- (void)resumeRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] resumeRequestWithURL:url];
+}
+
+- (void)cancelRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] cancelRequestWithURL:url];
 }
 
 
