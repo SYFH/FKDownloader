@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSUInteger priority;
 
 /// 处理
-/// @param task 下载请求
-+ (NSMutableURLRequest *)processRequest:(NSMutableURLRequest *)task;
+/// @param request 下载请求
+- (NSMutableURLRequest *)processRequest:(NSMutableURLRequest *)request;
 
 @end
 
@@ -39,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSUInteger priority;
 
 /// 处理
-/// @param task 下载请求
-+ (NSURLResponse *)processResponse:(NSURLResponse *)task;
+/// @param response 下载请求
+- (NSURLResponse *)processResponse:(NSURLResponse *)response;
 
 @end
 

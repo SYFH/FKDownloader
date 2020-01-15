@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D63540E23CEB38D00F2A4B3 /* CustomRequestMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D63540D23CEB38D00F2A4B3 /* CustomRequestMiddleware.m */; };
+		3D63541123CEB3A200F2A4B3 /* CustomResponseMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D63541023CEB3A200F2A4B3 /* CustomResponseMiddleware.m */; };
 		3D66171323B75BE6008EBE8A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66171223B75BE6008EBE8A /* AppDelegate.m */; };
 		3D66171623B75BE6008EBE8A /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66171523B75BE6008EBE8A /* SceneDelegate.m */; };
 		3D66171923B75BE6008EBE8A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66171823B75BE6008EBE8A /* ViewController.m */; };
@@ -19,6 +21,10 @@
 
 /* Begin PBXFileReference section */
 		1FB6ECB7D278981428518BA4 /* Pods-FKDownloaderDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKDownloaderDemo.release.xcconfig"; path = "Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo.release.xcconfig"; sourceTree = "<group>"; };
+		3D63540C23CEB38D00F2A4B3 /* CustomRequestMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomRequestMiddleware.h; sourceTree = "<group>"; };
+		3D63540D23CEB38D00F2A4B3 /* CustomRequestMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomRequestMiddleware.m; sourceTree = "<group>"; };
+		3D63540F23CEB3A200F2A4B3 /* CustomResponseMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomResponseMiddleware.h; sourceTree = "<group>"; };
+		3D63541023CEB3A200F2A4B3 /* CustomResponseMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomResponseMiddleware.m; sourceTree = "<group>"; };
 		3D66170E23B75BE6008EBE8A /* FKDownloaderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKDownloaderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D66171123B75BE6008EBE8A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3D66171223B75BE6008EBE8A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -74,6 +80,10 @@
 				3D66171523B75BE6008EBE8A /* SceneDelegate.m */,
 				3D66171723B75BE6008EBE8A /* ViewController.h */,
 				3D66171823B75BE6008EBE8A /* ViewController.m */,
+				3D63540C23CEB38D00F2A4B3 /* CustomRequestMiddleware.h */,
+				3D63540D23CEB38D00F2A4B3 /* CustomRequestMiddleware.m */,
+				3D63540F23CEB3A200F2A4B3 /* CustomResponseMiddleware.h */,
+				3D63541023CEB3A200F2A4B3 /* CustomResponseMiddleware.m */,
 				3D66171A23B75BE6008EBE8A /* Main.storyboard */,
 				3D66171D23B75BE8008EBE8A /* Assets.xcassets */,
 				3D66171F23B75BE8008EBE8A /* LaunchScreen.storyboard */,
@@ -89,7 +99,6 @@
 				7ADFB7B7079998919B00875A /* Pods-FKDownloaderDemo.debug.xcconfig */,
 				1FB6ECB7D278981428518BA4 /* Pods-FKDownloaderDemo.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -197,6 +206,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D63540E23CEB38D00F2A4B3 /* CustomRequestMiddleware.m in Sources */,
+				3D63541123CEB3A200F2A4B3 /* CustomResponseMiddleware.m in Sources */,
 				3D66171923B75BE6008EBE8A /* ViewController.m in Sources */,
 				3D66171323B75BE6008EBE8A /* AppDelegate.m in Sources */,
 				3D66172423B75BE8008EBE8A /* main.m in Sources */,

@@ -8,6 +8,8 @@
 
 #import "FKMiddleware.h"
 
+#import "FKLogger.h"
+
 @interface FKMiddleware ()
 
 @property (nonatomic, strong) NSHashTable<id<FKRequestMiddlewareProtocol>> *requestMiddlewares;
@@ -28,16 +30,17 @@
 
 - (void)registeRequestMiddleware:(id<FKRequestMiddlewareProtocol>)middleware {
     [self.requestMiddlewares addObject:middleware];
+    [FKLogger info:@"注册请求中间件"];
 }
 
 - (void)registeResponseMiddleware:(id<FKResponseMiddlewareProtocol>)middleware {
     [self.responseMiddlewares addObject:middleware];
+    [FKLogger info:@"注册响应中间件"];
 }
 
 - (void)processRequest:(NSMutableURLRequest *)request complete:(void (^)(NSMutableURLRequest *request))complete {
     NSMutableURLRequest *processed = request;
-    NSArray<id<FKRequestMiddlewareProtocol>> *result = [self.requestMiddlewares.allObjects sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES]]];
-    for (id<FKRequestMiddlewareProtocol> middleware in result) {
+    for (id<FKRequestMiddlewareProtocol> middleware in self.requestMiddlewares) {
         if ([middleware respondsToSelector:@selector(processRequest:)]) {
             processed = [middleware processRequest:processed];
         }

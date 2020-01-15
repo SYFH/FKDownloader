@@ -9,6 +9,9 @@
 #import "ViewController.h"
 #import <FKDownloader/FKDownloader.h>
 
+#import "CustomRequestMiddleware.h"
+#import "CustomResponseMiddleware.h"
+
 @interface ViewController ()
 
 @end
@@ -21,6 +24,9 @@
     NSLog(@"begin");
     [FKConfigure configure].maxAction = 3;
     [[FKConfigure configure] take];
+    
+    [[FKMiddleware shared] registeRequestMiddleware:[CustomRequestMiddleware new]];
+    [[FKMiddleware shared] registeResponseMiddleware:[CustomResponseMiddleware new]];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
