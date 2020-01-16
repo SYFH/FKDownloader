@@ -14,9 +14,11 @@
 #import "FKCacheModel.h"
 #import "FKScheduler.h"
 #import "FKLogger.h"
+#import "FKCoder.h"
 
 @interface FKBuilder ()
 
+@property (nonatomic, strong) NSString *normalURL;
 @property (nonatomic, strong) NSString *urlHash;
 @property (nonatomic, strong) NSString *requestSingleID;
 @property (nonatomic, assign, getter=isPrepared) BOOL prepared;
@@ -26,14 +28,22 @@
 @implementation FKBuilder
 
 + (instancetype)buildWithURL:(NSString *)url {
-    return [[FKBuilder alloc] initWithURL:[NSURL URLWithString:url]];
+    // 校验 URL 是否合法
+    NSString *encodeURL = [FKCoder encode:url];
+    NSURL *URL = [NSURL URLWithString:encodeURL];
+    NSParameterAssert(URL);
+    
+    return [[FKBuilder alloc] initWithNormalURL:url];
 }
 
-- (instancetype)initWithURL:(NSURL *)URL {
-    self = [super initWithURL:URL];
+- (instancetype)initWithNormalURL:(NSString *)URL {
+    NSURL *normalURL = [NSURL URLWithString:[FKCoder encode:URL]];
+    self = [super initWithURL:normalURL];
     if (self) {
+        self.normalURL = URL;
+        
         // 计算Hash
-        self.urlHash = self.URL.absoluteString.SHA256;
+        self.urlHash = self.normalURL.SHA256;
         
         // 创建请求编号
         self.requestSingleID = [NSString stringWithFormat:@"%09llu_%@", FKSingleNumber.shared.number, self.urlHash];
@@ -50,9 +60,9 @@
     FKCacheRequestModel *model = [[FKCacheRequestModel alloc] init];
     model.requestID = self.urlHash;
     model.requestSingleID = self.requestSingleID;
-    model.url = self.URL.absoluteString;
+    model.url = self.normalURL;
     model.request = [self copy];
-    [FKLogger info:@"创建缓存请求模型: %@", model];
+    [FKLogger info:@"创建请求缓存: %@", model];
     
     // 进行预处理
     [[FKScheduler shared] prepareRequest:model];

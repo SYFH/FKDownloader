@@ -41,21 +41,18 @@
     if ([[FKFileManager manager] existLocalRequestWithRequest:request]) {
         // 当添加的任务不在缓存表中, 但本地信息文件存在, 则重新添加到缓存表中, 不进行重复下载
         FKCacheRequestModel *localRequest = [[FKFileManager manager] loadLocalRequestWithRequestID:request.requestID];
-        if (localRequest.state == FKStateComplete) {
-            [FKLogger info:@"请求文件已在本地存在, 并且已完成下载"];
-        } else {
-            [[FKCache cache] addRequestWithModel:localRequest];
-            [FKLogger info:@"请求文件已在本地存在, 直接添加到缓存队列"];
-        }
+        [[FKCache cache] addRequestWithModel:localRequest];
+        [FKLogger info:@"请求文件已在本地存在, 直接添加到缓存队列"];
     } else {
         // 创建任务相关文件与文件夹
-        [[FKFileManager manager] createRequestFinderWithRequestID:request.url.SHA256];
+        [[FKFileManager manager] createRequestFinderWithRequestID:request.requestID];
         [[FKFileManager manager] createRequestFileWithRequest:request];
         [FKLogger info:@"创建请求相关文件夹和文件"];
         
         // 添加到缓存表
         request.state = FKStateIdel;
         [[FKCache cache] addRequestWithModel:request];
+        [[FKFileManager manager] updateRequestFileWithRequest:request];
         [FKLogger info:@"prepare -> idel, 添加到缓存列表: %@", request];
     }
     
@@ -116,11 +113,12 @@
 - (void)cancelRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (info.state == FKStateAction) {
+    if (info.state == FKStateAction || info.state == FKStateSuspend) {
         NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
         [downloadTask cancel];
         
         [[FKCache cache] removeDownloadTask:downloadTask];
+        [[FKObserver observer] removeCacheProgressWithDownloadTask:downloadTask];
         
         info.state = FKStateCancel;
         [[FKFileManager manager] updateRequestFileWithRequest:info];

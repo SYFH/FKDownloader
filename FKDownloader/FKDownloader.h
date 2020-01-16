@@ -26,3 +26,6 @@ FOUNDATION_EXPORT const unsigned char FKDownloaderVersionString[];
 
 // Middleware
 #import <FKDownloader/FKMiddleware.h>
+
+// Utils
+#import <FKDownloader/FKCommonHeader.h>

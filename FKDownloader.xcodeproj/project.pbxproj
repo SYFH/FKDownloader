@@ -12,6 +12,8 @@
 		3D36748823BD8FB40023E3A0 /* FKCacheModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D36748623BD8FB40023E3A0 /* FKCacheModel.h */; };
 		3D36748923BD8FB40023E3A0 /* FKCacheModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D36748723BD8FB40023E3A0 /* FKCacheModel.m */; };
 		3D560E3023CC5F8C0080500D /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D560E2E23CC5F800080500D /* CoreServices.framework */; };
+		3D613ED723D00ADA00B25D44 /* FKCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D613ED523D00ADA00B25D44 /* FKCoder.h */; };
+		3D613ED823D00ADA00B25D44 /* FKCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D613ED623D00ADA00B25D44 /* FKCoder.m */; };
 		3D613EF323BC5D75005F489F /* FKFileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D613EF123BC5D75005F489F /* FKFileManager.h */; };
 		3D613EF423BC5D75005F489F /* FKFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D613EF223BC5D75005F489F /* FKFileManager.m */; };
 		3D613EFB23BCAA78005F489F /* NSString+FKCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D613EF923BCAA78005F489F /* NSString+FKCategory.h */; };
@@ -62,6 +64,8 @@
 		3D36748623BD8FB40023E3A0 /* FKCacheModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKCacheModel.h; sourceTree = "<group>"; };
 		3D36748723BD8FB40023E3A0 /* FKCacheModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKCacheModel.m; sourceTree = "<group>"; };
 		3D560E2E23CC5F800080500D /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
+		3D613ED523D00ADA00B25D44 /* FKCoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKCoder.h; sourceTree = "<group>"; };
+		3D613ED623D00ADA00B25D44 /* FKCoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKCoder.m; sourceTree = "<group>"; };
 		3D613EF123BC5D75005F489F /* FKFileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKFileManager.h; sourceTree = "<group>"; };
 		3D613EF223BC5D75005F489F /* FKFileManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKFileManager.m; sourceTree = "<group>"; };
 		3D613EF923BCAA78005F489F /* NSString+FKCategory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+FKCategory.h"; sourceTree = "<group>"; };
@@ -191,6 +195,8 @@
 				3D613EF223BC5D75005F489F /* FKFileManager.m */,
 				3D6A396323C571A500A97A29 /* FKLogger.h */,
 				3D6A396423C571A500A97A29 /* FKLogger.m */,
+				3D613ED523D00ADA00B25D44 /* FKCoder.h */,
+				3D613ED623D00ADA00B25D44 /* FKCoder.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -259,6 +265,7 @@
 				3D933F0923BB46E9006C6C95 /* FKMiddleware.h in Headers */,
 				3D613EF323BC5D75005F489F /* FKFileManager.h in Headers */,
 				3D36748823BD8FB40023E3A0 /* FKCacheModel.h in Headers */,
+				3D613ED723D00ADA00B25D44 /* FKCoder.h in Headers */,
 				3DF8F75523BB21D700A9E363 /* FKMessager.h in Headers */,
 				3D68DF4523BC37F50060DAEB /* FKCache.h in Headers */,
 				3DF8F75F23BB2A6500A9E363 /* FKScheduler.h in Headers */,
@@ -379,6 +386,7 @@
 				3DF8F75623BB21D700A9E363 /* FKMessager.m in Sources */,
 				3D613EF423BC5D75005F489F /* FKFileManager.m in Sources */,
 				3D933F0A23BB46E9006C6C95 /* FKMiddleware.m in Sources */,
+				3D613ED823D00ADA00B25D44 /* FKCoder.m in Sources */,
 				3D776F7223B84F4400AC6190 /* FKSessionDelegater.m in Sources */,
 				3DF8F74E23BB217600A9E363 /* FKConfigure.m in Sources */,
 				3DF8F76023BB2A6500A9E363 /* FKScheduler.m in Sources */,

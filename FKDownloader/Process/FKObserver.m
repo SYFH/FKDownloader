@@ -122,6 +122,13 @@
     [FKLogger info:@"删除监听缓存"];
 }
 
+- (void)removeCacheProgressWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
+    FKObserverModel *info = [self.infoMap objectForKey:downloadTask.taskDescription];
+    info.countOfBytesReceived = 0;
+    [self.infoMap setObject:info forKey:downloadTask.taskDescription];
+    [FKLogger info:@"请求任务缓存的进度数据"];
+}
+
 - (void)addBlock:(MessagerInfoBlock)block requestID:(NSString *)requestID {
     if (![[FKCache cache] existRequestWithRequestID:requestID]) {
         [FKLogger info:@"任务不存在, 不添加监听缓存"];

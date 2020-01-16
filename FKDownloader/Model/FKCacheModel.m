@@ -23,6 +23,10 @@
     if (self.resumeData) {
         [coder encodeObject:self.resumeData forKey:@"resumeData"];
     }
+    
+    if (self.error) {
+        [coder encodeObject:self.error forKey:@"error"];
+    }
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
@@ -37,6 +41,7 @@
         self.dataLength = [coder decodeInt64ForKey:@"dataLength"];
         self.extension = [coder decodeObjectForKey:@"extension"];
         self.resumeData = [coder decodeObjectForKey:@"resumeData"];
+        self.error = [coder decodeObjectForKey:@"error"];
     }
     return self;
 }

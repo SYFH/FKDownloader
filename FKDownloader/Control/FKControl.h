@@ -22,19 +22,19 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param url 请求链接
 + (FKState)stateWithURL:(NSString *)url;
 
-/// 激活已取消任务
+/// 激活已取消任务, 只对 cancel 状态任务起作用
 /// @param url 请求链接
 + (void)actionRequestWithURL:(NSString *)url;
 
-/// 暂停任务
+/// 暂停任务, 只对 action 状态任务起作用
 /// @param url 请求链接
 + (void)suspendRequestWithURL:(NSString *)url;
 
-/// 继续任务
+/// 继续任务, 只对 suspend 状态任务起作用
 /// @param url 请求链接
 + (void)resumeRequestWithURL:(NSString *)url;
 
-/// 取消任务
+/// 取消任务, 只对 action/suspend 状态任务起作用
 /// @param url 请求链接
 + (void)cancelRequestWithURL:(NSString *)url;
 

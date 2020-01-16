@@ -26,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) FKState state; // 请求状态
 @property (nonatomic, assign) int64_t dataLength; // 数据长度
 @property (nonatomic, strong) NSString *extension; // 文件后缀, `.*`
-@property (nonatomic, strong, nullable) NSData *resumeData; //回复数据
+@property (nonatomic, strong, nullable) NSData *resumeData; // 回复数据
+@property (nonatomic, strong) NSError *error; // 错误
 
 @end
 

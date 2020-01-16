@@ -27,7 +27,6 @@
     NSLog(@"begin");
     self.downloadURL = @"https://github.com/ET-Team/EnigTech2/releases/download/v1.2.12/EnigTech2-1.2.12.zip";
     
-    [FKConfigure configure].maxAction = 3;
     [[FKConfigure configure] take];
     
     [[FKMiddleware shared] registeRequestMiddleware:[CustomRequestMiddleware new]];
