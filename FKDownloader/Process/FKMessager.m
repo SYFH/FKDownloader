@@ -50,4 +50,8 @@
     return [[FKMessager alloc] initWithBarrel:barrel info:info];
 }
 
+- (void)dealloc {
+    // 将对应的回调清除, 以提高性能
+}
+
 @end

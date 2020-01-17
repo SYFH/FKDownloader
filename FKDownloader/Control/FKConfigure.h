@@ -20,8 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 的任务不受影响, 直至正在执行任务数量小于此值后, 之后的任务才可被控制
 @property (nonatomic, assign) unsigned int maxAction;
 
-/// 配置模版, 默认为支持蜂窝网络和后台下载, 可进行更多自定义配置
+/// 配置模版, 后台下载, 默认为支持蜂窝网络, 可进行更多自定义配置
 @property (nonatomic, strong, readonly) NSURLSessionConfiguration *templateBackgroundConfiguration;
+
+/// 后台下载标识符
+@property (nonatomic, strong, readonly) NSString *backgroundSessionIdentifier;
+
+/// 系统后台下载回调设置, -[AppDelegate application:handleEventsForBackgroundURLSession:completionHandler] 中使用
+@property (nonatomic, strong, nullable) void(^completionHandler)(void);
 
 + (instancetype)configure;
 

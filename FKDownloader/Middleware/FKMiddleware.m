@@ -30,12 +30,12 @@
 
 - (void)registeRequestMiddleware:(id<FKRequestMiddlewareProtocol>)middleware {
     [self.requestMiddlewares addObject:middleware];
-    [FKLogger info:@"注册请求中间件"];
+    [FKLogger debug:@"%@\n注册请求中间件", middleware];
 }
 
 - (void)registeResponseMiddleware:(id<FKResponseMiddlewareProtocol>)middleware {
     [self.responseMiddlewares addObject:middleware];
-    [FKLogger info:@"注册响应中间件"];
+    [FKLogger debug:@"%@\n注册响应中间件", middleware];
 }
 
 - (void)processRequest:(NSMutableURLRequest *)request complete:(void (^)(NSMutableURLRequest *request))complete {

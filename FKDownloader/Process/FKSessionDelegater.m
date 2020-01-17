@@ -8,8 +8,13 @@
 
 #import "FKSessionDelegater.h"
 
+#import "FKCommonHeader.h"
 #import "FKEngine.h"
 #import "FKObserver.h"
+#import "FKCache.h"
+#import "FKCacheModel.h"
+#import "FKFileManager.h"
+#import "FKConfigure.h"
 
 @implementation FKSessionDelegater
 
@@ -55,7 +60,12 @@
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
-    NSLog(@"事件完成");
+    if ([FKConfigure configure].completionHandler) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [FKConfigure configure].completionHandler();
+        });
+        [FKConfigure configure].completionHandler = nil;
+    }
 }
 
 
@@ -93,9 +103,28 @@
                            didCompleteWithError:(nullable NSError *)error {
     
     if (error) {
-        NSLog(@"didCompleteWithError: %@", error);
-    } else {
-        NSLog(@"didComplete");
+        // 区分错误状态
+        NSString *requestID = task.taskDescription;
+        FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
+        NSInteger code = error.code;
+        NSDictionary *errorUserInfo = error.userInfo;
+        if (code == NSURLErrorCancelled) {
+            if ([errorUserInfo.allKeys containsObject:@"NSURLSessionDownloadTaskResumeData"]) {
+                // 下载任务进行带有恢复数据的暂停
+                NSData *resumeData = [errorUserInfo objectForKey:@"NSURLSessionDownloadTaskResumeData"];
+                info.resumeData = resumeData;
+                info.state = FKStateSuspend;
+            } else {
+                // 普通取消或不支持断点下载的链接
+                info.state = FKStateCancel;
+            }
+        } else {
+            // 其他错误, 如网路未连接, 超时, 返回数据错误等
+            info.state = FKStateError;
+            info.error = error;
+        }
+        [[FKCache cache] updateRequestWithModel:info];
+        [[FKFileManager manager] updateRequestFileWithRequest:info];
     }
 }
 

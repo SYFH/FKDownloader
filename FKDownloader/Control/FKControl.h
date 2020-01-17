@@ -7,7 +7,15 @@
 //
 
 /**
- 负责控制任务状态, 对外接口
+ 负责控制任务状态, 对外接口.
+ 状态变化对应:
+ prepare -> idel
+ idel -> action
+ action -> suspend/cancel
+ suspend -> action/cancel
+ cancel -> idel
+ error -> idel
+ complete -> .
  */
 
 #import <Foundation/Foundation.h>
@@ -22,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param url 请求链接
 + (FKState)stateWithURL:(NSString *)url;
 
-/// 激活已取消任务, 只对 cancel 状态任务起作用
+/// 激活任务, 对 cancel/error 状态任务起作用
 /// @param url 请求链接
 + (void)actionRequestWithURL:(NSString *)url;
 

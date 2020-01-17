@@ -53,9 +53,14 @@
 
 - (NSURLSessionConfiguration *)templateBackgroundConfiguration {
     if (!_templateBackgroundConfiguration) {
-        _templateBackgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"com.fk.downloader.background.session.config"];
+        _templateBackgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[self backgroundSessionIdentifier]];
+        _templateBackgroundConfiguration.allowsCellularAccess = YES;
     }
     return _templateBackgroundConfiguration;
+}
+
+- (NSString *)backgroundSessionIdentifier {
+    return @"com.fk.downloader.background.session";
 }
 
 @end

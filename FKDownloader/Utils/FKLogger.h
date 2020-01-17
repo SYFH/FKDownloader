@@ -8,11 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
+@class FKCacheRequestModel;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FKLogger : NSObject
 
-+ (void)info:(NSString *)info, ... NS_FORMAT_FUNCTION(1,2);
+/// 输出调试日志
+/// @param debug 内容
++ (void)debug:(NSString *)debug, ... NS_FORMAT_FUNCTION(1,2);
+
++ (NSString *)downloadTaskDebugInfo:(NSURLSessionDownloadTask *)downloadTask;
++ (NSString *)requestCacheModelDebugInfo:(FKCacheRequestModel *)requestModel;
 
 @end
 

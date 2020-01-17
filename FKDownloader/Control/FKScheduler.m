@@ -35,40 +35,40 @@
 - (void)prepareRequest:(FKCacheRequestModel *)request {
     // 检查是否已存在请求
     BOOL isExist = [[FKCache cache] existRequestWithURL:request.url];
-    if (isExist) { [FKLogger info:@"请求已存在: %@", request.url]; return; }
+    if (isExist) { [FKLogger debug:@"%@\n请求已存在", request.url]; return; }
     
     // 检查本地是否存在请求信息
     if ([[FKFileManager manager] existLocalRequestWithRequest:request]) {
         // 当添加的任务不在缓存表中, 但本地信息文件存在, 则重新添加到缓存表中, 不进行重复下载
         FKCacheRequestModel *localRequest = [[FKFileManager manager] loadLocalRequestWithRequestID:request.requestID];
         [[FKCache cache] addRequestWithModel:localRequest];
-        [FKLogger info:@"请求文件已在本地存在, 直接添加到缓存队列"];
+        [FKLogger debug:@"%@\n请求文件已在本地存在, 直接添加到缓存队列", [FKLogger requestCacheModelDebugInfo:localRequest]];
     } else {
         // 创建任务相关文件与文件夹
         [[FKFileManager manager] createRequestFinderWithRequestID:request.requestID];
         [[FKFileManager manager] createRequestFileWithRequest:request];
-        [FKLogger info:@"创建请求相关文件夹和文件"];
+        [FKLogger debug:@"%@\n创建请求相关文件夹和文件", [FKLogger requestCacheModelDebugInfo:request]];
         
         // 添加到缓存表
         request.state = FKStateIdel;
         [[FKCache cache] addRequestWithModel:request];
         [[FKFileManager manager] updateRequestFileWithRequest:request];
-        [FKLogger info:@"prepare -> idel, 添加到缓存列表: %@", request];
+        [FKLogger debug:@"%@\nprepare -> idel, 添加到缓存列表", [FKLogger requestCacheModelDebugInfo:request]];
     }
     
     // 保存唯一编号到磁盘
     [[FKFileManager manager] saveSingleNumber];
-    [FKLogger info:@"保存唯一编号"];
+    [FKLogger debug:@"保存唯一编号"];
 }
 
 - (void)actionRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (info.state == FKStateCancel) {
+    if (info.state == FKStateCancel || info.state == FKStateError) {
         info.state = FKStateIdel;
         [[FKFileManager manager] updateRequestFileWithRequest:info];
         [[FKCache cache] updateRequestWithModel:info];
-        [FKLogger info:@"cancel -> idel, 更新本地缓存"];
+        [FKLogger debug:@"%@\ncancel -> idel, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }
 }
 
@@ -78,13 +78,7 @@
     if (info.state == FKStateAction) {
         NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
         [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
-            if (resumeData) {
-                info.resumeData = resumeData;
-                info.state = FKStateSuspend;
-                [[FKFileManager manager] updateRequestFileWithRequest:info];
-                [[FKCache cache] updateRequestWithModel:info];
-                [FKLogger info:@"action -> suspend, 更新本地缓存"];
-            }
+            // 此处不做处理, 统一在代理中处理所有错误
         }];
         [[FKObserver observer] removeDownloadTask:downloadTask];
     }
@@ -105,7 +99,7 @@
             info.state = FKStateAction;
             [[FKFileManager manager] updateRequestFileWithRequest:info];
             [[FKCache cache] updateRequestWithModel:info];
-            [FKLogger info:@"suspend -> action, 更新本地缓存"];
+            [FKLogger debug:@"%@\nsuspend -> action, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
         }
     }
 }
@@ -123,7 +117,7 @@
         info.state = FKStateCancel;
         [[FKFileManager manager] updateRequestFileWithRequest:info];
         [[FKCache cache] updateRequestWithModel:info];
-        [FKLogger info:@"action -> cancen, 更新本地缓存"];
+        [FKLogger debug:@"%@\naction -> cancen, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }
 }
 

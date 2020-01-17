@@ -69,13 +69,13 @@
                    forKeyPath:@"countOfBytesReceived"
                       options:NSKeyValueObservingOptionNew
                       context:nil]; // 已接收字节
-    [FKLogger info:@"监听下载任务属性: countOfBytesReceived"];
+    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"监听属性: countOfBytesReceived"];
     
     [downloadTask addObserver:self
                    forKeyPath:@"countOfBytesExpectedToReceive"
                       options:NSKeyValueObservingOptionNew
                       context:nil]; // 总大小
-    [FKLogger info:@"监听下载任务属性: countOfBytesExpectedToReceive"];
+    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"监听属性: countOfBytesExpectedToReceive"];
 }
 
 - (void)observerCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
@@ -84,7 +84,7 @@
     info.countOfBytesReceived = 0;
     info.countOfBytesExpectedToReceive = 0;
     [self.infoMap setObject:info forKey:downloadTask.taskDescription];
-    [FKLogger info:@"添加监听缓存"];
+    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"添加监听缓存"];
 }
 
 - (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
@@ -94,12 +94,12 @@
     [downloadTask removeObserver:self
                       forKeyPath:@"countOfBytesReceived"
                          context:nil];
-    [FKLogger info:@"移除监听下载任务属性: countOfBytesReceived"];
+    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"移除监听属性: countOfBytesReceived"];
     
     [downloadTask removeObserver:self
                       forKeyPath:@"countOfBytesExpectedToReceive"
                          context:nil];
-    [FKLogger info:@"移除监听下载任务属性: countOfBytesExpectedToReceive"];
+    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"移除监听属性: countOfBytesExpectedToReceive"];
 }
 
 - (void)removeCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
@@ -119,35 +119,35 @@
             [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
         }
     }
-    [FKLogger info:@"删除监听缓存"];
+    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"删除监听缓存"];
 }
 
 - (void)removeCacheProgressWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
     FKObserverModel *info = [self.infoMap objectForKey:downloadTask.taskDescription];
     info.countOfBytesReceived = 0;
     [self.infoMap setObject:info forKey:downloadTask.taskDescription];
-    [FKLogger info:@"请求任务缓存的进度数据"];
+    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"删除任务缓存的进度数据"];
 }
 
 - (void)addBlock:(MessagerInfoBlock)block requestID:(NSString *)requestID {
     if (![[FKCache cache] existRequestWithRequestID:requestID]) {
-        [FKLogger info:@"任务不存在, 不添加监听缓存"];
+        [FKLogger debug:@"%@\n%@", requestID, @"任务不存在, 不添加监听缓存"];
         return;
     }
     
     if ([[FKCache cache] stateRequestWithRequestID:requestID] == FKStateComplete) {
-        [FKLogger info:@"任务已完成, 不添加监听缓存"];
+        [FKLogger debug:@"%@\n%@", requestID, @"任务已完成, 不添加监听缓存"];
         return;
     }
     
     [self.blockMap setObject:block forKey:requestID];
-    [FKLogger info:@"添加信息回调到监听缓存"];
+    [FKLogger debug:@"%@\n%@", requestID, @"添加信息回调到监听缓存"];
     
     FKObserverModel *model = [self.infoMap objectForKey:requestID];
     block(model.countOfBytesReceived,
           model.countOfBytesExpectedToReceive,
           [[FKCache cache] stateRequestWithRequestID:requestID]);
-    [FKLogger info:@"添加信息回调时进行快速响应"];
+    [FKLogger debug:@"%@\n%@", requestID, @"添加信息回调时进行快速响应"];
 }
 
 - (void)addBarrel:(NSString *)barrel urls:(NSArray<NSString *> *)urls {
@@ -155,7 +155,7 @@
     for (NSString *url in urls) {
         [self.barrelIndexMap setObject:barrel forKey:url];
     }
-    [FKLogger info:@"添加任务集合: %@ 到监听缓存", barrel];
+    [FKLogger debug:@"添加任务集合: %@ 到监听缓存", barrel];
 }
 
 - (void)removeBarrel:(NSString *)barrel {
@@ -165,12 +165,12 @@
     }
     [self.barrelBlockMap removeObjectForKey:barrel];
     [self.barrelMap removeObjectForKey:barrel];
-    [FKLogger info:@"从监听缓存移除任务集合: %@", barrel];
+    [FKLogger debug:@"从监听缓存移除任务集合: %@", barrel];
 }
 
 - (void)addBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
     [self.barrelBlockMap setObject:info forKey:barrel];
-    [FKLogger info:@"添加任务集合: %@ 信息回调到监听缓存", barrel];
+    [FKLogger debug:@"添加任务集合: %@ 信息回调到监听缓存", barrel];
 }
 
 - (void)execRequestInfoBlock {

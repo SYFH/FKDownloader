@@ -54,6 +54,9 @@
         
         // 配置计时器
         [self configtureTimer];
+        
+        // 配置通知监听
+        [self configtureNotification];
     }
     return self;
 }
@@ -68,7 +71,7 @@
 - (void)configtureSession {
     NSURLSessionConfiguration *backgroundConfiguration = [[FKConfigure configure].templateBackgroundConfiguration copy];
     self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:[FKSessionDelegater delegater] delegateQueue:nil];
-    [FKLogger info:@"根据配置生成后台下载 Session"];
+    [FKLogger debug:@"根据配置生成后台下载 Session"];
 }
 
 - (void)configtureTimer {
@@ -82,19 +85,53 @@
     dispatch_resume(self.timer);
 }
 
+- (void)configtureNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationdidFinishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
+}
+
+- (void)applicationdidFinishLaunching:(NSNotification *)notify {
+    [self configtureSession];
+    [self loadSessionRequest];
+}
+
 - (void)loadSessionRequest {
     // 加载 Session 中的任务
     [self.backgroundSession getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> *dataTasks, NSArray<NSURLSessionUploadTask *> *uploadTasks, NSArray<NSURLSessionDownloadTask *> *downloadTasks) {
         
-        // 重新监听下载进度
         for (NSURLSessionDownloadTask *task in downloadTasks) {
-            NSLog(@"%@", task.taskDescription);
+            // 获取本地请求缓存
+            NSString *requestID = task.taskDescription;
+            FKCacheRequestModel *info = [[FKFileManager manager] loadLocalRequestWithRequestID:requestID];
+            info.state = [self stateTransform:task.state];
+            
+            // 更新缓存
+            [[FKCache cache] addRequestWithModel:info];
+            [[FKCache cache] addDownloadTask:task];
+            [[FKFileManager manager] updateRequestFileWithRequest:info];
+            
+            // 添加监听
+            [[FKObserver observer] observerDownloadTask:task];
+            [[FKObserver observer] observerCacheWithDownloadTask:task];
         }
     }];
 }
 
+- (FKState)stateTransform:(NSURLSessionTaskState)state {
+    switch (state) {
+        case NSURLSessionTaskStateRunning:
+            return FKStateAction;
+        case NSURLSessionTaskStateSuspended:
+            return FKStateSuspend;
+        case NSURLSessionTaskStateCanceling:
+            return FKStateCancel;
+        case NSURLSessionTaskStateCompleted:
+            return FKStateComplete;
+    }
+    return FKStateIdel;
+}
+
 - (void)timerAction {
-    [FKLogger info:@"定时器触发"];
+    [FKLogger debug:@"定时器触发"];
     // 任务: 执行下一个请求
     [self actionNextRequest];
     
@@ -114,14 +151,14 @@
             FKCacheRequestModel *requestModel = [[FKCache cache] firstIdelRequest];
             if (!requestModel) {
                 self.processingNextRequest = NO;
-                [FKLogger info:@"没有待执行任务"];
+                [FKLogger debug:@"没有待执行任务"];
                 return;
             }
             
             // 检查请求是否已存在下载任务
             if ([[FKCache cache] existDownloadTaskWithRequestID:requestModel.requestID]) {
                 self.processingNextRequest = NO;
-                [FKLogger info:@"此请求已存在下载任务: %@", requestModel.url];
+                [FKLogger debug:@"%@\n此请求已存在下载任务", requestModel.url];
                 return;
             }
             
@@ -132,31 +169,30 @@
                     request = [middleware processRequest:request];
                 }
             }
-            [FKLogger info:@"请求中间件处理"];
+            [FKLogger debug:@"%@\n%@\n对请求进行中间件处理", requestModel.request, request];
             
             // 执行请求, 添加释放时调用方法以删除 KVO
             NSURLSessionDownloadTask *downloadTask = [self.backgroundSession downloadTaskWithRequest:request];
             downloadTask.taskDescription = [NSString stringWithFormat:@"%@", requestModel.requestID];
             [downloadTask resume];
-            [FKLogger info:@"根据请求创建下载任务"];
+            [FKLogger debug:@"%@\n根据请求创建下载任务", [FKLogger downloadTaskDebugInfo:downloadTask]];
             
             // 更新请求缓存
             requestModel.state = FKStateAction;
             [[FKCache cache] updateRequestWithModel:requestModel];
-            [FKLogger info:@"idel -> action, 更新本地请求缓存"];
+            [FKLogger debug:@"%@\nidel -> action, 更新本地请求缓存", [FKLogger requestCacheModelDebugInfo:requestModel]];
             
             // 缓存请求任务
             [[FKCache cache] addDownloadTask:downloadTask];
-            [FKLogger info:@"保存下载任务"];
+            [FKLogger debug:@"%@\n保存下载任务", [FKLogger requestCacheModelDebugInfo:requestModel]];
             
             // 添加 KVO
             [[FKObserver observer] observerDownloadTask:downloadTask];
             [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
-            [FKLogger info:@"监听下载任务信息"];
             
             self.processingNextRequest = NO;
         } else {
-            [FKLogger info:@"执行任务数量已到达上限"];
+            [FKLogger debug:@"执行任务数量已到达上限"];
             self.processingNextRequest = NO;
         }
     }];
@@ -177,23 +213,22 @@
     }
     NSString *fileName = [NSString stringWithFormat:@"%@%@", downloadTask.taskDescription, extension];
     [[FKFileManager manager] moveFile:location toRequestFinder:downloadTask.taskDescription fileName:fileName];
-    [FKLogger info:@"移动缓存文件: %@ 到请求文件: %@", location.absoluteURL, fileName];
+    [FKLogger debug:@"%@\n移动缓存文件: %@ 到请求文件: %@", [FKLogger downloadTaskDebugInfo:downloadTask], location.absoluteURL, fileName];
     
     // 移除监听
     [[FKObserver observer] removeDownloadTask:downloadTask];
     [[FKObserver observer] removeCacheWithDownloadTask:downloadTask];
-    [FKLogger info:@"移除请求监听"];
     
     // 更新本地请求缓存
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:downloadTask.taskDescription];
     info.state = FKStateComplete;
     info.extension = extension;
     [[FKFileManager manager] updateRequestFileWithRequest:info];
-    [FKLogger info:@"action -> complete, 更新本地任务信息"];
+    [FKLogger debug:@"%@\naction -> complete, 更新本地任务信息", [FKLogger requestCacheModelDebugInfo:info]];
     
     // 移除缓存任务进行释放
     [[FKCache cache] removeDownloadTask:downloadTask];
-    [FKLogger info:@"清除任务缓存"];
+    [FKLogger debug:@"%@\n清除任务缓存", [FKLogger downloadTaskDebugInfo:downloadTask]];
     
     // 处理响应
     for (id<FKResponseMiddlewareProtocol> middleware in [FKMiddleware shared].responseMiddlewareArray) {
@@ -201,7 +236,7 @@
             [middleware processResponse:downloadTask.response];
         }
     }
-    [FKLogger info:@"响应中间件处理"];
+    [FKLogger debug:@"对响应进行中间件处理"];
 }
 
 - (void)actionRequestWithURL:(NSString *)url {

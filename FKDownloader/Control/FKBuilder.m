@@ -47,7 +47,7 @@
         
         // 创建请求编号
         self.requestSingleID = [NSString stringWithFormat:@"%09llu_%@", FKSingleNumber.shared.number, self.urlHash];
-        [FKLogger info:@"创建唯一请求编号: %@", self.requestSingleID];
+        [FKLogger debug:@"%@\n创建唯一请求编号", self.requestSingleID];
     }
     return self;
 }
@@ -62,7 +62,7 @@
     model.requestSingleID = self.requestSingleID;
     model.url = self.normalURL;
     model.request = [self copy];
-    [FKLogger info:@"创建请求缓存: %@", model];
+    [FKLogger debug:@"%@\n%@\n%@\n创建请求缓存", model.requestID, model.requestSingleID, model.url];
     
     // 进行预处理
     [[FKScheduler shared] prepareRequest:model];
