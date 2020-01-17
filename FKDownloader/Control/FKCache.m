@@ -59,13 +59,17 @@
 }
 
 - (void)addRequestWithModel:(FKCacheRequestModel *)model {
-    [self.requestMap setObject:model forKey:model.requestSingleID];
-    [self.requestIndexMap setObject:model.requestSingleID forKey:model.requestID];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.requestMap setObject:model forKey:model.requestSingleID];
+        [self.requestIndexMap setObject:model.requestSingleID forKey:model.requestID];
+    }];
 }
 
 - (void)updateRequestWithModel:(FKCacheRequestModel *)model {
-    NSString *requestSingleID = [self.requestIndexMap objectForKey:model.requestID];
-    [self.requestMap setObject:model forKey:requestSingleID];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:model.requestID];
+        [self.requestMap setObject:model forKey:requestSingleID];
+    }];
 }
 
 - (NSUInteger)actionRequestCount {
@@ -102,21 +106,27 @@
 }
 
 - (void)addDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    NSString *requestID = downloadTask.taskDescription;
-    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
-    [self.taskMap setObject:downloadTask forKey:requestSingleID];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        NSString *requestID = downloadTask.taskDescription;
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+        [self.taskMap setObject:downloadTask forKey:requestSingleID];
+    }];
 }
 
 - (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    NSString *requestID = downloadTask.taskDescription;
-    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
-    [self.taskMap removeObjectForKey:requestSingleID];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        NSString *requestID = downloadTask.taskDescription;
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+        [self.taskMap removeObjectForKey:requestSingleID];
+    }];
 }
 
 - (void)repleaceDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    NSString *requestID = downloadTask.taskDescription;
-    NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
-    [self.taskMap setObject:downloadTask forKey:requestSingleID];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        NSString *requestID = downloadTask.taskDescription;
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+        [self.taskMap setObject:downloadTask forKey:requestSingleID];
+    }];
 }
 
 - (BOOL)existDownloadTaskWithRequestID:(NSString *)requestID {

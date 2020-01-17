@@ -103,29 +103,33 @@
 }
 
 - (void)removeCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    [self.infoMap removeObjectForKey:downloadTask.taskDescription];
-    [self.blockMap removeObjectForKey:downloadTask.taskDescription];
-    
-    NSString *barrel = [self.barrelIndexMap objectForKey:downloadTask.taskDescription];
-    if (barrel.length) {// 有所属集合
-        NSMutableArray<NSString *> *urls = [NSMutableArray arrayWithArray:[self.barrelMap objectForKey:barrel]];
-        [urls removeObject:downloadTask.taskDescription];
-        if (urls.count == 0) {
-            [self.barrelMap removeObjectForKey:barrel];
-            [self.barrelBlockMap removeObjectForKey:barrel];
-            [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
-        } else {
-            [self.barrelMap setObject:[NSArray arrayWithArray:urls] forKey:barrel];
-            [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.infoMap removeObjectForKey:downloadTask.taskDescription];
+        [self.blockMap removeObjectForKey:downloadTask.taskDescription];
+        
+        NSString *barrel = [self.barrelIndexMap objectForKey:downloadTask.taskDescription];
+        if (barrel.length) {// 有所属集合
+            NSMutableArray<NSString *> *urls = [NSMutableArray arrayWithArray:[self.barrelMap objectForKey:barrel]];
+            [urls removeObject:downloadTask.taskDescription];
+            if (urls.count == 0) {
+                [self.barrelMap removeObjectForKey:barrel];
+                [self.barrelBlockMap removeObjectForKey:barrel];
+                [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
+            } else {
+                [self.barrelMap setObject:[NSArray arrayWithArray:urls] forKey:barrel];
+                [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
+            }
         }
-    }
+    }];
     [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"删除监听缓存"];
 }
 
 - (void)removeCacheProgressWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    FKObserverModel *info = [self.infoMap objectForKey:downloadTask.taskDescription];
-    info.countOfBytesReceived = 0;
-    [self.infoMap setObject:info forKey:downloadTask.taskDescription];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        FKObserverModel *info = [self.infoMap objectForKey:downloadTask.taskDescription];
+        info.countOfBytesReceived = 0;
+        [self.infoMap setObject:info forKey:downloadTask.taskDescription];
+    }];
     [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"删除任务缓存的进度数据"];
 }
 
@@ -140,7 +144,9 @@
         return;
     }
     
-    [self.blockMap setObject:block forKey:requestID];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.blockMap setObject:block forKey:requestID];
+    }];
     [FKLogger debug:@"%@\n%@", requestID, @"添加信息回调到监听缓存"];
     
     FKObserverModel *model = [self.infoMap objectForKey:requestID];
@@ -151,25 +157,31 @@
 }
 
 - (void)addBarrel:(NSString *)barrel urls:(NSArray<NSString *> *)urls {
-    [self.barrelMap setObject:urls forKey:barrel];
-    for (NSString *url in urls) {
-        [self.barrelIndexMap setObject:barrel forKey:url];
-    }
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.barrelMap setObject:urls forKey:barrel];
+        for (NSString *url in urls) {
+            [self.barrelIndexMap setObject:barrel forKey:url];
+        }
+    }];
     [FKLogger debug:@"添加任务集合: %@ 到监听缓存", barrel];
 }
 
 - (void)removeBarrel:(NSString *)barrel {
-    NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
-    for (NSString *requestID in urls) {
-        [self.barrelIndexMap removeObjectForKey:requestID];
-    }
-    [self.barrelBlockMap removeObjectForKey:barrel];
-    [self.barrelMap removeObjectForKey:barrel];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
+        for (NSString *requestID in urls) {
+            [self.barrelIndexMap removeObjectForKey:requestID];
+        }
+        [self.barrelBlockMap removeObjectForKey:barrel];
+        [self.barrelMap removeObjectForKey:barrel];
+    }];
     [FKLogger debug:@"从监听缓存移除任务集合: %@", barrel];
 }
 
 - (void)addBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
-    [self.barrelBlockMap setObject:info forKey:barrel];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.barrelBlockMap setObject:info forKey:barrel];
+    }];
     [FKLogger debug:@"添加任务集合: %@ 信息回调到监听缓存", barrel];
 }
 
