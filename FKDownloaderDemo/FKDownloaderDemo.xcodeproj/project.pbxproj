@@ -16,6 +16,8 @@
 		3D66171E23B75BE8008EBE8A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D66171D23B75BE8008EBE8A /* Assets.xcassets */; };
 		3D66172123B75BE8008EBE8A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D66171F23B75BE8008EBE8A /* LaunchScreen.storyboard */; };
 		3D66172423B75BE8008EBE8A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66172323B75BE8008EBE8A /* main.m */; };
+		3D7842FC23D3F092004537AC /* ResourceListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7842FB23D3F092004537AC /* ResourceListController.m */; };
+		3D7842FF23D3F09D004537AC /* DownloadManageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7842FE23D3F09D004537AC /* DownloadManageController.m */; };
 		A6FB7529D2327BDAFC785FD0 /* Pods_FKDownloaderDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 776E125DA45087D7F9E095D9 /* Pods_FKDownloaderDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +39,10 @@
 		3D66172023B75BE8008EBE8A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3D66172223B75BE8008EBE8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D66172323B75BE8008EBE8A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		3D7842FA23D3F092004537AC /* ResourceListController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceListController.h; sourceTree = "<group>"; };
+		3D7842FB23D3F092004537AC /* ResourceListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ResourceListController.m; sourceTree = "<group>"; };
+		3D7842FD23D3F09D004537AC /* DownloadManageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadManageController.h; sourceTree = "<group>"; };
+		3D7842FE23D3F09D004537AC /* DownloadManageController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadManageController.m; sourceTree = "<group>"; };
 		776E125DA45087D7F9E095D9 /* Pods_FKDownloaderDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FKDownloaderDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7ADFB7B7079998919B00875A /* Pods-FKDownloaderDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKDownloaderDemo.debug.xcconfig"; path = "Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -80,10 +86,8 @@
 				3D66171523B75BE6008EBE8A /* SceneDelegate.m */,
 				3D66171723B75BE6008EBE8A /* ViewController.h */,
 				3D66171823B75BE6008EBE8A /* ViewController.m */,
-				3D63540C23CEB38D00F2A4B3 /* CustomRequestMiddleware.h */,
-				3D63540D23CEB38D00F2A4B3 /* CustomRequestMiddleware.m */,
-				3D63540F23CEB3A200F2A4B3 /* CustomResponseMiddleware.h */,
-				3D63541023CEB3A200F2A4B3 /* CustomResponseMiddleware.m */,
+				3D78430123D3F0B6004537AC /* Controller */,
+				3D78430023D3F0A5004537AC /* Middleware */,
 				3D66171A23B75BE6008EBE8A /* Main.storyboard */,
 				3D66171D23B75BE8008EBE8A /* Assets.xcassets */,
 				3D66171F23B75BE8008EBE8A /* LaunchScreen.storyboard */,
@@ -91,6 +95,28 @@
 				3D66172323B75BE8008EBE8A /* main.m */,
 			);
 			path = FKDownloaderDemo;
+			sourceTree = "<group>";
+		};
+		3D78430023D3F0A5004537AC /* Middleware */ = {
+			isa = PBXGroup;
+			children = (
+				3D63540C23CEB38D00F2A4B3 /* CustomRequestMiddleware.h */,
+				3D63540D23CEB38D00F2A4B3 /* CustomRequestMiddleware.m */,
+				3D63540F23CEB3A200F2A4B3 /* CustomResponseMiddleware.h */,
+				3D63541023CEB3A200F2A4B3 /* CustomResponseMiddleware.m */,
+			);
+			path = Middleware;
+			sourceTree = "<group>";
+		};
+		3D78430123D3F0B6004537AC /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				3D7842FA23D3F092004537AC /* ResourceListController.h */,
+				3D7842FB23D3F092004537AC /* ResourceListController.m */,
+				3D7842FD23D3F09D004537AC /* DownloadManageController.h */,
+				3D7842FE23D3F09D004537AC /* DownloadManageController.m */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 		5BEE627D9BF1BB4A36459E24 /* Pods */ = {
@@ -121,6 +147,7 @@
 				3D66170A23B75BE6008EBE8A /* Sources */,
 				3D66170B23B75BE6008EBE8A /* Frameworks */,
 				3D66170C23B75BE6008EBE8A /* Resources */,
+				86EE9F04592C197F8693FA17 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -199,6 +226,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		86EE9F04592C197F8693FA17 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -208,6 +252,8 @@
 			files = (
 				3D63540E23CEB38D00F2A4B3 /* CustomRequestMiddleware.m in Sources */,
 				3D63541123CEB3A200F2A4B3 /* CustomResponseMiddleware.m in Sources */,
+				3D7842FF23D3F09D004537AC /* DownloadManageController.m in Sources */,
+				3D7842FC23D3F092004537AC /* ResourceListController.m in Sources */,
 				3D66171923B75BE6008EBE8A /* ViewController.m in Sources */,
 				3D66171323B75BE6008EBE8A /* AppDelegate.m in Sources */,
 				3D66172423B75BE8008EBE8A /* main.m in Sources */,

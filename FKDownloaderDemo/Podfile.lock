@@ -1,8 +1,14 @@
 PODS:
   - FKDownloader (0.1.5)
+  - Masonry (1.1.0)
 
 DEPENDENCIES:
   - FKDownloader (from `../`)
+  - Masonry
+
+SPEC REPOS:
+  trunk:
+    - Masonry
 
 EXTERNAL SOURCES:
   FKDownloader:
@@ -10,7 +16,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FKDownloader: c585ec78d4b47b7f5a75ce9b20c4f98d972a1687
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
 
-PODFILE CHECKSUM: 2ddd6bede39c2accff7fe76b53864aac8c8051c0
+PODFILE CHECKSUM: 3533a6f5b18bdda4b071df7105c53d92d9fe41b6
 
 COCOAPODS: 1.8.4

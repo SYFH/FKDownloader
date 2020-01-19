@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="K0R-aV-cGP">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -16,69 +16,57 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="状态" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xpn-gI-swB">
-                                <rect key="frame" x="20" y="144" width="374" height="20.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pB4-ab-h4C">
-                                <rect key="frame" x="192" y="284" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="开始"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="owP-Xd-zyD">
+                                <rect key="frame" x="20" y="288" width="374" height="30"/>
+                                <state key="normal" title="资源列表"/>
                                 <connections>
-                                    <action selector="action:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uBO-TB-JUU"/>
+                                    <action selector="resourceListDidTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zej-5P-mOX"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lHZ-yZ-Rad">
-                                <rect key="frame" x="192" y="322" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="暂停"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nCC-op-4A2">
+                                <rect key="frame" x="20" y="338" width="374" height="30"/>
+                                <state key="normal" title="下载管理"/>
                                 <connections>
-                                    <action selector="suspend:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8XG-cq-IKB"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xc8-B0-2ld">
-                                <rect key="frame" x="192" y="360" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="继续"/>
-                                <connections>
-                                    <action selector="resume:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KeV-t5-zDa"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Tw-3j-6eZ">
-                                <rect key="frame" x="192" y="398" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="取消"/>
-                                <connections>
-                                    <action selector="cancel:" destination="BYZ-38-t0r" eventType="touchUpInside" id="QbH-gJ-puQ"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nnt-lV-d2w">
-                                <rect key="frame" x="192" y="246" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="添加"/>
-                                <connections>
-                                    <action selector="prepare:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zFo-Kw-zST"/>
+                                    <action selector="downloadManageDidTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9FX-6t-ADj"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="Xpn-gI-swB" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="09b-KY-tk5"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Xpn-gI-swB" secondAttribute="trailing" constant="20" id="5a4-Rb-uyb"/>
-                            <constraint firstItem="Xpn-gI-swB" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Fp3-Q6-qDW"/>
-                            <constraint firstItem="Xpn-gI-swB" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="100" id="kQz-bc-qCP"/>
+                            <constraint firstItem="nCC-op-4A2" firstAttribute="top" secondItem="owP-Xd-zyD" secondAttribute="bottom" constant="20" id="CKx-YR-UO3"/>
+                            <constraint firstItem="owP-Xd-zyD" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="200" id="MnU-TY-Z0I"/>
+                            <constraint firstItem="owP-Xd-zyD" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="SCx-BU-Xlm"/>
+                            <constraint firstItem="nCC-op-4A2" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="fNS-wv-GPW"/>
+                            <constraint firstItem="owP-Xd-zyD" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="jch-B8-JDy"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="owP-Xd-zyD" secondAttribute="trailing" constant="20" id="syN-eW-FQH"/>
+                            <constraint firstItem="nCC-op-4A2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="tgC-1a-C6T"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="nCC-op-4A2" secondAttribute="trailing" constant="20" id="wWJ-Ng-SWT"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <connections>
-                        <outlet property="stateLabel" destination="Xpn-gI-swB" id="WVa-o8-TSs"/>
-                    </connections>
+                    <navigationItem key="navigationItem" id="OXi-1u-L7e"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="132" y="129"/>
+            <point key="canvasLocation" x="1042.0289855072465" y="128.57142857142856"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="9ob-qC-qaG">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="K0R-aV-cGP" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="x1q-Ue-laR">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="J6q-Sk-XkX"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3Lm-di-x6Y" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="131.8840579710145" y="128.57142857142856"/>
         </scene>
     </scenes>
 </document>

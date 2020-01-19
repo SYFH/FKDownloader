@@ -7,5 +7,6 @@ target 'FKDownloaderDemo' do
 
   # Pods for FKDownloaderDemo
   pod 'FKDownloader', :path => '../'
+  pod 'Masonry'
 
 end
