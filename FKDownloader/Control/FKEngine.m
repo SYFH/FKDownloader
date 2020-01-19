@@ -65,7 +65,7 @@
     self.ioQueue.maxConcurrentOperationCount = 1;
     self.messagerQueue.maxConcurrentOperationCount = 6;
     
-    self.timerQueue = dispatch_queue_create("com.fk.queue.cache.timer", DISPATCH_QUEUE_SERIAL);
+    self.timerQueue = dispatch_queue_create("com.fk.downloader.queue.timer", DISPATCH_QUEUE_SERIAL);
 }
 
 - (void)configtureSession {
@@ -131,7 +131,6 @@
 }
 
 - (void)timerAction {
-    [FKLogger debug:@"定时器触发"];
     // 任务: 执行下一个请求
     [self actionNextRequest];
     
@@ -140,62 +139,59 @@
 }
 
 - (void)actionNextRequest {
-    [self.ioQueue addOperationWithBlock:^{
-        if (self.isProcessingNextRequest) { return; }
+    if (self.isProcessingNextRequest) { return; }
+    
+    // 判断已执行任务数量是否到达上限
+    if ([[FKCache cache] actionRequestCount] < [FKConfigure configure].maxAction) {
+        self.processingNextRequest = YES;
         
-        // 判断已执行任务数量是否到达上限
-        if ([[FKCache cache] actionRequestCount] < [FKConfigure configure].maxAction) {
-            self.processingNextRequest = YES;
-            
-            // 拿到第一个待执行任务
-            FKCacheRequestModel *requestModel = [[FKCache cache] firstIdelRequest];
-            if (!requestModel) {
-                self.processingNextRequest = NO;
-                [FKLogger debug:@"没有待执行任务"];
-                return;
-            }
-            
-            // 检查请求是否已存在下载任务
-            if ([[FKCache cache] existDownloadTaskWithRequestID:requestModel.requestID]) {
-                self.processingNextRequest = NO;
-                [FKLogger debug:@"%@\n此请求已存在下载任务", requestModel.url];
-                return;
-            }
-            
-            // 处理请求
-            NSMutableURLRequest *request = requestModel.request;
-            for (id<FKRequestMiddlewareProtocol> middleware in [FKMiddleware shared].requestMiddlewareArray) {
-                if ([middleware respondsToSelector:@selector(processRequest:)]) {
-                    request = [middleware processRequest:request];
-                }
-            }
-            [FKLogger debug:@"%@\n%@\n对请求进行中间件处理", requestModel.request, request];
-            
-            // 执行请求, 添加释放时调用方法以删除 KVO
-            NSURLSessionDownloadTask *downloadTask = [self.backgroundSession downloadTaskWithRequest:request];
-            downloadTask.taskDescription = [NSString stringWithFormat:@"%@", requestModel.requestID];
-            [downloadTask resume];
-            [FKLogger debug:@"%@\n根据请求创建下载任务", [FKLogger downloadTaskDebugInfo:downloadTask]];
-            
-            // 更新请求缓存
-            requestModel.state = FKStateAction;
-            [[FKCache cache] updateRequestWithModel:requestModel];
-            [FKLogger debug:@"%@\nidel -> action, 更新本地请求缓存", [FKLogger requestCacheModelDebugInfo:requestModel]];
-            
-            // 缓存请求任务
-            [[FKCache cache] addDownloadTask:downloadTask];
-            [FKLogger debug:@"%@\n保存下载任务", [FKLogger requestCacheModelDebugInfo:requestModel]];
-            
-            // 添加 KVO
-            [[FKObserver observer] observerDownloadTask:downloadTask];
-            [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
-            
+        // 拿到第一个待执行任务
+        FKCacheRequestModel *requestModel = [[FKCache cache] firstIdelRequest];
+        if (!requestModel) {
             self.processingNextRequest = NO;
-        } else {
-            [FKLogger debug:@"执行任务数量已到达上限"];
-            self.processingNextRequest = NO;
+            return;
         }
-    }];
+        
+        // 检查请求是否已存在下载任务
+        if ([[FKCache cache] existDownloadTaskWithRequestID:requestModel.requestID]) {
+            self.processingNextRequest = NO;
+            [FKLogger debug:@"%@\n此请求已存在下载任务", requestModel.url];
+            return;
+        }
+        
+        // 处理请求
+        NSMutableURLRequest *request = requestModel.request;
+        for (id<FKRequestMiddlewareProtocol> middleware in [FKMiddleware shared].requestMiddlewareArray) {
+            if ([middleware respondsToSelector:@selector(processRequest:)]) {
+                request = [middleware processRequest:request];
+            }
+        }
+        [FKLogger debug:@"%@\n%@\n对请求进行中间件处理", requestModel.request, request];
+        
+        // 执行请求, 添加释放时调用方法以删除 KVO
+        NSURLSessionDownloadTask *downloadTask = [self.backgroundSession downloadTaskWithRequest:request];
+        downloadTask.taskDescription = [NSString stringWithFormat:@"%@", requestModel.requestID];
+        [downloadTask resume];
+        [FKLogger debug:@"%@\n根据请求创建下载任务", [FKLogger downloadTaskDebugInfo:downloadTask]];
+        
+        // 更新请求缓存
+        requestModel.state = FKStateAction;
+        [[FKCache cache] updateRequestWithModel:requestModel];
+        [FKLogger debug:@"%@\nidel -> action, 更新本地请求缓存", [FKLogger requestCacheModelDebugInfo:requestModel]];
+        
+        // 缓存请求任务
+        [[FKCache cache] addDownloadTask:downloadTask];
+        [FKLogger debug:@"%@\n保存下载任务", [FKLogger requestCacheModelDebugInfo:requestModel]];
+        
+        // 添加 KVO
+        [[FKObserver observer] observerDownloadTask:downloadTask];
+        [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
+        
+        self.processingNextRequest = NO;
+    } else {
+        [FKLogger debug:@"执行任务数量已到达上限"];
+        self.processingNextRequest = NO;
+    }
 }
 
 - (void)distributeRequestInfo {
