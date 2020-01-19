@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,6 +18,9 @@
 		3D66172423B75BE8008EBE8A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66172323B75BE8008EBE8A /* main.m */; };
 		3D7842FC23D3F092004537AC /* ResourceListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7842FB23D3F092004537AC /* ResourceListController.m */; };
 		3D7842FF23D3F09D004537AC /* DownloadManageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7842FE23D3F09D004537AC /* DownloadManageController.m */; };
+		3D78430423D4373A004537AC /* InfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D78430323D4373A004537AC /* InfoModel.m */; };
+		3D78430723D4440B004537AC /* DownloadURLManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D78430623D4440B004537AC /* DownloadURLManager.m */; };
+		3D78430D23D45069004537AC /* DownloadInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D78430C23D45069004537AC /* DownloadInfoCell.m */; };
 		A6FB7529D2327BDAFC785FD0 /* Pods_FKDownloaderDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 776E125DA45087D7F9E095D9 /* Pods_FKDownloaderDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +46,12 @@
 		3D7842FB23D3F092004537AC /* ResourceListController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ResourceListController.m; sourceTree = "<group>"; };
 		3D7842FD23D3F09D004537AC /* DownloadManageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadManageController.h; sourceTree = "<group>"; };
 		3D7842FE23D3F09D004537AC /* DownloadManageController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadManageController.m; sourceTree = "<group>"; };
+		3D78430223D4373A004537AC /* InfoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoModel.h; sourceTree = "<group>"; };
+		3D78430323D4373A004537AC /* InfoModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoModel.m; sourceTree = "<group>"; };
+		3D78430523D4440B004537AC /* DownloadURLManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadURLManager.h; sourceTree = "<group>"; };
+		3D78430623D4440B004537AC /* DownloadURLManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadURLManager.m; sourceTree = "<group>"; };
+		3D78430B23D45069004537AC /* DownloadInfoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadInfoCell.h; sourceTree = "<group>"; };
+		3D78430C23D45069004537AC /* DownloadInfoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadInfoCell.m; sourceTree = "<group>"; };
 		776E125DA45087D7F9E095D9 /* Pods_FKDownloaderDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FKDownloaderDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7ADFB7B7079998919B00875A /* Pods-FKDownloaderDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKDownloaderDemo.debug.xcconfig"; path = "Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +95,9 @@
 				3D66171523B75BE6008EBE8A /* SceneDelegate.m */,
 				3D66171723B75BE6008EBE8A /* ViewController.h */,
 				3D66171823B75BE6008EBE8A /* ViewController.m */,
+				3D78430A23D4504F004537AC /* Utils */,
+				3D78430923D4504B004537AC /* Model */,
+				3D78430823D45047004537AC /* View */,
 				3D78430123D3F0B6004537AC /* Controller */,
 				3D78430023D3F0A5004537AC /* Middleware */,
 				3D66171A23B75BE6008EBE8A /* Main.storyboard */,
@@ -117,6 +129,33 @@
 				3D7842FE23D3F09D004537AC /* DownloadManageController.m */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		3D78430823D45047004537AC /* View */ = {
+			isa = PBXGroup;
+			children = (
+				3D78430B23D45069004537AC /* DownloadInfoCell.h */,
+				3D78430C23D45069004537AC /* DownloadInfoCell.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		3D78430923D4504B004537AC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				3D78430223D4373A004537AC /* InfoModel.h */,
+				3D78430323D4373A004537AC /* InfoModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		3D78430A23D4504F004537AC /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				3D78430523D4440B004537AC /* DownloadURLManager.h */,
+				3D78430623D4440B004537AC /* DownloadURLManager.m */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		5BEE627D9BF1BB4A36459E24 /* Pods */ = {
@@ -251,6 +290,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D63540E23CEB38D00F2A4B3 /* CustomRequestMiddleware.m in Sources */,
+				3D78430723D4440B004537AC /* DownloadURLManager.m in Sources */,
 				3D63541123CEB3A200F2A4B3 /* CustomResponseMiddleware.m in Sources */,
 				3D7842FF23D3F09D004537AC /* DownloadManageController.m in Sources */,
 				3D7842FC23D3F092004537AC /* ResourceListController.m in Sources */,
@@ -258,6 +298,8 @@
 				3D66171323B75BE6008EBE8A /* AppDelegate.m in Sources */,
 				3D66172423B75BE8008EBE8A /* main.m in Sources */,
 				3D66171623B75BE6008EBE8A /* SceneDelegate.m in Sources */,
+				3D78430D23D45069004537AC /* DownloadInfoCell.m in Sources */,
+				3D78430423D4373A004537AC /* InfoModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
