@@ -1,7 +1,7 @@
 # FKDonwloader 
 
-[![Support](https://img.shields.io/badge/support-iOS%208%2B%20-blue.svg?style=flat-square)](https://www.apple.com/nl/ios/)
-[![Language](https://img.shields.io/badge/language-ObjC%7CSwift-blue.svg?style=flat-square)]()
+[![Support](https://img.shields.io/badge/support-iOS%209%2B%20-blue.svg?style=flat-square)](https://www.apple.com/nl/ios/)
+[![Language](https://img.shields.io/badge/language-ObjC-blue.svg?style=flat-square)]()
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat-square)](https://github.com/Carthage/Carthage)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/FKDownloader.svg?style=flat-square)](https://cocoapods.org/pods/FKDownloader)
 [![](https://img.shields.io/cocoapods/l/FKDownloader.svg?style=flat-square)](https://github.com/SYFH/FKDownloader/blob/master/LICENSE)
@@ -10,226 +10,186 @@
 
 # Features
 * [x] 后台下载
-* [x] 恢复所有后台任务和进度
-* [x] 自管理任务持久化
 * [x] 使用配置实例统一配置
-    * [x] 可配置是否为后台下载
-    * [x] 可配置是否允许蜂窝网络下载
-    * [x] 可配置自动开始/自动清理
-    * [x] 可配置并行任务数量
-    * [x] 可配置自定义保存/缓存/恢复目录
-    * [x] 可配置超时时间
-    * [x] 可配置是否进行文件校验
-* [x] 使用 NSProgress 管理任务进度
-* [x] 所有任务总进度
-* [x] 任务实时速度和预计剩余时间
-* [x] 文件校验, 支持 MD5/SHA1/SHA256/SHA512, 并对特大文件校验进行了内存优化
-* [x] 自定义文件名
+* [x] 实时获取任务进度、状态等信息
+* [x] 使用中间件自定义处理请求与响应
 * [x] 任务可添加多个 Tag, 并通过 Tag 进行分组
 * [x] 通过 Tag 获取组任务进度
-* [x] 状态与进度数据可通过代理/通知/Block任意获取
-* [x] 网络状态检测, 恢复网络时自动开始被中断的任务
 * [x] 没有使用任何第三方
-* [x] 自启动, 无需显式调用
-* [x] 兼容 Swift
-* [x] 更简单的调用
-* [x] 更详细的任务状态: 无/预处理/等待/进行中/完成/取消/暂停/恢复/校验/错误
 
-# 初衷与动机
-[一个系统BUG引发的血案](https://www.jianshu.com/p/72b5fe043141)
+# Description
+对 0.x 版本彻底重构, 移除部分冗余逻辑, 一切只为了更好的下载体验.
 
-# 简单使用 -- ObjC
-- 任务管理
+# Framework Process
+![](https://pic.downk.cc/item/5e2556dc2fb38b8c3c996a09.jpg)
 
-``` Objective-C
-// 批量添加任务, 数组元素支持 NSString, NSURL, NSDictionary, NSMutableDictionary
-[[FKDownloadManager manager] addTaskWithArray:urls];
+部分逻辑参考了 Scrapy 这个广为人知的爬虫框架    
 
-// 批量添加任务并分配 tag
-[[FKDownloadManager manager] addTaskWithArray:urls tag:@"group_task_01"];
+# Usage
+在使用 FKDownloader 时主要是对 5 个类进行操作.
 
-// 开始执行任务
-[[FKDownloadManager manager] start:@"URL"];
+#### FKConfigure
 
-// 根据 URL 获取任务
-[[FKDownloadManager manager] acquire:@"URL"];
+配置类, 负责配置下载中所需要的参数, 最好在应用启动后立即配置.    
 
-// 暂停任务
-[[FKDownloadManager manager] suspend:@"URL"];
-
-// 恢复任务
-[[FKDownloadManager manager] resume:@"URL"];
-
-// 取消任务
-[[FKDownloadManager manager] cancel:@"URL"];
-
-// 移除任务
-[[FKDownloadManager manager] remove:@"URL"];
-
-// 设置任务代理
-[[FKDownloadManager manager] acquire:@"URL"].delegate = self;
-
-// 设置任务 Block
-[[FKDownloadManager manager] acquire:@"URL"].statusBlock = ^(FKTask *task) {
-    // 状态改变时被调用
-};
-[[FKDownloadManager manager] acquire:@"URL"].speedBlock = ^(FKTask *task) {
-    // 下载速度, 默认 1s 调用一次
-};
-[[FKDownloadManager manager] acquire:@"URL"].progressBlock = ^(FKTask *task) {
-    // 进度改变时被调用
-};
-
+配置最大下载数量, 默认 3, 设定范围 1 ~ 6    
 ```
+[FKConfigure configure].maxAction = 3;
+```    
 
-- 支持的任务通知
-
+配置 NSURLSessionConfiguration, 鉴于系统类中包含了新的特性, 所以配置相关都在一个模版上进行配置, FKDownloader 会以此模版进行配置 Session, 其中 `allowsCellularAccess` 为默认开启    
 ```
-// 与代理同价, 可按照代理的使用方式使用通知.
-extern FKNotificationName const FKTaskPrepareNotification;
-extern FKNotificationName const FKTaskDidIdleNotification;
-extern FKNotificationName const FKTaskWillExecuteNotification;
-extern FKNotificationName const FKTaskDidExecuteNotication;
-extern FKNotificationName const FKTaskProgressNotication;
-extern FKNotificationName const FKTaskDidResumingNotification;
-extern FKNotificationName const FKTaskWillChecksumNotification;
-extern FKNotificationName const FKTaskDidChecksumNotification;
-extern FKNotificationName const FKTaskDidFinishNotication;
-extern FKNotificationName const FKTaskErrorNotication;
-extern FKNotificationName const FKTaskWillSuspendNotication;
-extern FKNotificationName const FKTaskDidSuspendNotication;
-extern FKNotificationName const FKTaskWillCancelldNotication;
-extern FKNotificationName const FKTaskDidCancelldNotication;
-extern FKNotificationName const FKTaskSpeedInfoNotication;
-extern FKNotificationName const FKTaskWillRemoveNotification;
-extern FKNotificationName const FKTaskDidRemoveNotification;
-```
+[FKConfigure configure].templateBackgroundConfiguration.allowsCellularAccess = NO;
+```    
 
-- 需要在 AppDelegate 中调用的
-
+配置后台下载的系统回调, 此方法在 `-[AppDelegate application:handleEventsForBackgroundURLSession:completionHandler]` 中使用    
 ```
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler {
-    
-    // 保存后台下载所需的系统 Block, 区别 identifier 以防止与其他第三方冲突
-    if ([identifier isEqualToString:[FKDownloadManager manager].configure.sessionIdentifier]) {
-        [FKDownloadManager manager].configure.backgroundHandler = completionHandler;
+    if ([identifier isEqualToString:[FKConfigure configure].backgroundSessionIdentifier]) {
+        [FKConfigure configure].completionHandler = completionHandler;
     }
 }
+```    
+
+配置完成后, 使配置生效    
 ```
+[[FKConfigure configure] take];
+```    
 
-# 简单使用 -- Swift
-- 任务管理
+#### FKBuilder    
 
-``` Swift
-// 批量添加任务, 数组元素支持 NSString, NSURL, NSDictionary, NSMutableDictionary
-Downloader.shared().addTasks(with: urls)
-
-// 批量添加任务并分配 tag
-Downloader.shared().addTasks(with: urls, tag: "group_task_01")
-
-// 开始执行任务
-Downloader.shared().start("URL")
-
-// 根据 URL 获取任务
-Downloader.shared().acquire("URL")
-
-// 暂停任务
-Downloader.shared().suspend("URL")
-
-// 恢复任务
-Downloader.shared().resume("URL")
-
-// 取消任务
-Downloader.shared().cancel("URL")
-
-// 移除任务
-Downloader.shared().remove("URL")
-
-// 设置任务代理
-Downloader.shared().acquire("URL")?.delegate = self
-
-// 设置任务 Block
-Downloader.shared().acquire("URL")?.statusBlock = { (task) in
-    // 状态改变时被调用
-}
-Downloader.shared().acquire("URL")?.progressBlock = { (task) in
-    // 下载速度, 默认 1s 调用一次
-}
-Downloader.shared().acquire("URL")?.speedBlock = { (task) in
-    // 进度改变时被调用
-}
-
-```
-
-- 支持的任务通知
-
-``` Swift
-// 与代理同价, 可按照代理的使用方式使用通知.
-extension NSNotification.Name {
-
-    public static let FKTaskPrepare: NSNotification.Name
-
-    public static let FKTaskDidIdle: NSNotification.Name
-
-    public static let FKTaskWillExecute: NSNotification.Name
-
-    public static let FKTaskDidExecute: NSNotification.Name
-
-    public static let FKTaskProgress: NSNotification.Name
-
-    public static let FKTaskDidResuming: NSNotification.Name
-
-    public static let FKTaskWillChecksum: NSNotification.Name
-
-    public static let FKTaskDidChecksum: NSNotification.Name
-
-    public static let FKTaskDidFinish: NSNotification.Name
-
-    public static let FKTaskError: NSNotification.Name
-
-    public static let FKTaskWillSuspend: NSNotification.Name
-
-    public static let FKTaskDidSuspend: NSNotification.Name
-
-    public static let FKTaskWillCancelld: NSNotification.Name
-
-    public static let FKTaskDidCancelld: NSNotification.Name
-
-    public static let FKTaskSpeedInfo: NSNotification.Name
+构建者主要负责创建任务, 设定任务的基本信息等.    
     
-    public static let FKTaskWillRemove: NSNotification.Name
-
-    public static let FKTaskDidRemove: NSNotification.Name
-}
+使用链接进行构建        
 ```
+FKBuilder *builder = [FKBuilder buildWithURL:@"Download URL"];
+```    
 
-- 需要在 AppDelegate 中调用的
+对下载链接进行预处理, 这一步主要流程为:    
+1. 创建下载任务对应的文件夹与信息描述文件    
+2. 生成内部使用的唯一任务编号    
+3. 将任务放入内部缓存    
 
-``` Swift 
-func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+```
+[builder prepare];
+```    
+
+#### FKControl
+主要负责控制任务状态    
+
+激活任务, 对 FKStateCancel 和 FKStateError 状态生效, 将任务重新排到任务队列中    
+```
+[FKControl actionRequestWithURL:@"Download URL"];
+```    
+
+暂停任务, 对 FKStateAction 状态生效    
+```
+[FKControl suspendRequestWithURL:@"Download URL"];
+```    
+
+继续任务, 对 FKStateSuspend 状态生效    
+```
+[FKControl resumeRequestWithURL:@"Download URL"];
+```    
+
+取消任务, 对 FKStateAction 和 FKStateSuspend 状态生效    
+```
+[FKControl resumeRequestWithURL:@"Download URL"];
+```    
+
+直接获取下载链接对应任务的状态    
+```
+FKState state = [FKControl stateWithURL:@"Download URL"];
+```    
+
+直接获取下载链接对应任务的错误信息, 可能为空值    
+```
+NSError *error = [FKControl errorWithURL:@"Download URL"];
+```    
+
+#### FKMessager
+负责获取任务对应的信息    
+
+获取下载链接对应任务信息, 注意, 回调不在主线程, 如需 UI 操作请自行切换线程    
+```
+[FKMessager messagerWithURL:@"Download URL" info:^(int64_t countOfBytesReceived,
+                                                   int64_t countOfBytesExpectedToReceive,
+                                                   FKState state,
+                                                   NSError * _Nullable error) {
         
-    if identifier == Downloader.shared().configure.sessionIdentifier {
-        Downloader.shared().configure.backgroundHandler = completionHandler
-    }
-}
-```
+    // do something...
+}];
+```    
 
-# 示例/最佳实践
-请直接运行 Demo.
-　　
-# 安装
+将多个链接标记为一个任务集合    
+```
+// Add
+[FKMessager addMessagerWithURLs:@[@"Download URL"] barrel:@"name"];
+
+// Delete
+[FKMessager removeMessagerBarrel:@"name"];
+```    
+
+获取一个集合的任务信息, 基本上, 集合信息只是最基本的数据, 只有总大小和已下载大小, 状态之类的数据请自行记录和控制    
+```    
+[FKMessager messagerWithBarrel:@"name" info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive) {
+    // do something...
+}];
+```    
+
+#### FKMiddleware
+管理中间件, 主要包括请求中间件与响应中间件    
+
+注册请求中间件, 在构建 NSMutableURLRequest 时, 会依次调用中间件来处理请求, FKDownloader 会使用最终的 NSMutableURLRequest 来进行下载    
+```
+[[FKMiddleware shared] registeRequestMiddleware:[CustomRequestMiddleware new]];
+```    
+
+这册响应中间件, 在任务完成下载或出错中断后被调用, 可以用来处理文件校验, 移动文件到指定路径等操作.    
+```
+[[FKMiddleware shared] registeResponseMiddleware:[CustomResponseMiddleware new]];
+```    
+
+请求中间件类需要遵循 `FKRequestMiddlewareProtocol` 协议, 并实现被标记为 `@required` 的方法与属性, 其中 `priority` 表示优先级, 类型为正整数, 值越接近 0, 优先级越高, 响应中间件协议 `FKResponseMiddlewareProtocol` 的 `priority` 属性与请求中间件逻辑一致.    
+
+请求中间件协议中 `processRequest:` 方法会传进来一个 NSMutableURLRequest 对象, 请在进行自定义处理后直接返回一个 NSMutableURLRequest 对象.    
+
+响应中间件协议中 `processResponse:` 方法会传进来一个 FKResponse 对象, 对象结构如下:    
+```
+@interface FKResponse : NSObject
+
+@property (nonatomic, strong) NSURLResponse *response;
+@property (nonatomic, strong) NSString *filePath;
+@property (nonatomic, strong, nullable) NSError *error;
+
+@end
+```    
+
+其中 response 为系统返回的请求响应信息, 可从中获取相应头的信息. filePath 为下载的文件路径, 下载请求完成后, 文件会移动到此路径, 注意, 文件可能不存在. error 为系统返回的请求响应错误, 可能为网络中断, 验证无法通过, 不合法的返回值等问题.    
+
+# Requirements
+
+| FKDownloader Versions | Minimum iOS Target |
+|---|---|
+| 1.x | iOS 9 |
+| 0.x | iOS 8 |
+
+# Install
 - CocoaPods  
 　　`pod 'FKDownloader'`  
 - Carthage  
 　　`github 'SYFH/FKDownloader'`  
 - Manual  
 　　将`FKDownloader` 文件夹复制到项目中, `#import "FKDownloader.h"` 即可开始  
+　　
+# Change log
+- 1.0.0    
+    对 0.x 彻底重构, 完成框架完整逻辑, 机型/系统等 BUG 需要继续完善    
 
-# 关于
+# About
 如果觉得好用, 可以 Star 哟~  
 如果觉得功能不如人意, 请尽情的 Fork!  
-如果使用中出现了问题, 请直接提交 issues!  
-　　
+如果使用中出现了问题, 请直接提交 issues!      
 
 # MIT License
 
