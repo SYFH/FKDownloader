@@ -19,6 +19,10 @@
     return [[FKCache cache] stateRequestWithRequestID:url.SHA256];
 }
 
++ (NSError *)errorWithURL:(NSString *)url {
+    return [[FKCache cache] errorRequestWithRequestID:url.SHA256];
+}
+
 + (void)actionRequestWithURL:(NSString *)url {
     [[FKEngine engine] actionRequestWithURL:url];
 }
