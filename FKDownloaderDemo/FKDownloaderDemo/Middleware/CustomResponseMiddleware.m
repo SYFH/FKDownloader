@@ -11,9 +11,8 @@
 @implementation CustomResponseMiddleware
 @synthesize priority;
 
-- (NSURLResponse *)processResponse:(NSURLResponse *)response {
+- (void)processResponse:(FKResponse *)response {
     NSLog(@"CustomResponseMiddleware: %@", response);
-    return response;
 }
 
 - (NSUInteger)priority {
