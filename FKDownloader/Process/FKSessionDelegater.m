@@ -125,6 +125,7 @@
         }
         [[FKCache cache] updateRequestWithModel:info];
         [[FKFileManager manager] updateRequestFileWithRequest:info];
+        [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
     }
 }
 

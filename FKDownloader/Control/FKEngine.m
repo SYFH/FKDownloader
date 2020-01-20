@@ -211,16 +211,17 @@
     [[FKFileManager manager] moveFile:location toRequestFinder:downloadTask.taskDescription fileName:fileName];
     [FKLogger debug:@"%@\n移动缓存文件: %@ 到请求文件: %@", [FKLogger downloadTaskDebugInfo:downloadTask], location.absoluteURL, fileName];
     
-    // 移除监听
-    [[FKObserver observer] removeDownloadTask:downloadTask];
-    [[FKObserver observer] removeCacheWithDownloadTask:downloadTask];
-    
     // 更新本地请求缓存
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:downloadTask.taskDescription];
     info.state = FKStateComplete;
     info.extension = extension;
     [[FKFileManager manager] updateRequestFileWithRequest:info];
     [FKLogger debug:@"%@\naction -> complete, 更新本地任务信息", [FKLogger requestCacheModelDebugInfo:info]];
+    
+    // 移除监听
+    [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
+    [[FKObserver observer] removeDownloadTask:downloadTask];
+    [[FKObserver observer] removeCacheWithDownloadTask:downloadTask];
     
     // 移除缓存任务进行释放
     [[FKCache cache] removeDownloadTask:downloadTask];

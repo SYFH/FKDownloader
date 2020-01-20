@@ -68,6 +68,7 @@
         info.state = FKStateIdel;
         [[FKFileManager manager] updateRequestFileWithRequest:info];
         [[FKCache cache] updateRequestWithModel:info];
+        [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\ncancel -> idel, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }
 }
@@ -80,7 +81,6 @@
         [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
             // 此处不做处理, 统一在代理中处理所有错误
         }];
-        [[FKObserver observer] removeDownloadTask:downloadTask];
     }
 }
 
@@ -99,6 +99,7 @@
             info.state = FKStateAction;
             [[FKFileManager manager] updateRequestFileWithRequest:info];
             [[FKCache cache] updateRequestWithModel:info];
+            [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
             [FKLogger debug:@"%@\nsuspend -> action, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
         }
     }
@@ -117,6 +118,7 @@
         info.state = FKStateCancel;
         [[FKFileManager manager] updateRequestFileWithRequest:info];
         [[FKCache cache] updateRequestWithModel:info];
+        [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\naction -> cancen, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }
 }

@@ -62,6 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 执行现有请求的信息回调
 - (void)execRequestInfoBlock;
 
+/// 对指定请求进行快速信息回调调用
+/// @param requestID 请求标识
+- (void)execFastInfoBlockWithRequestID:(NSString *)requestID;
+
 @end
 
 NS_ASSUME_NONNULL_END

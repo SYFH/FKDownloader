@@ -106,10 +106,12 @@
     __weak typeof(self) weak = self;
     [FKMessager messagerWithURL:self.url info:^(int64_t countOfBytesReceived,
                                                 int64_t countOfBytesExpectedToReceive,
-                                                FKState state) {
+                                                FKState state,
+                                                NSError * _Nullable error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(weak) self = weak;
+            
             CGFloat progress = countOfBytesReceived * 1.0 / countOfBytesExpectedToReceive;
             self.progressView.progress = progress;
             self.progressInfoLabel.text = [NSString stringWithFormat:@"%lld/%lld",countOfBytesReceived, countOfBytesExpectedToReceive];
@@ -126,30 +128,41 @@
         case FKStatePrepare: {
             [self.controlButton setTitle:@"处理中" forState:UIControlStateNormal];
             self.controlButton.enabled = NO;
+            self.progressView.progress = 0;
+            self.progressInfoLabel.hidden = YES;
+            self.stateLabel.text = [self stateTransform:state];
         } break;
         case FKStateIdel: {
             [self.controlButton setTitle:@"取消" forState:UIControlStateNormal];
             self.controlButton.enabled = YES;
+            self.progressInfoLabel.hidden = NO;
         } break;
         case FKStateAction: {
             [self.controlButton setTitle:@"暂停" forState:UIControlStateNormal];
             self.controlButton.enabled = YES;
+            self.progressInfoLabel.hidden = NO;
         } break;
         case FKStateSuspend: {
             [self.controlButton setTitle:@"继续" forState:UIControlStateNormal];
             self.controlButton.enabled = YES;
+            self.progressInfoLabel.hidden = NO;
         } break;
         case FKStateCancel: {
             [self.controlButton setTitle:@"开始" forState:UIControlStateNormal];
             self.controlButton.enabled = YES;
+            self.progressInfoLabel.hidden = NO;
         } break;
         case FKStateError: {
             [self.controlButton setTitle:@"开始" forState:UIControlStateNormal];
             self.controlButton.enabled = YES;
+            self.progressInfoLabel.hidden = NO;
         } break;
         case FKStateComplete: {
             [self.controlButton setTitle:@"已完成" forState:UIControlStateNormal];
             self.controlButton.enabled = NO;
+            self.progressView.progress = 1;
+            self.progressInfoLabel.hidden = YES;
+            self.stateLabel.text = [self stateTransform:state];
         } break;
     }
 }
@@ -206,6 +219,7 @@
 - (void)setUrl:(NSString *)url {
     _url = url;
     
+    [[FKBuilder buildWithURL:url] prepare];
     [self infoMessage];
 }
 

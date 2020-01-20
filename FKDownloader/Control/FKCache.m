@@ -160,6 +160,11 @@
     return info.state;
 }
 
+- (NSError *)errorRequestWithRequestID:(NSString *)requestID {
+    FKCacheRequestModel *info = [self requestWithRequestID:requestID];
+    return info.error;
+}
+
 
 #pragma mark - Getter/Setter
 - (NSMapTable<NSString *,FKCacheRequestModel *> *)requestMap {

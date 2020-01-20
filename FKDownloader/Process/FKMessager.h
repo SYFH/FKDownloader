@@ -16,7 +16,8 @@
 
 typedef void(^MessagerInfoBlock)(int64_t countOfBytesReceived,
                                  int64_t countOfBytesExpectedToReceive,
-                                 FKState state);
+                                 FKState state,
+                                 NSError * _Nullable error);
 
 typedef void(^MessagerBarrelBlock)(int64_t countOfBytesReceived,
                                    int64_t countOfBytesExpectedToReceive);
