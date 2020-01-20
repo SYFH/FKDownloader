@@ -67,9 +67,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param extension 文件后缀
 - (NSString *)requestFielPath:(NSString *)requestID extension:(NSString *)extension;
 
-/// 获取已完成请求的数据
+/// 获取已完成请求数据的路径
 /// @param requestID 请求标识
-- (NSData * _Nullable)dataWithRequestID:(NSString *)requestID;
+- (NSString *)filePathWithRequestID:(NSString *)requestID;
 
 @end
 

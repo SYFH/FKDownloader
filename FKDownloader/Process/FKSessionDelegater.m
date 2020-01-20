@@ -135,7 +135,7 @@
         if ([middleware respondsToSelector:@selector(processResponse:)]) {
             FKResponse *response = [[FKResponse alloc] init];
             response.response = task.response;
-            response.responseData = [[FKFileManager manager] dataWithRequestID:task.taskDescription];
+            response.filePath = [[FKFileManager manager] filePathWithRequestID:task.taskDescription];
             response.error = error;
             [middleware processResponse:response];
         }
