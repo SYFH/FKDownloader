@@ -12,8 +12,9 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
+#import "FKResponse.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 /// 请求中间件协议, 在下载前调用, 进行处理 NSURLRequest
 @protocol FKRequestMiddlewareProtocol <NSObject>
@@ -40,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 处理
 /// @param response 下载请求
-- (NSURLResponse *)processResponse:(NSURLResponse *)response;
+- (void)processResponse:(FKResponse *)response;
 
 @end
 

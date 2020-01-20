@@ -29,3 +29,6 @@ FOUNDATION_EXPORT const unsigned char FKDownloaderVersionString[];
 
 // Utils
 #import <FKDownloader/FKCommonHeader.h>
+
+// Model
+#import <FKDownloader/FKResponse.h>

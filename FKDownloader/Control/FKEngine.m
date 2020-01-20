@@ -201,18 +201,16 @@
 }
 
 - (void)processCompleteDownload:(NSURLSessionDownloadTask *)downloadTask location:(NSURL *)location {
+    // 获取请求缓存
+    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:downloadTask.taskDescription];
+    
     // 移动文件到请求文件夹
-    NSString *extension = @"";
-    NSString *fileExtension = downloadTask.response.MIMEType.toExtension;
-    if (fileExtension.length) {
-        extension = [NSString stringWithFormat:@".%@", fileExtension];
-    }
+    NSString *extension = info.extension;
     NSString *fileName = [NSString stringWithFormat:@"%@%@", downloadTask.taskDescription, extension];
     [[FKFileManager manager] moveFile:location toRequestFinder:downloadTask.taskDescription fileName:fileName];
     [FKLogger debug:@"%@\n移动缓存文件: %@ 到请求文件: %@", [FKLogger downloadTaskDebugInfo:downloadTask], location.absoluteURL, fileName];
     
     // 更新本地请求缓存
-    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:downloadTask.taskDescription];
     info.state = FKStateComplete;
     info.extension = extension;
     [[FKFileManager manager] updateRequestFileWithRequest:info];
@@ -226,14 +224,6 @@
     // 移除缓存任务进行释放
     [[FKCache cache] removeDownloadTask:downloadTask];
     [FKLogger debug:@"%@\n清除任务缓存", [FKLogger downloadTaskDebugInfo:downloadTask]];
-    
-    // 处理响应
-    for (id<FKResponseMiddlewareProtocol> middleware in [FKMiddleware shared].responseMiddlewareArray) {
-        if ([middleware respondsToSelector:@selector(processResponse:)]) {
-            [middleware processResponse:downloadTask.response];
-        }
-    }
-    [FKLogger debug:@"对响应进行中间件处理"];
 }
 
 - (void)actionRequestWithURL:(NSString *)url {

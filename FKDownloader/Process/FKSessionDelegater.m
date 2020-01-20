@@ -15,6 +15,8 @@
 #import "FKCacheModel.h"
 #import "FKFileManager.h"
 #import "FKConfigure.h"
+#import "FKLogger.h"
+#import "FKMiddleware.h"
 
 @implementation FKSessionDelegater
 
@@ -127,6 +129,18 @@
         [[FKFileManager manager] updateRequestFileWithRequest:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
     }
+    
+    // 使用中间件处理响应
+    for (id<FKResponseMiddlewareProtocol> middleware in [FKMiddleware shared].responseMiddlewareArray) {
+        if ([middleware respondsToSelector:@selector(processResponse:)]) {
+            FKResponse *response = [[FKResponse alloc] init];
+            response.response = task.response;
+            response.responseData = [[FKFileManager manager] dataWithRequestID:task.taskDescription];
+            response.error = error;
+            [middleware processResponse:response];
+        }
+    }
+    [FKLogger debug:@"对响应进行中间件处理"];
 }
 
 

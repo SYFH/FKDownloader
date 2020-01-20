@@ -126,6 +126,14 @@
     return [[self requestFinderPath:requestID] stringByAppendingPathComponent:fileName];
 }
 
+- (NSData * _Nullable)dataWithRequestID:(NSString *)requestID {
+    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
+    NSString *fileName = [NSString stringWithFormat:@"%@%@", info.requestID, info.extension];
+    NSString *requestFinder = [self.workPath stringByAppendingPathComponent:requestID];
+    NSString *requestFileName = [requestFinder stringByAppendingPathComponent:fileName];
+    return [NSData dataWithContentsOfFile:requestFileName options:NSDataReadingMappedIfSafe error:nil];
+}
+
 
 #pragma mark - Getter/Setter
 - (NSFileManager *)fileManager {

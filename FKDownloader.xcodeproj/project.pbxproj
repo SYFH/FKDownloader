@@ -33,6 +33,8 @@
 		3D933F0A23BB46E9006C6C95 /* FKMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0823BB46E9006C6C95 /* FKMiddleware.m */; };
 		3D933F0E23BB54C1006C6C95 /* FKSingleNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */; };
 		3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */; };
+		3DB8FB2F23D584B2002B7450 /* FKResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB8FB2D23D584B2002B7450 /* FKResponse.h */; };
+		3DB8FB3023D584B2002B7450 /* FKResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB8FB2E23D584B2002B7450 /* FKResponse.m */; };
 		3DEC509323C03A5E009F7489 /* FKCommonHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DEC509223C03A5E009F7489 /* FKCommonHeader.h */; };
 		3DF8F74923BB214900A9E363 /* FKEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF8F74723BB214900A9E363 /* FKEngine.h */; };
 		3DF8F74A23BB214900A9E363 /* FKEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF8F74823BB214900A9E363 /* FKEngine.m */; };
@@ -88,6 +90,8 @@
 		3D933F0823BB46E9006C6C95 /* FKMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKMiddleware.m; sourceTree = "<group>"; };
 		3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSingleNumber.h; sourceTree = "<group>"; };
 		3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSingleNumber.m; sourceTree = "<group>"; };
+		3DB8FB2D23D584B2002B7450 /* FKResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKResponse.h; sourceTree = "<group>"; };
+		3DB8FB2E23D584B2002B7450 /* FKResponse.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKResponse.m; sourceTree = "<group>"; };
 		3DEC509223C03A5E009F7489 /* FKCommonHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKCommonHeader.h; sourceTree = "<group>"; };
 		3DF8F74723BB214900A9E363 /* FKEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKEngine.h; sourceTree = "<group>"; };
 		3DF8F74823BB214900A9E363 /* FKEngine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKEngine.m; sourceTree = "<group>"; };
@@ -130,6 +134,8 @@
 				3D36748323BD89BC0023E3A0 /* FKObserverModel.m */,
 				3D36748623BD8FB40023E3A0 /* FKCacheModel.h */,
 				3D36748723BD8FB40023E3A0 /* FKCacheModel.m */,
+				3DB8FB2D23D584B2002B7450 /* FKResponse.h */,
+				3DB8FB2E23D584B2002B7450 /* FKResponse.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -268,6 +274,7 @@
 				3D613ED723D00ADA00B25D44 /* FKCoder.h in Headers */,
 				3DF8F75523BB21D700A9E363 /* FKMessager.h in Headers */,
 				3D68DF4523BC37F50060DAEB /* FKCache.h in Headers */,
+				3DB8FB2F23D584B2002B7450 /* FKResponse.h in Headers */,
 				3DF8F75F23BB2A6500A9E363 /* FKScheduler.h in Headers */,
 				3D933F0523BB4660006C6C95 /* FKControl.h in Headers */,
 				3DF8F74923BB214900A9E363 /* FKEngine.h in Headers */,
@@ -378,6 +385,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D613EFC23BCAA78005F489F /* NSString+FKCategory.m in Sources */,
+				3DB8FB3023D584B2002B7450 /* FKResponse.m in Sources */,
 				3D36748523BD89BC0023E3A0 /* FKObserverModel.m in Sources */,
 				3DF8F75A23BB229700A9E363 /* FKBuilder.m in Sources */,
 				3D68DF4623BC37F50060DAEB /* FKCache.m in Sources */,
