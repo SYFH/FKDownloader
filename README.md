@@ -28,7 +28,7 @@
 # Usage
 在使用 FKDownloader 时主要是对 5 个类进行操作.
 
-#### FKConfigure
+### FKConfigure
 
 配置类, 负责配置下载中所需要的参数, 最好在应用启动后立即配置.    
 
@@ -56,7 +56,7 @@
 [[FKConfigure configure] take];
 ```    
 
-#### FKBuilder    
+### FKBuilder    
 
 构建者主要负责创建任务, 设定任务的基本信息等.    
     
@@ -74,7 +74,7 @@ FKBuilder *builder = [FKBuilder buildWithURL:@"Download URL"];
 [builder prepare];
 ```    
 
-#### FKControl
+### FKControl
 主要负责控制任务状态    
 
 激活任务, 对 FKStateCancel 和 FKStateError 状态生效, 将任务重新排到任务队列中    
@@ -107,7 +107,7 @@ FKState state = [FKControl stateWithURL:@"Download URL"];
 NSError *error = [FKControl errorWithURL:@"Download URL"];
 ```    
 
-#### FKMessager
+### FKMessager
 负责获取任务对应的信息    
 
 获取下载链接对应任务信息, 注意, 回调不在主线程, 如需 UI 操作请自行切换线程    
@@ -137,7 +137,7 @@ NSError *error = [FKControl errorWithURL:@"Download URL"];
 }];
 ```    
 
-#### FKMiddleware
+### FKMiddleware
 管理中间件, 主要包括请求中间件与响应中间件    
 
 注册请求中间件, 在构建 NSMutableURLRequest 时, 会依次调用中间件来处理请求, FKDownloader 会使用最终的 NSMutableURLRequest 来进行下载    
@@ -158,6 +158,7 @@ NSError *error = [FKControl errorWithURL:@"Download URL"];
 ```
 @interface FKResponse : NSObject
 
+@property (nonatomic, strong) NSString *originalURL;
 @property (nonatomic, strong) NSURLResponse *response;
 @property (nonatomic, strong) NSString *filePath;
 @property (nonatomic, strong, nullable) NSError *error;
@@ -165,7 +166,7 @@ NSError *error = [FKControl errorWithURL:@"Download URL"];
 @end
 ```    
 
-其中 response 为系统返回的请求响应信息, 可从中获取相应头的信息. filePath 为下载的文件路径, 下载请求完成后, 文件会移动到此路径, 注意, 文件可能不存在. error 为系统返回的请求响应错误, 可能为网络中断, 验证无法通过, 不合法的返回值等问题.    
+其中 originalURL 是在构建时传入的链接, response 为系统返回的请求响应信息, 可从中获取相应头的信息. filePath 为下载的文件路径, 下载请求完成后, 文件会移动到此路径, 注意, 文件可能不存在. error 为系统返回的请求响应错误, 可能为网络中断, 验证无法通过, 不合法的返回值等问题.    
 
 # Requirements
 
