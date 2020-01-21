@@ -64,12 +64,20 @@
 - (void)actionRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (info.state == FKStateCancel || info.state == FKStateError) {
+    if (info.state == FKStateCancel) {
         info.state = FKStateIdel;
         [[FKCache cache] updateRequestWithModel:info];
         [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\ncancel -> idel, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
+    } else if (info.state == FKStateError) {
+        info.state = FKStateIdel;
+        NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
+        [downloadTask cancel];
+        [[FKObserver observer] removeDownloadTask:downloadTask];
+        [[FKCache cache] removeDownloadTask:downloadTask];
+        [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
+        [FKLogger debug:@"%@\nerror -> idel, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }
 }
 
