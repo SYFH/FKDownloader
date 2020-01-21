@@ -11,11 +11,13 @@
 @implementation FKCoder
 
 + (NSString *)encode:(NSString *)url {
+    // 解码至原始链接, 防止多次编码导致请求失败
     NSString *decode = url;
     while (![decode isEqualToString:[FKCoder decode:decode]]) {
         decode = [FKCoder decode:decode];
     }
     
+    // 使用 URLQueryAllowedCharacterSet 会导致 fragment 编码错误, 需要分开编码
     NSString *decodeURL = @"";
     NSRange fragmentRange = [decode rangeOfString:@"#" options:NSBackwardsSearch];
     if (fragmentRange.location == NSNotFound) {

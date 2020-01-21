@@ -8,7 +8,6 @@
 
 #import "FKSessionDelegater.h"
 
-#import "FKCommonHeader.h"
 #import "FKEngine.h"
 #import "FKObserver.h"
 #import "FKCache.h"
@@ -135,7 +134,7 @@
             FKResponse *response = [[FKResponse alloc] init];
             response.originalURL = [[FKCache cache] requestWithRequestID:task.taskDescription].url;
             response.response = task.response;
-            response.filePath = [[FKCache cache] localRequestFilePathWithRequestID:task.taskDescription];
+            response.filePath = [[FKCache cache] requestExpectedFilePathWithRequestID:task.taskDescription];
             response.error = error;
             [middleware processResponse:response];
         }

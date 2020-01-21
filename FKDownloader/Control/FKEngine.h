@@ -38,6 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param location 缓存文件地址
 - (void)processCompleteDownload:(NSURLSessionDownloadTask *)downloadTask location:(NSURL *)location;
 
+@end
+
+@interface FKEngine (Control)
+
 /// 激活已取消任务
 /// @param url 请求链接
 - (void)actionRequestWithURL:(NSString *)url;

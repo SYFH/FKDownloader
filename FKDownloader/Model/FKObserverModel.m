@@ -10,16 +10,4 @@
 
 @implementation FKObserverModel
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        
-    }
-    return self;
-}
-
-+ (instancetype)model {
-    return [[FKObserverModel alloc] init];
-}
-
 @end

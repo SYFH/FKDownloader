@@ -18,7 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param debug 内容
 + (void)debug:(NSString *)debug, ... NS_FORMAT_FUNCTION(1,2);
 
+/// 获取下载任务的详细信息
+/// @param downloadTask 下载任务
 + (NSString *)downloadTaskDebugInfo:(NSURLSessionDownloadTask *)downloadTask;
+
+/// 获取请求模型的详细信息
+/// @param requestModel 请求模型
 + (NSString *)requestCacheModelDebugInfo:(FKCacheRequestModel *)requestModel;
 
 @end

@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)observer;
 
+@end
+
+@interface FKObserver (Observer)
+
 /// 添加需要监听的下载任务
 /// @param downloadTask 下载任务
 - (void)observerDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
@@ -40,6 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param downloadTask 下载任务
 - (void)removeCacheProgressWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
 
+@end
+
+@interface FKObserver (Block)
+
 /// 添加信息回调到指定请求
 /// @param block 信息回调
 /// @param requestID 请求标识
@@ -58,6 +66,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param barrel 集合名
 /// @param info 信息回调
 - (void)addBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info;
+
+@end
+
+@interface FKObserver (Exec)
 
 /// 执行现有请求的信息回调
 - (void)execRequestInfoBlock;

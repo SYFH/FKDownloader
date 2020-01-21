@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSUInteger priority;
 
 /// 处理
-/// @param response 下载请求
+/// @param response 响应数据
 - (void)processResponse:(FKResponse *)response;
 
 @end

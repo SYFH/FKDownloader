@@ -10,8 +10,6 @@
 
 #import "NSString+FKCategory.h"
 
-#import "FKLogger.h"
-#import "FKEngine.h"
 #import "FKCache.h"
 #import "FKSingleNumber.h"
 #import "FKCacheModel.h"
@@ -47,6 +45,25 @@
     return self;
 }
 
+- (NSString *)workFinder {
+    return self.workPath;
+}
+
+
+#pragma mark - Getter/Setter
+- (NSFileManager *)fileManager {
+    return [NSFileManager defaultManager];
+}
+
+- (NSString *)requestFileExtension {
+    return @".rqi";
+}
+
+@end
+
+
+@implementation FKFileManager (SingleNumber)
+
 - (void)saveSingleNumber {
     NSString *path = [self.workPath stringByAppendingPathComponent:@"singleNumner"];
     unsigned long long number = FKSingleNumber.shared.current;
@@ -61,9 +78,10 @@
     return number;
 }
 
-- (NSString *)workFinder {
-    return self.workPath;
-}
+@end
+
+
+@implementation FKFileManager (Request)
 
 - (void)createRequestFinderWithRequestID:(NSString *)request {
     NSString *requestPath = [self.workPath stringByAppendingPathComponent:request];
@@ -132,16 +150,6 @@
     NSString *requestFinder = [self.workPath stringByAppendingPathComponent:requestID];
     NSString *requestFilePath = [requestFinder stringByAppendingPathComponent:fileName];
     return requestFilePath;
-}
-
-
-#pragma mark - Getter/Setter
-- (NSFileManager *)fileManager {
-    return [NSFileManager defaultManager];
-}
-
-- (NSString *)requestFileExtension {
-    return @".rqi";
 }
 
 @end

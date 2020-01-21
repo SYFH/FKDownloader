@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)cache;
 
+@end
+
+@interface FKCache (Request)
+
 /// 检查请求是否已存在
 /// @param url 链接
 - (BOOL)existRequestWithURL:(NSString *)url;
@@ -51,6 +55,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param requestID 请求标识
 - (NSString *)localRequestFilePathWithRequestID:(NSString *)requestID;
 
+/// 获取下载成功的文件地址, 文件可能不存在
+/// @param requestID 请求标识
+- (NSString *)requestExpectedFilePathWithRequestID:(NSString *)requestID;
+
 /// 当前进行中任务数量
 - (NSUInteger)actionRequestCount;
 
@@ -67,6 +75,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 获取第一个待执行任务
 - (FKCacheRequestModel * _Nullable)firstIdelRequest;
+
+@end
+
+@interface FKCache (DownloadTask)
 
 /// 添加下载任务
 /// @param downloadTask 下载任务

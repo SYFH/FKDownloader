@@ -22,10 +22,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)manager;
 
+/// FKDownloader 工作目录
+- (NSString *)workFinder;
+
+@end
+
+@interface FKFileManager (SingleNumber)
+
+/// 保存唯一编号
 - (void)saveSingleNumber;
+
+/// 读取唯一编号
 - (unsigned long long)loadSingleNumber;
 
-- (NSString *)workFinder;
+@end
+
+@interface FKFileManager (Request)
 
 /// 创建请求文件夹
 /// @param request SHA256(Request.URL)

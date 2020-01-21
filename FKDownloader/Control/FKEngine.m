@@ -226,22 +226,6 @@
     [FKLogger debug:@"%@\n清除任务缓存", [FKLogger downloadTaskDebugInfo:downloadTask]];
 }
 
-- (void)actionRequestWithURL:(NSString *)url {
-    [[FKScheduler shared] actionRequestWithURL:url];
-}
-
-- (void)suspendRequestWithURL:(NSString *)url {
-    [[FKScheduler shared] suspendRequestWithURL:url];
-}
-
-- (void)resumeRequestWithURL:(NSString *)url {
-    [[FKScheduler shared] resumeRequestWithURL:url];
-}
-
-- (void)cancelRequestWithURL:(NSString *)url {
-    [[FKScheduler shared] cancelRequestWithURL:url];
-}
-
 
 #pragma mark - Getter/Setter
 - (NSOperationQueue *)ioQueue {
@@ -258,6 +242,27 @@
         _ioQueue.name = @"com.fk.queue.cache.messager";
     }
     return _ioQueue;
+}
+
+@end
+
+
+@implementation FKEngine (Control)
+
+- (void)actionRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] actionRequestWithURL:url];
+}
+
+- (void)suspendRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] suspendRequestWithURL:url];
+}
+
+- (void)resumeRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] resumeRequestWithURL:url];
+}
+
+- (void)cancelRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] cancelRequestWithURL:url];
 }
 
 @end

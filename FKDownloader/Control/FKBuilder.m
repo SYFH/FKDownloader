@@ -37,8 +37,8 @@
 }
 
 - (instancetype)initWithNormalURL:(NSString *)URL {
-    NSURL *normalURL = [NSURL URLWithString:[FKCoder encode:URL]];
-    self = [super initWithURL:normalURL];
+    NSURL *url = [NSURL URLWithString:[FKCoder encode:URL]];
+    self = [super initWithURL:url];
     if (self) {
         self.normalURL = URL;
         

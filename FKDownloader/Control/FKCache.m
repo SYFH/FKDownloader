@@ -49,6 +49,37 @@
     return self;
 }
 
+
+#pragma mark - Getter/Setter
+- (NSMapTable<NSString *,FKCacheRequestModel *> *)requestMap {
+    if (!_requestMap) {
+        _requestMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                            valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _requestMap;
+}
+
+- (NSMapTable<NSString *,NSURLSessionDownloadTask *> *)taskMap {
+    if (!_taskMap) {
+        _taskMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                         valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _taskMap;
+}
+
+- (NSMapTable<NSString *,NSString *> *)requestIndexMap {
+    if (!_requestIndexMap) {
+        _requestIndexMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                                 valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _requestIndexMap;
+}
+
+@end
+
+
+@implementation FKCache (Request)
+
 - (BOOL)existRequestWithURL:(NSString *)url {
     return [self existRequestWithRequestID:url.SHA256];
 }
@@ -110,6 +141,14 @@
     return [[FKFileManager manager] loadLocalRequestWithRequestID:requestID];
 }
 
+- (NSString *)requestExpectedFilePathWithRequestID:(NSString *)requestID {
+    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
+    NSString *fileName = [NSString stringWithFormat:@"%@%@", info.requestID, info.extension];
+    NSString *requestFinder = [[FKFileManager manager].workFinder stringByAppendingPathComponent:requestID];
+    NSString *requestFilePath = [requestFinder stringByAppendingPathComponent:fileName];
+    return requestFilePath;
+}
+
 - (NSArray<FKCacheRequestModel *> *)requestArray {
     __block NSArray<FKCacheRequestModel *> *array = nil;
     [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
@@ -131,6 +170,11 @@
     }
     return requestModel;
 }
+
+@end
+
+
+@implementation FKCache (DownloadTask)
 
 - (void)addDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
@@ -180,32 +224,6 @@
 - (NSError *)errorRequestWithRequestID:(NSString *)requestID {
     FKCacheRequestModel *info = [self requestWithRequestID:requestID];
     return info.error;
-}
-
-
-#pragma mark - Getter/Setter
-- (NSMapTable<NSString *,FKCacheRequestModel *> *)requestMap {
-    if (!_requestMap) {
-        _requestMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                            valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _requestMap;
-}
-
-- (NSMapTable<NSString *,NSURLSessionDownloadTask *> *)taskMap {
-    if (!_taskMap) {
-        _taskMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                         valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _taskMap;
-}
-
-- (NSMapTable<NSString *,NSString *> *)requestIndexMap {
-    if (!_requestIndexMap) {
-        _requestIndexMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                                 valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _requestIndexMap;
 }
 
 @end
