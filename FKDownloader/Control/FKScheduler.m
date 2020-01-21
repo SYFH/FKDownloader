@@ -38,9 +38,9 @@
     if (isExist) { [FKLogger debug:@"%@\n请求已存在", request.url]; return; }
     
     // 检查本地是否存在请求信息
-    if ([[FKFileManager manager] existLocalRequestWithRequest:request]) {
+    if ([[FKCache cache] existLocalRequestFileWithRequest:request]) {
         // 当添加的任务不在缓存表中, 但本地信息文件存在, 则重新添加到缓存表中, 不进行重复下载
-        FKCacheRequestModel *localRequest = [[FKFileManager manager] loadLocalRequestWithRequestID:request.requestID];
+        FKCacheRequestModel *localRequest = [[FKCache cache] localRequestFileWithRequestID:request.requestID];
         [[FKCache cache] addRequestWithModel:localRequest];
         [FKLogger debug:@"%@\n请求文件已在本地存在, 直接添加到缓存队列", [FKLogger requestCacheModelDebugInfo:localRequest]];
     } else {
@@ -52,7 +52,7 @@
         // 添加到缓存表
         request.state = FKStateIdel;
         [[FKCache cache] addRequestWithModel:request];
-        [[FKFileManager manager] updateRequestFileWithRequest:request];
+        [[FKCache cache] updateLocalRequestWithModel:request];
         [FKLogger debug:@"%@\nprepare -> idel, 添加到缓存列表", [FKLogger requestCacheModelDebugInfo:request]];
     }
     
@@ -66,8 +66,8 @@
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
     if (info.state == FKStateCancel || info.state == FKStateError) {
         info.state = FKStateIdel;
-        [[FKFileManager manager] updateRequestFileWithRequest:info];
         [[FKCache cache] updateRequestWithModel:info];
+        [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\ncancel -> idel, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }
@@ -97,8 +97,8 @@
             [[FKObserver observer] observerDownloadTask:downloadTask];
             
             info.state = FKStateAction;
-            [[FKFileManager manager] updateRequestFileWithRequest:info];
             [[FKCache cache] updateRequestWithModel:info];
+            [[FKCache cache] updateLocalRequestWithModel:info];
             [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
             [FKLogger debug:@"%@\nsuspend -> action, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
         }
@@ -116,8 +116,8 @@
         [[FKObserver observer] removeCacheProgressWithDownloadTask:downloadTask];
         
         info.state = FKStateCancel;
-        [[FKFileManager manager] updateRequestFileWithRequest:info];
         [[FKCache cache] updateRequestWithModel:info];
+        [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\naction -> cancen, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }

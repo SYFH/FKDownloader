@@ -101,13 +101,13 @@
         for (NSURLSessionDownloadTask *task in downloadTasks) {
             // 获取本地请求缓存
             NSString *requestID = task.taskDescription;
-            FKCacheRequestModel *info = [[FKFileManager manager] loadLocalRequestWithRequestID:requestID];
+            FKCacheRequestModel *info = [[FKCache cache] localRequestFileWithRequestID:requestID];;
             info.state = [self stateTransform:task.state];
             
             // 更新缓存
             [[FKCache cache] addRequestWithModel:info];
             [[FKCache cache] addDownloadTask:task];
-            [[FKFileManager manager] updateRequestFileWithRequest:info];
+            [[FKCache cache] updateLocalRequestWithModel:info];
             
             // 添加监听
             [[FKObserver observer] observerDownloadTask:task];
@@ -213,7 +213,7 @@
     // 更新本地请求缓存
     info.state = FKStateComplete;
     info.extension = extension;
-    [[FKFileManager manager] updateRequestFileWithRequest:info];
+    [[FKCache cache] updateLocalRequestWithModel:info];
     [FKLogger debug:@"%@\naction -> complete, 更新本地任务信息", [FKLogger requestCacheModelDebugInfo:info]];
     
     // 移除监听

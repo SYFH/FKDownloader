@@ -13,7 +13,6 @@
 #import "FKObserver.h"
 #import "FKCache.h"
 #import "FKCacheModel.h"
-#import "FKFileManager.h"
 #import "FKConfigure.h"
 #import "FKLogger.h"
 #import "FKMiddleware.h"
@@ -126,7 +125,7 @@
             info.error = error;
         }
         [[FKCache cache] updateRequestWithModel:info];
-        [[FKFileManager manager] updateRequestFileWithRequest:info];
+        [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
     }
     
@@ -134,8 +133,9 @@
     for (id<FKResponseMiddlewareProtocol> middleware in [FKMiddleware shared].responseMiddlewareArray) {
         if ([middleware respondsToSelector:@selector(processResponse:)]) {
             FKResponse *response = [[FKResponse alloc] init];
+            response.originalURL = [[FKCache cache] requestWithRequestID:task.taskDescription].url;
             response.response = task.response;
-            response.filePath = [[FKFileManager manager] filePathWithRequestID:task.taskDescription];
+            response.filePath = [[FKCache cache] localRequestFilePathWithRequestID:task.taskDescription];
             response.error = error;
             [middleware processResponse:response];
         }

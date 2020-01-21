@@ -14,7 +14,6 @@
 #import "FKCacheModel.h"
 #import "FKObserverModel.h"
 #import "FKLogger.h"
-#import "FKFileManager.h"
 #import "FKEngine.h"
 
 @interface FKObserver ()
@@ -262,7 +261,7 @@
     }
 
     if (hasUpdate) {
-        [[FKFileManager manager] updateRequestFileWithRequest:model];
+        [[FKCache cache] updateLocalRequestWithModel:model];
     }
 }
 

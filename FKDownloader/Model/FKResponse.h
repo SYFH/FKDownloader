@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKResponse : NSObject
 
+@property (nonatomic, strong) NSString *originalURL;
 @property (nonatomic, strong) NSURLResponse *response;
 @property (nonatomic, strong) NSString *filePath;
 @property (nonatomic, strong, nullable) NSError *error;

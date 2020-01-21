@@ -10,6 +10,7 @@
 
 #import "NSString+FKCategory.h"
 
+#import "FKFileManager.h"
 #import "FKCacheModel.h"
 #import "FKEngine.h"
 
@@ -60,6 +61,10 @@
     return requestSingleID.length > 0;
 }
 
+- (BOOL)existLocalRequestFileWithRequest:(FKCacheRequestModel *)model {
+    return [[FKFileManager manager] existLocalRequestWithRequest:model];
+}
+
 - (void)addRequestWithModel:(FKCacheRequestModel *)model {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         [self.requestMap setObject:model forKey:model.requestSingleID];
@@ -72,6 +77,14 @@
         NSString *requestSingleID = [self.requestIndexMap objectForKey:model.requestID];
         [self.requestMap setObject:model forKey:requestSingleID];
     }];
+}
+
+- (void)updateLocalRequestWithModel:(FKCacheRequestModel *)model {
+    [[FKFileManager manager] updateRequestFileWithRequest:model];
+}
+
+- (NSString *)localRequestFilePathWithRequestID:(NSString *)requestID {
+    return [[FKFileManager manager] filePathWithRequestID:requestID];
 }
 
 - (NSUInteger)actionRequestCount {
@@ -91,6 +104,10 @@
         info = [self.requestMap objectForKey:requestSingleID];
     }]] waitUntilFinished:YES];
     return info;
+}
+
+- (FKCacheRequestModel *)localRequestFileWithRequestID:(NSString *)requestID {
+    return [[FKFileManager manager] loadLocalRequestWithRequestID:requestID];
 }
 
 - (NSArray<FKCacheRequestModel *> *)requestArray {

@@ -31,6 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param requestID 请求标识
 - (BOOL)existRequestWithRequestID:(NSString *)requestID;
 
+/// 检查本地请求文件是否已存在
+/// @param model 请求
+- (BOOL)existLocalRequestFileWithRequest:(FKCacheRequestModel *)model;
+
 /// 添加请求缓存
 /// @param model 请求
 - (void)addRequestWithModel:(FKCacheRequestModel *)model;
@@ -39,12 +43,24 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param model 请求
 - (void)updateRequestWithModel:(FKCacheRequestModel *)model;
 
+/// 更新本地请求缓存
+/// @param model 请求
+- (void)updateLocalRequestWithModel:(FKCacheRequestModel *)model;
+
+/// 获取本地请求缓存路径
+/// @param requestID 请求标识
+- (NSString *)localRequestFilePathWithRequestID:(NSString *)requestID;
+
 /// 当前进行中任务数量
 - (NSUInteger)actionRequestCount;
 
 /// 根据请求编号获取缓存请求信息
-/// @param requestID 请求编号
+/// @param requestID 请求标识
 - (FKCacheRequestModel *)requestWithRequestID:(NSString *)requestID;
+
+/// 根据请求编号从本地获取缓存请求信息
+/// @param requestID 请求标识
+- (FKCacheRequestModel *)localRequestFileWithRequestID:(NSString *)requestID;
 
 /// 获取当前所有请求
 - (NSArray<FKCacheRequestModel *> *)requestArray;
