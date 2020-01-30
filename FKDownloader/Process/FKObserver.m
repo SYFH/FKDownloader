@@ -92,9 +92,11 @@
         info.countOfBytesExpectedToReceive = downloadTask.countOfBytesExpectedToReceive;
         
         // 更新下载文件大小
-        if (model.dataLength) {
+        if (model.dataLength == 0) {
             model.dataLength = info.countOfBytesExpectedToReceive;
             hasUpdate = YES;
+        } else {
+            info.countOfBytesExpectedToReceive = model.dataLength;
         }
     }
 
@@ -284,41 +286,47 @@
 
 - (void)execFastInfoBlockWithRequestID:(NSString *)requestID {
     MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
-    FKObserverModel *model = [self.infoMap objectForKey:requestID];
-    NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
-    FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
-    block(model.countOfBytesReceived,
-          model.countOfBytesExpectedToReceive,
-          state,
-          error);
+    if (block) {
+        FKObserverModel *model = [self.infoMap objectForKey:requestID];
+        NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
+        FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+        block(model.countOfBytesReceived,
+        model.countOfBytesExpectedToReceive,
+        state,
+        error);
+    }
 }
 
 - (void)execRequestInfoBlock {
     // 处理单一请求的信息回调
     for (NSString *requestID in self.blockMap) {
         MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
-        FKObserverModel *model = [self.infoMap objectForKey:requestID];
-        NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
-        FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
-        block(model.countOfBytesReceived,
-              model.countOfBytesExpectedToReceive,
-              state,
-              error);
+        if (block) {
+            FKObserverModel *model = [self.infoMap objectForKey:requestID];
+            NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
+            FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+            block(model.countOfBytesReceived,
+                  model.countOfBytesExpectedToReceive,
+                  state,
+                  error);
+        }
     }
     
     // 处理请求集合的信息回调
     for (NSString *barrel in self.barrelMap) {
-        NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
-        int64_t countOfBytesReceived = 0;
-        int64_t countOfBytesExpectedToReceive = 0;
-        
-        for (NSString *requestID in urls) {
-            FKObserverModel *model = [self.infoMap objectForKey:requestID];
-            countOfBytesReceived += model.countOfBytesReceived;
-            countOfBytesExpectedToReceive += model.countOfBytesExpectedToReceive;
-        }
         MessagerBarrelBlock block = [self.barrelBlockMap objectForKey:barrel];
-        block(countOfBytesReceived, countOfBytesExpectedToReceive);
+        if (block) {
+            NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
+            int64_t countOfBytesReceived = 0;
+            int64_t countOfBytesExpectedToReceive = 0;
+            
+            for (NSString *requestID in urls) {
+                FKObserverModel *model = [self.infoMap objectForKey:requestID];
+                countOfBytesReceived += model.countOfBytesReceived;
+                countOfBytesExpectedToReceive += model.countOfBytesExpectedToReceive;
+            }
+            block(countOfBytesReceived, countOfBytesExpectedToReceive);
+        }
     }
 }
 
