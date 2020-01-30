@@ -8,7 +8,12 @@
 
 #import <XCTest/XCTest.h>
 
+#import "NSString+FKCategory.h"
+
 #import "FKCoder.h"
+#import "FKBuilder.h"
+#import "FKCache.h"
+#import "FKCacheModel.h"
 
 @interface FKDownloaderTests : XCTestCase
 
@@ -35,11 +40,21 @@
     XCTAssertTrue([URL isEqualToString:decodeURL]);
 }
 
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
+- (void)testPrepareURL {
+    NSString *URL = @"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe";
+    [[FKBuilder buildWithURL:URL] prepare];
+    
+    // 检查是否存在内存缓存
+    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:URL.SHA256];
+    XCTAssertNotNil(info);
+    
+    // 检查请求是否生成
+    XCTAssertNotNil(info.request);
+    XCTAssertTrue([info.request.URL.absoluteString isEqualToString:URL]);
+    
+    // 检查信息是否正确
+    XCTAssertTrue([info.requestID isEqualToString:URL.SHA256]);
+    XCTAssertTrue([info.url isEqualToString:URL]);
 }
 
 @end
