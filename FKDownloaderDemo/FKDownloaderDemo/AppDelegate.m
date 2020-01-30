@@ -22,9 +22,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [[FKConfigure configure] take];
     [[FKMiddleware shared] registeRequestMiddleware:[CustomRequestMiddleware new]];
     [[FKMiddleware shared] registeResponseMiddleware:[CustomResponseMiddleware new]];
+    [[FKConfigure configure] take];
+    [[FKConfigure configure] activateQueue];
     return YES;
 }
 

@@ -18,6 +18,7 @@
 @property (nonatomic, strong) UILabel *progressInfoLabel;
 @property (nonatomic, strong) UILabel *stateLabel;
 @property (nonatomic, strong) UIButton *controlButton;
+@property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, assign) FKState state;
 
 @end
@@ -52,6 +53,12 @@
         [self.controlButton setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
         [self.controlButton addTarget:self action:@selector(controlDidTap:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:self.controlButton];
+        
+        self.cancelButton = [[UIButton alloc] init];
+        [self.cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+        [self.cancelButton setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
+        [self.cancelButton addTarget:self action:@selector(cancelDidTap:) forControlEvents:UIControlEventTouchUpInside];
+        [self.contentView addSubview:self.cancelButton];
     }
     return self;
 }
@@ -60,8 +67,15 @@
     [super layoutSubviews];
     
     [self.controlButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.right.equalTo(self.contentView);
+        make.top.right.equalTo(self.contentView);
         make.width.mas_equalTo(80);
+    }];
+    
+    [self.cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.right.equalTo(self.contentView);
+        make.top.equalTo(self.controlButton.mas_bottom);
+        make.width.mas_equalTo(80);
+        make.height.equalTo(self.controlButton.mas_height);
     }];
     
     [self.urlLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -112,9 +126,14 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(weak) self = weak;
             
-            CGFloat progress = countOfBytesReceived * 1.0 / countOfBytesExpectedToReceive;
-            self.progressView.progress = progress;
-            self.progressInfoLabel.text = [NSString stringWithFormat:@"%lld/%lld",countOfBytesReceived, countOfBytesExpectedToReceive];
+            if (countOfBytesExpectedToReceive > 0 && countOfBytesReceived > 0) {
+                CGFloat progress = countOfBytesReceived * 1.0 / countOfBytesExpectedToReceive;
+                self.progressView.progress = progress;
+                self.progressInfoLabel.text = [NSString stringWithFormat:@"%lld/%lld",countOfBytesReceived, countOfBytesExpectedToReceive];
+            } else {
+                self.progressInfoLabel.text = @"";
+                self.progressView.progress = 0;
+            }
             self.stateLabel.text = [self stateTransform:state];
             [self controlTitleWithState:state];
         });
@@ -128,9 +147,7 @@
         case FKStatePrepare: {
             [self.controlButton setTitle:@"处理中" forState:UIControlStateNormal];
             self.controlButton.enabled = NO;
-            self.progressView.progress = 0;
             self.progressInfoLabel.hidden = YES;
-            self.stateLabel.text = [self stateTransform:state];
         } break;
         case FKStateIdel: {
             [self.controlButton setTitle:@"取消" forState:UIControlStateNormal];
@@ -160,9 +177,7 @@
         case FKStateComplete: {
             [self.controlButton setTitle:@"已完成" forState:UIControlStateNormal];
             self.controlButton.enabled = NO;
-            self.progressView.progress = 1;
             self.progressInfoLabel.hidden = YES;
-            self.stateLabel.text = [self stateTransform:state];
         } break;
     }
 }
@@ -214,12 +229,15 @@
     }
 }
 
+- (void)cancelDidTap:(UIButton *)sender {
+    [FKControl cancelRequestWithURL:self.url];
+}
+
 
 #pragma mark - Getter/Setter
 - (void)setUrl:(NSString *)url {
     _url = url;
     
-    [[FKBuilder buildWithURL:url] prepare];
     [self infoMessage];
 }
 
