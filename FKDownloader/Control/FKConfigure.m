@@ -39,6 +39,10 @@
     [[FKEngine engine] configtureSession];
 }
 
+- (void)activateQueue {
+    [[FKEngine engine] configtureTimer];
+}
+
 
 #pragma mark - Getter/Setter
 - (void)setMaxAction:(unsigned int)maxAction {

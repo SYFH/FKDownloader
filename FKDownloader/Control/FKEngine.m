@@ -52,9 +52,6 @@
         // 配置线程
         [self configtureQueue];
         
-        // 配置计时器
-        [self configtureTimer];
-        
         // 配置通知监听
         [self configtureNotification];
     }

@@ -33,6 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 配置 Session
 - (void)configtureSession;
 
+/// 配置计时器
+- (void)configtureTimer;
+
 /// 处理下载完成流程
 /// @param downloadTask 下载任务
 /// @param location 缓存文件地址

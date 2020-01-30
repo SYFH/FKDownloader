@@ -31,8 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)configure;
 
-/// 使配置生效, 请在程序启动时配置
+/// 使配置生效, 请在程序启动时, 配置完成后调用
 - (void)take;
+
+/// 激活队列, 进行任务的开始
+- (void)activateQueue;
 
 @end
 
