@@ -24,7 +24,7 @@
     // Override point for customization after application launch.
     [[FKMiddleware shared] registeRequestMiddleware:[CustomRequestMiddleware new]];
     [[FKMiddleware shared] registeResponseMiddleware:[CustomResponseMiddleware new]];
-    [[FKConfigure configure] take];
+    [[FKConfigure configure] takeSession];
     [[FKConfigure configure] activateQueue];
     return YES;
 }
