@@ -8,9 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FKMiddleware.h"
+#import "FKResponse.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TestMiddleware : NSObject
+@interface TestMiddleware : NSObject<FKRequestMiddlewareProtocol, FKResponseMiddlewareProtocol>
+
+@property (nonatomic, strong) NSMutableURLRequest *(^requestMiddlewareHandle)(NSMutableURLRequest* request);
+@property (nonatomic, strong) void(^responseMiddlewareHandle)(FKResponse *response);
 
 @end
 

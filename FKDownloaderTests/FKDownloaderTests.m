@@ -14,8 +14,18 @@
 #import "FKBuilder.h"
 #import "FKCache.h"
 #import "FKCacheModel.h"
+#import "FKConfigure.h"
+#import "FKMessager.h"
+#import "FKControl.h"
+#import "FKEngine.h"
+#import "FKLogger.h"
+
+#import "TestMiddleware.h"
 
 @interface FKDownloaderTests : XCTestCase
+
+@property (nonatomic, strong) TestMiddleware *middleware;
+@property (nonatomic, assign) BOOL onceSuspend;
 
 @end
 
@@ -23,10 +33,20 @@
 
 - (void)setUp {
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    self.middleware = [[TestMiddleware alloc] init];
 }
 
 - (void)tearDown {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
+    // 清理请求产生的文件
+    NSString *URL = @"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe";
+    [FKControl trashRequestWithURL:URL];
+    
+    URL = @"https://qd.myapp.com/myapp/qqteam/AndroidQQ/mobileqq_android.apk?r=1";
+    [FKControl trashRequestWithURL:URL];
+    
+    URL = @"https://dl.softmgr.qq.com/original/Browser/QQBrowser_Setup_Qqpcmgr_10.5.3863.400.exe";
+    [FKControl trashRequestWithURL:URL];
 }
 
 - (void)testCodingURL {
@@ -40,8 +60,32 @@
     XCTAssertTrue([URL isEqualToString:decodeURL]);
 }
 
+- (void)testTakeConfigture {
+    [FKConfigure configure].maxAction = 3;
+    [[FKConfigure configure] takeSession];
+    
+    XCTAssertTrue([[FKEngine engine].backgroundSession.configuration.identifier isEqualToString:[FKConfigure configure].backgroundSessionIdentifier]);
+}
+
 - (void)testPrepareURL {
     NSString *URL = @"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe";
+    
+    __weak typeof(self) weak = self;
+    self.middleware.requestMiddlewareHandle = ^NSMutableURLRequest * _Nonnull(NSMutableURLRequest * _Nonnull request) {
+        [FKLogger debug:@"自定义请求中间件被调用"];
+        __strong typeof(weak) self = weak;
+        XCTAssertTrue(YES);
+        return request;
+    };
+    self.middleware.responseMiddlewareHandle = ^(FKResponse * _Nonnull response) {
+        [FKLogger debug:@"自定义响应中间件被调用"];
+        __strong typeof(weak) self = weak;
+        XCTAssertTrue(YES);
+    };
+    
+    [[FKMiddleware shared] registeRequestMiddleware:self.middleware];
+    [[FKMiddleware shared] registeResponseMiddleware:self.middleware];
+    
     [[FKBuilder buildWithURL:URL] prepare];
     
     // 检查是否存在内存缓存
@@ -55,6 +99,104 @@
     // 检查信息是否正确
     XCTAssertTrue([info.requestID isEqualToString:URL.SHA256]);
     XCTAssertTrue([info.url isEqualToString:URL]);
+}
+
+- (void)testSimpleDownloadURL {
+    NSString *URL = @"https://qd.myapp.com/myapp/qqteam/AndroidQQ/mobileqq_android.apk?r=1";
+    
+    [[FKConfigure configure] takeSession];
+    [[FKConfigure configure] activateQueue];
+    
+    [[FKBuilder buildWithURL:URL] prepare];
+    
+    // 注意: Unit Test 在不依附于 App 时创建的 Background Session 是无效的
+    // 错误信息: Code=4099 "The connection to service on pid 0 named com.apple.nsurlsessiond was invalidated from this process."
+    // 相关信息请查看 [Testing Background Session Code](https://forums.developer.apple.com/thread/14855)
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"testActivateDownloadURL"];
+    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
+        
+        if (error) {
+            // 直接停止测试
+            [expectation fulfill];
+        } else {
+            if (countOfBytesExpectedToReceive > 0) {
+                if (state != FKStateCancel) {
+                    [FKControl cancelRequestWithURL:URL];
+                } else {
+                    // 取消下载后停止测试
+                    [expectation fulfill];
+                }
+            }
+        }
+    }];
+    [self waitForExpectations:@[expectation]
+                      timeout:[FKConfigure configure].templateBackgroundConfiguration.timeoutIntervalForRequest];
+}
+
+- (void)testControlDownloadURL {
+    NSString *URL = @"https://dl.softmgr.qq.com/original/Browser/QQBrowser_Setup_Qqpcmgr_10.5.3863.400.exe";
+    
+    [[FKConfigure configure] takeSession];
+    [[FKConfigure configure] activateQueue];
+    
+    [[FKBuilder buildWithURL:URL] prepare];
+    
+    [FKControl actionRequestWithURL:URL];
+    FKState state = [FKControl stateWithURL:URL];
+    XCTAssertTrue(state == FKStateIdel || state == FKStateAction || state == FKStatePrepare);
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"testControlDownloadURL"];
+    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
+        
+        switch (state) {
+            case FKStatePrepare: {
+                
+            } break;
+                
+            case FKStateIdel: {
+                
+            } break;
+                           
+            case FKStateAction: {
+                if (countOfBytesExpectedToReceive > 0 && self.onceSuspend == NO) {
+                    [FKControl suspendRequestWithURL:URL];
+                    self.onceSuspend = YES;
+                    // 暂停后状态不会立即改变, 而是视断点续传数据返回情况改变
+                }
+                
+                int64_t maxSize = 1000 * 1000 * 8; // 8 mb
+                if (countOfBytesReceived > maxSize) {
+                    [FKControl cancelRequestWithURL:URL];
+                    FKState state = [FKControl stateWithURL:URL];
+                    XCTAssertTrue(state == FKStateCancel);
+                }
+            } break;
+                           
+            case FKStateSuspend: {
+                [FKControl resumeRequestWithURL:URL];
+                FKState state = [FKControl stateWithURL:URL];
+                XCTAssertTrue(state == FKStateAction);
+            } break;
+                           
+            case FKStateCancel: {
+                NSError *error = [FKControl errorWithURL:URL];
+                [FKLogger debug:@"contrl test, download error: %@", error];
+                
+                // 最后取消时, 完成测试
+                [expectation fulfill];
+            } break;
+                           
+            case FKStateError: {
+                
+            } break;
+                           
+            case FKStateComplete: {
+                
+            } break;
+        }
+    }];
+    [self waitForExpectations:@[expectation]
+                      timeout:[FKConfigure configure].templateBackgroundConfiguration.timeoutIntervalForRequest];
 }
 
 @end
