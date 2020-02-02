@@ -59,11 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param request 请求信息
 - (BOOL)existLocalRequestWithRequest:(FKCacheRequestModel *)request;
 
-/// 根据请求链接读取本地信息文件
-/// @param url 请求链接
-/// @param complete 回调
-- (void)loadLocalRequestWithURL:(NSString *)url complete:(void(^)(FKCacheRequestModel * _Nullable request))complete;
-
 /// 根据请求标识读取本地信息文件
 /// @param requestID 请求标识
 - (FKCacheRequestModel* _Nullable)loadLocalRequestWithRequestID:(NSString *)requestID;
@@ -81,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 获取请求文件地址
 /// @param requestID 请求标识
 /// @param extension 文件后缀
-- (NSString *)requestFielPath:(NSString *)requestID extension:(NSString *)extension;
+- (NSString *)requestFilePath:(NSString *)requestID extension:(NSString *)extension;
 
 /// 获取已完成请求数据的路径
 /// @param requestID 请求标识

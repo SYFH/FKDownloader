@@ -19,6 +19,7 @@
 #import "FKControl.h"
 #import "FKEngine.h"
 #import "FKLogger.h"
+#import "FKFileManager.h"
 
 #import "TestMiddleware.h"
 
@@ -95,13 +96,25 @@
 }
 
 - (void)testPrepareURL {
-    NSString *URL = @"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe";
+    NSString *time = [NSString stringWithFormat:@"%.0f", [NSDate date].timeIntervalSince1970 * 1000];
+    NSString *URL = [NSString stringWithFormat:@"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe?d=%@", time];
     
     [[FKBuilder buildWithURL:URL] prepare];
+    
+    unsigned long long signleNumber = [[FKFileManager manager] loadSingleNumber];
+    [FKLogger debug:@"%llu", signleNumber];
+    
+    NSString *requestFilePath = [[FKFileManager manager] requestFilePath:URL.SHA256 extension:@".rqi"];
+    NSString *requestFileName = [NSString stringWithFormat:@"%@.rqi", URL.SHA256];
+    XCTAssertTrue([requestFilePath hasSuffix:requestFileName]);
     
     // 检查是否存在内存缓存
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:URL.SHA256];
     XCTAssertNotNil(info);
+    
+    // 检查是否存在本地缓存
+    FKCacheRequestModel *localInfo = [[FKFileManager manager] loadLocalRequestWithRequestID:URL.SHA256];
+    XCTAssertNotNil(localInfo);
     
     // 检查请求是否生成
     XCTAssertNotNil(info.request);
@@ -110,6 +123,16 @@
     // 检查信息是否正确
     XCTAssertTrue([info.requestID isEqualToString:URL.SHA256]);
     XCTAssertTrue([info.url isEqualToString:URL]);
+    
+    info.extension = @".exe";
+    [[FKCache cache] updateRequestWithModel:info];
+    
+    NSString *filePath = [NSString stringWithFormat:@"%@/%@/%@%@", [FKFileManager manager].workFinder, URL.SHA256, URL.SHA256, info.extension];
+    NSString *expectedFilePath = [[FKCache cache] requestExpectedFilePathWithRequestID:info.requestID];
+    XCTAssertTrue([filePath isEqualToString:expectedFilePath]);
+    
+    // 删除
+    [FKControl trashRequestWithURL:URL];
 }
 
 - (void)testSimpleDownloadURL {

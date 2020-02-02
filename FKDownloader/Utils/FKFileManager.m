@@ -92,39 +92,31 @@
 }
 
 - (void)createRequestFileWithRequest:(FKCacheRequestModel *)request {
-    NSString *requestPath = [self requestFielPath:request.requestID extension:self.requestFileExtension];
+    NSString *requestPath = [self requestFilePath:request.requestID extension:self.requestFileExtension];
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:request];
     [self.fileManager createFileAtPath:requestPath contents:data attributes:nil];
 }
 
 - (void)deleteRequestFinderWithRequestID:(NSString *)request {
     NSString *requestPath = [self.workPath stringByAppendingPathComponent:request];
-    if ([self.fileManager fileExistsAtPath:requestPath] == NO) {
+    if ([self.fileManager fileExistsAtPath:requestPath]) {
         [self.fileManager removeItemAtPath:requestPath error:nil];
     }
 }
 
 - (void)updateRequestFileWithRequest:(FKCacheRequestModel *)request {
-    NSString *requestPath = [self requestFielPath:request.requestID extension:self.requestFileExtension];
+    NSString *requestPath = [self requestFilePath:request.requestID extension:self.requestFileExtension];
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:request];
     [data writeToFile:requestPath atomically:YES];
 }
 
 - (BOOL)existLocalRequestWithRequest:(FKCacheRequestModel *)request {
-    NSString *requestPath = [self requestFielPath:request.requestID extension:self.requestFileExtension];
+    NSString *requestPath = [self requestFilePath:request.requestID extension:self.requestFileExtension];
     return [self.fileManager fileExistsAtPath:requestPath];
 }
 
-- (void)loadLocalRequestWithURL:(NSString *)url complete:(void (^)(FKCacheRequestModel * _Nullable request))complete {
-    NSString *requestPath = [self requestFielPath:url.SHA256 extension:self.requestFileExtension];
-    FKCacheRequestModel *request = [NSKeyedUnarchiver unarchiveObjectWithFile:requestPath];
-    if (complete) {
-        complete(request);
-    }
-}
-
 - (FKCacheRequestModel *)loadLocalRequestWithRequestID:(NSString *)requestID {
-    NSString *requestPath = [self requestFielPath:requestID extension:self.requestFileExtension];
+    NSString *requestPath = [self requestFilePath:requestID extension:self.requestFileExtension];
     FKCacheRequestModel *request = [NSKeyedUnarchiver unarchiveObjectWithFile:requestPath];
     return request;
 }
@@ -146,7 +138,7 @@
     return [self.workPath stringByAppendingPathComponent:requestID];
 }
 
-- (NSString *)requestFielPath:(NSString *)requestID extension:(NSString *)extension {
+- (NSString *)requestFilePath:(NSString *)requestID extension:(NSString *)extension {
     NSString *fileName = [NSString stringWithFormat:@"%@%@", requestID, extension];
     return [[self requestFinderPath:requestID] stringByAppendingPathComponent:fileName];
 }
