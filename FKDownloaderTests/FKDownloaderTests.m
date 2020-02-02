@@ -39,15 +39,6 @@
 
 - (void)tearDown {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
-    // 清理请求产生的文件
-    NSString *URL = @"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe";
-    [FKControl trashRequestWithURL:URL];
-    
-    URL = @"https://qd.myapp.com/myapp/qqteam/AndroidQQ/mobileqq_android.apk?r=1";
-    [FKControl trashRequestWithURL:URL];
-    
-    URL = @"https://dl.softmgr.qq.com/original/Browser/QQBrowser_Setup_Qqpcmgr_10.5.3863.400.exe";
-    [FKControl trashRequestWithURL:URL];
 }
 
 - (void)testCodingURL {
@@ -164,8 +155,42 @@
                 } else {
                     // 取消下载后停止测试
                     [FKMessager removeMessagerBarrel:@"test"];
+                    [FKControl trashRequestWithURL:URL];
                     [expectation fulfill];
                 }
+            }
+        }
+    }];
+    [self waitForExpectations:@[expectation]
+                      timeout:[FKConfigure configure].templateBackgroundConfiguration.timeoutIntervalForRequest];
+}
+
+- (void)testDownloadURL {
+    NSString *URL = @"https://wx2.sinaimg.cn/mw600/5c583da1gy1gbi07pq10ej20dw0eiwit.jpg";
+    
+    [[FKConfigure configure] takeSession];
+    [[FKConfigure configure] activateQueue];
+    
+    [[FKBuilder buildWithURL:URL] prepare];
+
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"testActivateDownloadURL"];
+    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
+        
+        if (error) {
+            // 直接停止测试
+            [expectation fulfill];
+        } else {
+            if (state == FKStateComplete) {
+                NSString *filePath = [[FKCache cache] requestExpectedFilePathWithRequestID:URL.SHA256];
+                NSDictionary<NSFileAttributeKey, id> *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+                unsigned long long fileSize = [[attributes objectForKey:NSFileSize] unsignedLongLongValue];
+                
+                FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:URL.SHA256];
+                XCTAssertTrue([[FKFileManager manager] fileSizeWithPath:filePath] == fileSize);
+                XCTAssertTrue(info.dataLength == fileSize);
+                
+                [FKControl trashRequestWithURL:URL];
+                [expectation fulfill];
             }
         }
     }];
@@ -223,6 +248,7 @@
                 [FKLogger debug:@"contrl test, download error: %@", error];
                 
                 // 最后取消时, 完成测试
+                [FKControl trashRequestWithURL:URL];
                 [expectation fulfill];
             } break;
                            
