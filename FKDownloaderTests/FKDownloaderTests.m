@@ -60,16 +60,7 @@
     XCTAssertTrue([URL isEqualToString:decodeURL]);
 }
 
-- (void)testTakeConfigture {
-    [FKConfigure configure].maxAction = 3;
-    [[FKConfigure configure] takeSession];
-    
-    XCTAssertTrue([[FKEngine engine].backgroundSession.configuration.identifier isEqualToString:[FKConfigure configure].backgroundSessionIdentifier]);
-}
-
-- (void)testPrepareURL {
-    NSString *URL = @"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe";
-    
+- (void)testMiddleware {
     __weak typeof(self) weak = self;
     self.middleware.requestMiddlewareHandle = ^NSMutableURLRequest * _Nonnull(NSMutableURLRequest * _Nonnull request) {
         [FKLogger debug:@"自定义请求中间件被调用"];
@@ -85,6 +76,26 @@
     
     [[FKMiddleware shared] registeRequestMiddleware:self.middleware];
     [[FKMiddleware shared] registeResponseMiddleware:self.middleware];
+}
+
+- (void)testTakeConfigture {
+    // 无法输入附属
+    [FKConfigure configure].maxAction = -1;
+    XCTAssertTrue([FKConfigure configure].maxAction == 6);
+    
+    [FKConfigure configure].maxAction = 7;
+    XCTAssertTrue([FKConfigure configure].maxAction == 6);
+    
+    [FKConfigure configure].maxAction = 3;
+    XCTAssertTrue([FKConfigure configure].maxAction == 3);
+    
+    [[FKConfigure configure] takeSession];
+    
+    XCTAssertTrue([[FKEngine engine].backgroundSession.configuration.identifier isEqualToString:[FKConfigure configure].backgroundSessionIdentifier]);
+}
+
+- (void)testPrepareURL {
+    NSString *URL = @"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe";
     
     [[FKBuilder buildWithURL:URL] prepare];
     
@@ -109,6 +120,11 @@
     
     [[FKBuilder buildWithURL:URL] prepare];
     
+    [FKMessager addMessagerWithURLs:@[URL] barrel:@"test"];
+    [FKMessager messagerWithBarrel:@"test" info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive) {
+        
+    }];
+    
     // 注意: Unit Test 在不依附于 App 时创建的 Background Session 是无效的
     // 错误信息: Code=4099 "The connection to service on pid 0 named com.apple.nsurlsessiond was invalidated from this process."
     // 相关信息请查看 [Testing Background Session Code](https://forums.developer.apple.com/thread/14855)
@@ -124,6 +140,7 @@
                     [FKControl cancelRequestWithURL:URL];
                 } else {
                     // 取消下载后停止测试
+                    [FKMessager removeMessagerBarrel:@"test"];
                     [expectation fulfill];
                 }
             }

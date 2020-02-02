@@ -16,14 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSString (FKCategory)
 
-- (NSString *)MD5;
-- (NSData *)MD5Data;
-- (NSString *)SHA1;
-- (NSData *)SHA1Data;
 - (NSString *)SHA256;
-- (NSData *)SHA256Data;
-- (NSString *)SHA512;
-- (NSData *)SHA512Data;
 
 /// MIMEType to file extension
 - (NSString *)toExtension;

@@ -29,10 +29,6 @@
 
 
 #pragma mark - NSURLSessionDelegate
-- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(nullable NSError *)error {
-    NSLog(@"didBecomeInvalidWithError: %@", error);
-}
-
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * _Nullable credential))completionHandler {
     
@@ -70,10 +66,6 @@
 
 
 #pragma mark - NSURLSessionTaskDelegate
-- (void)URLSession:(NSURLSession *)session taskIsWaitingForConnectivity:(NSURLSessionTask *)task {
-    NSLog(@"等待连接");
-}
-
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
                      willPerformHTTPRedirection:(NSHTTPURLResponse *)response
                                      newRequest:(NSURLRequest *)request
@@ -148,19 +140,6 @@
                               didFinishDownloadingToURL:(NSURL *)location {
     
     [[FKEngine engine] processCompleteDownload:downloadTask location:location];
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-                                           didWriteData:(int64_t)bytesWritten
-                                      totalBytesWritten:(int64_t)totalBytesWritten
-                              totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-    
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-                                      didResumeAtOffset:(int64_t)fileOffset
-                                     expectedTotalBytes:(int64_t)expectedTotalBytes {
-    
 }
 
 @end
