@@ -47,6 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param request 请求信息
 - (void)createRequestFileWithRequest:(FKCacheRequestModel *)request;
 
+/// 删除请求文件夹, 包括此路径下的所有文件
+/// @param request 请求信息
+- (void)deleteRequestFinderWithRequestID:(NSString *)request;
+
 /// 更新请求信息文件
 /// @param request 请求信息
 - (void)updateRequestFileWithRequest:(FKCacheRequestModel *)request;

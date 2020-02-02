@@ -72,14 +72,18 @@
 }
 
 - (void)configtureTimer {
-    __weak typeof(self) weak = self;
-    self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.timerQueue);
-    dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-    dispatch_source_set_event_handler(self.timer, ^{
-        __strong typeof(weak) self = weak;
-        [self timerAction];
-    });
-    dispatch_resume(self.timer);
+    if (self.timer) {
+        return;
+    } else {
+        __weak typeof(self) weak = self;
+        self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.timerQueue);
+        dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+        dispatch_source_set_event_handler(self.timer, ^{
+            __strong typeof(weak) self = weak;
+            [self timerAction];
+        });
+        dispatch_resume(self.timer);
+    }
 }
 
 - (void)configtureNotification {

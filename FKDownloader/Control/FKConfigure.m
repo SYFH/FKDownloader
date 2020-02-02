@@ -35,7 +35,7 @@
     return self;
 }
 
-- (void)take {
+- (void)takeSession {
     [[FKEngine engine] configtureSession];
 }
 

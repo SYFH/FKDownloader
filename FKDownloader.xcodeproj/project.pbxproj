@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D3079D823E66C72005F0105 /* TestMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3079D723E66C72005F0105 /* TestMiddleware.m */; };
+		3D3079E123E67E68005F0105 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3079E023E67E68005F0105 /* AppDelegate.m */; };
+		3D3079E723E67E68005F0105 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3079E623E67E68005F0105 /* ViewController.m */; };
+		3D3079EA23E67E68005F0105 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D3079E823E67E68005F0105 /* Main.storyboard */; };
+		3D3079EC23E67E6B005F0105 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D3079EB23E67E6B005F0105 /* Assets.xcassets */; };
+		3D3079EF23E67E6B005F0105 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D3079ED23E67E6B005F0105 /* LaunchScreen.storyboard */; };
+		3D3079F223E67E6B005F0105 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3079F123E67E6B005F0105 /* main.m */; };
 		3D36748423BD89BC0023E3A0 /* FKObserverModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D36748223BD89BC0023E3A0 /* FKObserverModel.h */; };
 		3D36748523BD89BC0023E3A0 /* FKObserverModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D36748323BD89BC0023E3A0 /* FKObserverModel.m */; };
 		3D36748823BD8FB40023E3A0 /* FKCacheModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D36748623BD8FB40023E3A0 /* FKCacheModel.h */; };
@@ -51,6 +58,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3D3079F623E67E75005F0105 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3D6616F123B75BA9008EBE8A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D3079DC23E67E68005F0105;
+			remoteInfo = FKDownloaderTestsApp;
+		};
 		3D82358523C1DF4800FE1D89 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3D6616F123B75BA9008EBE8A /* Project object */;
@@ -61,6 +75,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3D3079D623E66C72005F0105 /* TestMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestMiddleware.h; sourceTree = "<group>"; };
+		3D3079D723E66C72005F0105 /* TestMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestMiddleware.m; sourceTree = "<group>"; };
+		3D3079DD23E67E68005F0105 /* FKDownloaderTestsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKDownloaderTestsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D3079DF23E67E68005F0105 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		3D3079E023E67E68005F0105 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		3D3079E523E67E68005F0105 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		3D3079E623E67E68005F0105 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		3D3079E923E67E68005F0105 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3D3079EB23E67E6B005F0105 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3D3079EE23E67E6B005F0105 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3D3079F023E67E6B005F0105 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3D3079F123E67E6B005F0105 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3D36748223BD89BC0023E3A0 /* FKObserverModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKObserverModel.h; sourceTree = "<group>"; };
 		3D36748323BD89BC0023E3A0 /* FKObserverModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKObserverModel.m; sourceTree = "<group>"; };
 		3D36748623BD8FB40023E3A0 /* FKCacheModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKCacheModel.h; sourceTree = "<group>"; };
@@ -108,6 +134,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3D3079DA23E67E68005F0105 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3D6616F723B75BA9008EBE8A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -127,6 +160,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D3079D523E66C55005F0105 /* Middleware */ = {
+			isa = PBXGroup;
+			children = (
+				3D3079D623E66C72005F0105 /* TestMiddleware.h */,
+				3D3079D723E66C72005F0105 /* TestMiddleware.m */,
+			);
+			path = Middleware;
+			sourceTree = "<group>";
+		};
+		3D3079DE23E67E68005F0105 /* FKDownloaderTestsApp */ = {
+			isa = PBXGroup;
+			children = (
+				3D3079DF23E67E68005F0105 /* AppDelegate.h */,
+				3D3079E023E67E68005F0105 /* AppDelegate.m */,
+				3D3079E523E67E68005F0105 /* ViewController.h */,
+				3D3079E623E67E68005F0105 /* ViewController.m */,
+				3D3079E823E67E68005F0105 /* Main.storyboard */,
+				3D3079EB23E67E6B005F0105 /* Assets.xcassets */,
+				3D3079ED23E67E6B005F0105 /* LaunchScreen.storyboard */,
+				3D3079F023E67E6B005F0105 /* Info.plist */,
+				3D3079F123E67E6B005F0105 /* main.m */,
+			);
+			path = FKDownloaderTestsApp;
+			sourceTree = "<group>";
+		};
 		3D36748123BD869B0023E3A0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -153,6 +211,7 @@
 			children = (
 				3D6616FC23B75BA9008EBE8A /* FKDownloader */,
 				3D82358023C1DF4800FE1D89 /* FKDownloaderTests */,
+				3D3079DE23E67E68005F0105 /* FKDownloaderTestsApp */,
 				3D6616FB23B75BA9008EBE8A /* Products */,
 				3D560E2D23CC5F7F0080500D /* Frameworks */,
 			);
@@ -163,6 +222,7 @@
 			children = (
 				3D6616FA23B75BA9008EBE8A /* FKDownloader.framework */,
 				3D82357F23C1DF4800FE1D89 /* FKDownloaderTests.xctest */,
+				3D3079DD23E67E68005F0105 /* FKDownloaderTestsApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -185,6 +245,7 @@
 		3D82358023C1DF4800FE1D89 /* FKDownloaderTests */ = {
 			isa = PBXGroup;
 			children = (
+				3D3079D523E66C55005F0105 /* Middleware */,
 				3D82358123C1DF4800FE1D89 /* FKDownloaderTests.m */,
 				3D82358323C1DF4800FE1D89 /* Info.plist */,
 			);
@@ -290,6 +351,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		3D3079DC23E67E68005F0105 /* FKDownloaderTestsApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D3079F323E67E6B005F0105 /* Build configuration list for PBXNativeTarget "FKDownloaderTestsApp" */;
+			buildPhases = (
+				3D3079D923E67E68005F0105 /* Sources */,
+				3D3079DA23E67E68005F0105 /* Frameworks */,
+				3D3079DB23E67E68005F0105 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FKDownloaderTestsApp;
+			productName = FKDownloaderTestsApp;
+			productReference = 3D3079DD23E67E68005F0105 /* FKDownloaderTestsApp.app */;
+			productType = "com.apple.product-type.application";
+		};
 		3D6616F923B75BA9008EBE8A /* FKDownloader */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3D66170223B75BA9008EBE8A /* Build configuration list for PBXNativeTarget "FKDownloader" */;
@@ -320,6 +398,7 @@
 			);
 			dependencies = (
 				3D82358623C1DF4800FE1D89 /* PBXTargetDependency */,
+				3D3079F723E67E75005F0105 /* PBXTargetDependency */,
 			);
 			name = FKDownloaderTests;
 			productName = FKDownloaderTests;
@@ -335,11 +414,15 @@
 				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = norld;
 				TargetAttributes = {
+					3D3079DC23E67E68005F0105 = {
+						CreatedOnToolsVersion = 11.3.1;
+					};
 					3D6616F923B75BA9008EBE8A = {
 						CreatedOnToolsVersion = 11.3;
 					};
 					3D82357E23C1DF4800FE1D89 = {
 						CreatedOnToolsVersion = 11.3;
+						TestTargetID = 3D3079DC23E67E68005F0105;
 					};
 				};
 			};
@@ -358,11 +441,22 @@
 			targets = (
 				3D6616F923B75BA9008EBE8A /* FKDownloader */,
 				3D82357E23C1DF4800FE1D89 /* FKDownloaderTests */,
+				3D3079DC23E67E68005F0105 /* FKDownloaderTestsApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3D3079DB23E67E68005F0105 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3079EF23E67E6B005F0105 /* LaunchScreen.storyboard in Resources */,
+				3D3079EC23E67E6B005F0105 /* Assets.xcassets in Resources */,
+				3D3079EA23E67E68005F0105 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3D6616F823B75BA9008EBE8A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -380,6 +474,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3D3079D923E67E68005F0105 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3079E723E67E68005F0105 /* ViewController.m in Sources */,
+				3D3079E123E67E68005F0105 /* AppDelegate.m in Sources */,
+				3D3079F223E67E6B005F0105 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3D6616F623B75BA9008EBE8A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -410,12 +514,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D82358223C1DF4800FE1D89 /* FKDownloaderTests.m in Sources */,
+				3D3079D823E66C72005F0105 /* TestMiddleware.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3D3079F723E67E75005F0105 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D3079DC23E67E68005F0105 /* FKDownloaderTestsApp */;
+			targetProxy = 3D3079F623E67E75005F0105 /* PBXContainerItemProxy */;
+		};
 		3D82358623C1DF4800FE1D89 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3D6616F923B75BA9008EBE8A /* FKDownloader */;
@@ -423,7 +533,62 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		3D3079E823E67E68005F0105 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3D3079E923E67E68005F0105 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		3D3079ED23E67E6B005F0105 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3D3079EE23E67E6B005F0105 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		3D3079F423E67E6B005F0105 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QD5GY3MPC6;
+				INFOPLIST_FILE = FKDownloaderTestsApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloaderTestsApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3D3079F523E67E6B005F0105 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QD5GY3MPC6;
+				INFOPLIST_FILE = FKDownloaderTestsApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloaderTestsApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		3D66170023B75BA9008EBE8A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -591,6 +756,7 @@
 		3D82358723C1DF4800FE1D89 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QD5GY3MPC6;
 				INFOPLIST_FILE = FKDownloaderTests/Info.plist;
@@ -603,12 +769,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloaderTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FKDownloaderTestsApp.app/FKDownloaderTestsApp";
 			};
 			name = Debug;
 		};
 		3D82358823C1DF4800FE1D89 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QD5GY3MPC6;
 				INFOPLIST_FILE = FKDownloaderTests/Info.plist;
@@ -621,12 +789,22 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.norld.FKDownloaderTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FKDownloaderTestsApp.app/FKDownloaderTestsApp";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3D3079F323E67E6B005F0105 /* Build configuration list for PBXNativeTarget "FKDownloaderTestsApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D3079F423E67E6B005F0105 /* Debug */,
+				3D3079F523E67E6B005F0105 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3D6616F423B75BA9008EBE8A /* Build configuration list for PBXProject "FKDownloader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

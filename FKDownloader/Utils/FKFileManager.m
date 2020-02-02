@@ -97,6 +97,13 @@
     [self.fileManager createFileAtPath:requestPath contents:data attributes:nil];
 }
 
+- (void)deleteRequestFinderWithRequestID:(NSString *)request {
+    NSString *requestPath = [self.workPath stringByAppendingPathComponent:request];
+    if ([self.fileManager fileExistsAtPath:requestPath] == NO) {
+        [self.fileManager removeItemAtPath:requestPath error:nil];
+    }
+}
+
 - (void)updateRequestFileWithRequest:(FKCacheRequestModel *)request {
     NSString *requestPath = [self requestFielPath:request.requestID extension:self.requestFileExtension];
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:request];

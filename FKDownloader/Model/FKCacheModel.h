@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) int64_t dataLength; // 数据长度
 @property (nonatomic, strong) NSString *extension; // 文件后缀, `.*`
 @property (nonatomic, strong, nullable) NSData *resumeData; // 恢复数据
-@property (nonatomic, strong) NSError *error; // 错误
+@property (nonatomic, strong, nullable) NSError *error; // 错误
 
 @end
 

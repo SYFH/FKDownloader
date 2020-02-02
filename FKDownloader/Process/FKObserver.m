@@ -22,6 +22,10 @@
 /// 结构: {"SHA256(Request.URL)": Observer.Model}
 @property (nonatomic, strong) NSMapTable<NSString *, FKObserverModel *> *infoMap;
 
+/// 预约信息回调, 在正式添加到 blockMap 之前的预保留队列, 防止任务未开始就添加信息回调
+/// 结构: {"SHA256(Request.URL)": MessagerInfoBlock}
+@property (nonatomic, strong) NSMapTable<NSString *, MessagerInfoBlock> *reserveBlockMap;
+
 /// 信息回调
 /// 结构: {"SHA256(Request.URL)": MessagerInfoBlock}
 @property (nonatomic, strong) NSMapTable<NSString *, MessagerInfoBlock> *blockMap;
@@ -55,6 +59,7 @@
     self = [super init];
     if (self) {
         NSUInteger count = self.infoMap.count;
+        count = self.reserveBlockMap.count;
         count = self.blockMap.count;
         count = self.barrelMap.count;
         count = self.barrelBlockMap.count;
@@ -115,6 +120,14 @@
     return _infoMap;
 }
 
+- (NSMapTable<NSString *,MessagerInfoBlock> *)reserveBlockMap {
+    if (!_reserveBlockMap) {
+        _reserveBlockMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                                 valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _reserveBlockMap;
+}
+
 - (NSMapTable<NSString *,MessagerInfoBlock> *)blockMap {
     if (!_blockMap) {
         _blockMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
@@ -173,6 +186,15 @@
     info.countOfBytesExpectedToReceive = 0;
     [self.infoMap setObject:info forKey:downloadTask.taskDescription];
     [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"添加监听缓存"];
+    
+    // 将预约回调添加到正式回调队列中
+    if ([self.reserveBlockMap objectForKey:info.requestID]) {
+        [[FKEngine engine].ioQueue addOperationWithBlock:^{
+            [self.blockMap setObject:[self.reserveBlockMap objectForKey:info.requestID] forKey:info.requestID];
+            [self.reserveBlockMap removeObjectForKey:info.requestID];
+        }];
+    }
+    [FKLogger debug:@"%@\n%@", info.requestID, @"将预约回调移动到正式回调队列中"];
 }
 
 - (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
@@ -235,7 +257,7 @@
     }
     
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        [self.blockMap setObject:block forKey:requestID];
+        [self.reserveBlockMap setObject:block forKey:requestID];
     }];
     [FKLogger debug:@"%@\n%@", requestID, @"添加信息回调到监听缓存"];
     
