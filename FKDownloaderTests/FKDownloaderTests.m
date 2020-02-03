@@ -59,6 +59,7 @@
     [FKControl cancelAllRequest];
 }
 
+/// 测试 URL Coding
 - (void)testCodingURL {
     NSString *URL = @"https://www.百度.com/◆/あい/🀆🀄︎🀅/家/🏠?ch=👌🍺&name=你好啊#第一章";
     NSString *contrast = @"https://www.%E7%99%BE%E5%BA%A6.com/%E2%97%86/%E3%81%82%E3%81%84/%F0%9F%80%86%F0%9F%80%84%EF%B8%8E%F0%9F%80%85/%E5%AE%B6/%F0%9F%8F%A0?ch=%F0%9F%91%8C%F0%9F%8D%BA&name=%E4%BD%A0%E5%A5%BD%E5%95%8A#%E7%AC%AC%E4%B8%80%E7%AB%A0";
@@ -70,6 +71,7 @@
     XCTAssertTrue([URL isEqualToString:decodeURL]);
 }
 
+/// 测试 MIME Type 转换文件后缀名问题
 - (void)testMIMETypeConvertFileExtension {
     NSString *MIMEType = @"application/vnd.android.package-archive";
     CFStringRef mimeType = (__bridge CFStringRef)MIMEType;
@@ -86,6 +88,7 @@
     XCTAssertTrue([[FKMIMEType extensionWithMIMEType:MIMEType] isEqualToString:@"bin"]);
 }
 
+/// 测试配置参数
 - (void)testTakeConfigture {
     // 无法输入附属
     [FKConfigure configure].maxAction = -1;
@@ -102,6 +105,21 @@
     XCTAssertTrue([[FKEngine engine].backgroundSession.configuration.identifier isEqualToString:[FKConfigure configure].backgroundSessionIdentifier]);
 }
 
+/// 对不存在的任务进行操作测试
+- (void)testNotExistURL {
+    NSString *URL = @"https://images.unsplash.com/photo-1580411787588-98a9629d7a7f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9";
+    
+    XCTAssertEqual([FKControl stateWithURL:URL], FKStatePrepare);
+    XCTAssertNil([FKControl errorWithURL:URL]);
+    
+    [FKControl actionRequestWithURL:URL];
+    [FKControl suspendRequestWithURL:URL];
+    [FKControl resumeRequestWithURL:URL];
+    [FKControl cancelRequestWithURL:URL];
+    [FKControl trashRequestWithURL:URL];
+}
+
+/// 测试预处理链接逻辑
 - (void)testPrepareURL {
     NSString *time = [NSString stringWithFormat:@"%.0f", [NSDate date].timeIntervalSince1970 * 1000];
     NSString *URL = [NSString stringWithFormat:@"https://qd.myapp.com/myapp/qqteam/pcqq/PCQQ2020.exe?d=%@", time];
@@ -145,6 +163,7 @@
     [FKControl trashRequestWithURL:URL];
 }
 
+/// 测试是否可以下载文件, 一旦有数据返回则立即取消
 - (void)testSimpleDownloadURL {
     NSString *URL = @"https://qd.myapp.com/myapp/qqteam/AndroidQQ/mobileqq_android.apk?r=1";
     
@@ -184,6 +203,7 @@
                       timeout:[FKConfigure configure].templateBackgroundConfiguration.timeoutIntervalForRequest];
 }
 
+/// 测试完整下载文件流程
 - (void)testDownloadURL {
     NSString *URL = @"https://wx2.sinaimg.cn/mw600/5c583da1gy1gbi07pq10ej20dw0eiwit.jpg";
     
@@ -217,6 +237,7 @@
                       timeout:[FKConfigure configure].templateBackgroundConfiguration.timeoutIntervalForRequest];
 }
 
+/// 测试对下载任务的控制操作, 流程为 Prepare -> Idel -> Action -> Suspend -> Action -> Cancel
 - (void)testControlDownloadURL {
     __block BOOL onceSuspend = NO;
     NSString *URL = @"https://dl.softmgr.qq.com/original/Browser/QQBrowser_Setup_Qqpcmgr_10.5.3863.400.exe";
