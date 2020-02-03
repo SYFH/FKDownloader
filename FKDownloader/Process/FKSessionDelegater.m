@@ -68,11 +68,13 @@
 #pragma mark - NSURLSessionTaskDelegate
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
                            didCompleteWithError:(nullable NSError *)error {
+
+    NSString *requestID = task.taskDescription;
+    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
+    if (!info) { return; }
     
     if (error) {
         // 区分错误状态
-        NSString *requestID = task.taskDescription;
-        FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
         NSInteger code = error.code;
         NSDictionary *errorUserInfo = error.userInfo;
         if (code == NSURLErrorCancelled) {
@@ -99,7 +101,7 @@
     for (id<FKResponseMiddlewareProtocol> middleware in [FKMiddleware shared].responseMiddlewareArray) {
         if ([middleware respondsToSelector:@selector(processResponse:)]) {
             FKResponse *response = [[FKResponse alloc] init];
-            response.originalURL = [[FKCache cache] requestWithRequestID:task.taskDescription].url;
+            response.originalURL = info.url;
             response.response = task.response;
             response.filePath = [[FKCache cache] requestExpectedFilePathWithRequestID:task.taskDescription];
             response.error = error;
