@@ -266,4 +266,13 @@
     [[FKScheduler shared] cancelRequestWithURL:url];
 }
 
+- (void)cancelAllRequest {
+    [self.backgroundSession getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * _Nonnull dataTasks, NSArray<NSURLSessionUploadTask *> * _Nonnull uploadTasks, NSArray<NSURLSessionDownloadTask *> * _Nonnull downloadTasks) {
+        
+        for (NSURLSessionDownloadTask *downloadTask in downloadTasks) {
+            [downloadTask cancel];
+        }
+    }];
+}
+
 @end

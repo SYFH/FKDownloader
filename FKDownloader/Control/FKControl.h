@@ -50,6 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param url 请求链接
 + (void)cancelRequestWithURL:(NSString *)url;
 
+/// 取消所有请求
++ (void)cancelAllRequest;
+
 /// 彻底删除任务, 包括本地信息文件
 /// @param url 请求链接
 + (void)trashRequestWithURL:(NSString *)url;

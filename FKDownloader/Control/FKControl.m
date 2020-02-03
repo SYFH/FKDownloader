@@ -40,6 +40,10 @@
     [[FKEngine engine] cancelRequestWithURL:url];
 }
 
++ (void)cancelAllRequest {
+    [[FKEngine engine] cancelAllRequest];
+}
+
 + (void)trashRequestWithURL:(NSString *)url {
     [[FKEngine engine] cancelRequestWithURL:url];
     [[FKFileManager manager] deleteRequestFinderWithRequestID:url.SHA256];
