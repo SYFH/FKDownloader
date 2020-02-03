@@ -7,6 +7,8 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <CommonCrypto/CommonDigest.h>
+#import <CoreServices/CoreServices.h>
 
 #import "NSString+FKCategory.h"
 
@@ -20,6 +22,7 @@
 #import "FKEngine.h"
 #import "FKLogger.h"
 #import "FKFileManager.h"
+#import "FKMIMEType.h"
 
 #import "TestMiddleware.h"
 
@@ -49,6 +52,22 @@
     
     XCTAssertTrue([encodeURL isEqualToString:contrast]);
     XCTAssertTrue([URL isEqualToString:decodeURL]);
+}
+
+- (void)testMIMETypeConvertFileExtension {
+    NSString *MIMEType = @"application/vnd.android.package-archive";
+    CFStringRef mimeType = (__bridge CFStringRef)MIMEType;
+    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType, NULL);
+    NSString *fileExtension = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
+    XCTAssertNil(fileExtension);
+    XCTAssertTrue([[FKMIMEType extensionWithMIMEType:MIMEType] isEqualToString:@"apk"]);
+    
+    MIMEType = @"application/octet-stream";
+    mimeType = (__bridge CFStringRef)MIMEType;
+    uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType, NULL);
+    fileExtension = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
+    XCTAssertNil(fileExtension);
+    XCTAssertTrue([[FKMIMEType extensionWithMIMEType:MIMEType] isEqualToString:@"bin"]);
 }
 
 - (void)testMiddleware {
