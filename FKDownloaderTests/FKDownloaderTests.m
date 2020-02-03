@@ -37,6 +37,21 @@
 - (void)setUp {
     // Put setup code here. This method is called before the invocation of each test method in the class.
     self.middleware = [[TestMiddleware alloc] init];
+    __weak typeof(self) weak = self;
+    self.middleware.requestMiddlewareHandle = ^NSMutableURLRequest * _Nonnull(NSMutableURLRequest * _Nonnull request) {
+        [FKLogger debug:@"自定义请求中间件被调用"];
+        __strong typeof(weak) self = weak;
+        XCTAssertTrue(YES);
+        return request;
+    };
+    self.middleware.responseMiddlewareHandle = ^(FKResponse * _Nonnull response) {
+        [FKLogger debug:@"自定义响应中间件被调用"];
+        __strong typeof(weak) self = weak;
+        XCTAssertTrue(YES);
+    };
+    
+    [[FKMiddleware shared] registeRequestMiddleware:self.middleware];
+    [[FKMiddleware shared] registeResponseMiddleware:self.middleware];
 }
 
 - (void)tearDown {
@@ -69,24 +84,6 @@
     fileExtension = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
     XCTAssertNil(fileExtension);
     XCTAssertTrue([[FKMIMEType extensionWithMIMEType:MIMEType] isEqualToString:@"bin"]);
-}
-
-- (void)testMiddleware {
-    __weak typeof(self) weak = self;
-    self.middleware.requestMiddlewareHandle = ^NSMutableURLRequest * _Nonnull(NSMutableURLRequest * _Nonnull request) {
-        [FKLogger debug:@"自定义请求中间件被调用"];
-        __strong typeof(weak) self = weak;
-        XCTAssertTrue(YES);
-        return request;
-    };
-    self.middleware.responseMiddlewareHandle = ^(FKResponse * _Nonnull response) {
-        [FKLogger debug:@"自定义响应中间件被调用"];
-        __strong typeof(weak) self = weak;
-        XCTAssertTrue(YES);
-    };
-    
-    [[FKMiddleware shared] registeRequestMiddleware:self.middleware];
-    [[FKMiddleware shared] registeResponseMiddleware:self.middleware];
 }
 
 - (void)testTakeConfigture {
@@ -140,6 +137,9 @@
     NSString *filePath = [NSString stringWithFormat:@"%@/%@/%@%@", [FKFileManager manager].workFinder, URL.SHA256, URL.SHA256, info.extension];
     NSString *expectedFilePath = [[FKCache cache] requestExpectedFilePathWithRequestID:info.requestID];
     XCTAssertTrue([filePath isEqualToString:expectedFilePath]);
+    
+    // 重复预处理
+    [[FKBuilder buildWithURL:URL] prepare];
     
     // 删除
     [FKControl trashRequestWithURL:URL];
