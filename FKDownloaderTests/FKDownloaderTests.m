@@ -243,7 +243,7 @@
             } break;
                            
             case FKStateAction: {
-                int64_t maxSize = 1000 * 1000 * 8;
+                int64_t maxSize = 1000 * 1000 * 6;
                 if (countOfBytesExpectedToReceive > 0 && onceSuspend == NO) {
                     [FKControl suspendRequestWithURL:URL];
                     onceSuspend = YES;

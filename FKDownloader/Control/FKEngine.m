@@ -270,7 +270,9 @@
     [self.backgroundSession getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * _Nonnull dataTasks, NSArray<NSURLSessionUploadTask *> * _Nonnull uploadTasks, NSArray<NSURLSessionDownloadTask *> * _Nonnull downloadTasks) {
         
         for (NSURLSessionDownloadTask *downloadTask in downloadTasks) {
-            [downloadTask cancel];
+            if (downloadTask.state == NSURLSessionTaskStateRunning) {
+                [downloadTask cancel];
+            }
         }
     }];
 }
