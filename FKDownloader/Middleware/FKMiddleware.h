@@ -52,11 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registeRequestMiddleware:(id<FKRequestMiddlewareProtocol>)middleware;
 - (void)registeResponseMiddleware:(id<FKResponseMiddlewareProtocol>)middleware;
 
-/// 使用中间件处理请求
-/// @param request 请求信息
-/// @param complete 回调
-- (void)processRequest:(NSMutableURLRequest *)request complete:(void(^)(NSMutableURLRequest *request))complete;
-
 /// 获取所有请求中间件, 按照优先级排序
 - (NSArray<id<FKRequestMiddlewareProtocol>> *)requestMiddlewareArray;
 

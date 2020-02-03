@@ -8,6 +8,7 @@
 
 #import "FKMiddleware.h"
 
+#import "FKEngine.h"
 #import "FKLogger.h"
 
 @interface FKMiddleware ()
@@ -29,36 +30,34 @@
 }
 
 - (void)registeRequestMiddleware:(id<FKRequestMiddlewareProtocol>)middleware {
-    [self.requestMiddlewares addObject:middleware];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.requestMiddlewares addObject:middleware];
+    }];
     [FKLogger debug:@"%@\n注册请求中间件", middleware];
 }
 
 - (void)registeResponseMiddleware:(id<FKResponseMiddlewareProtocol>)middleware {
-    [self.responseMiddlewares addObject:middleware];
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.responseMiddlewares addObject:middleware];
+    }];
     [FKLogger debug:@"%@\n注册响应中间件", middleware];
 }
 
-- (void)processRequest:(NSMutableURLRequest *)request complete:(void (^)(NSMutableURLRequest *request))complete {
-    NSMutableURLRequest *processed = request;
-    for (id<FKRequestMiddlewareProtocol> middleware in self.requestMiddlewares) {
-        if ([middleware respondsToSelector:@selector(processRequest:)]) {
-            processed = [middleware processRequest:processed];
-        }
-    }
-    if (complete) {
-        complete(processed);
-    }
-}
-
 - (NSArray<id<FKRequestMiddlewareProtocol>> *)requestMiddlewareArray {
-    NSArray<id<FKRequestMiddlewareProtocol>> *allRequestMiddleware = self.requestMiddlewares.objectEnumerator.allObjects;
+    __block NSArray<id<FKRequestMiddlewareProtocol>> *allRequestMiddleware = @[];
+    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
+        allRequestMiddleware = self.requestMiddlewares.objectEnumerator.allObjects;
+    }]] waitUntilFinished:YES];
     NSSortDescriptor *requestMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
     NSArray<id<FKRequestMiddlewareProtocol>> *middlewares = [allRequestMiddleware sortedArrayUsingDescriptors:@[requestMiddlewareSort]];
     return middlewares;
 }
 
 - (NSArray<id<FKResponseMiddlewareProtocol>> *)responseMiddlewareArray {
-    NSArray<id<FKResponseMiddlewareProtocol>> *allResponseMiddleware = self.responseMiddlewares.objectEnumerator.allObjects;
+    __block NSArray<id<FKResponseMiddlewareProtocol>> *allResponseMiddleware = @[];
+    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
+        allResponseMiddleware = self.responseMiddlewares.objectEnumerator.allObjects;
+    }]] waitUntilFinished:YES];
     NSSortDescriptor *responseMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
     NSArray<id<FKResponseMiddlewareProtocol>> *middlewares = [allResponseMiddleware sortedArrayUsingDescriptors:@[responseMiddlewareSort]];
     return middlewares;
