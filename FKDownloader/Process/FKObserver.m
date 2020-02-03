@@ -106,6 +106,7 @@
     }
 
     if (hasUpdate) {
+        [[FKCache cache] updateRequestWithModel:model];
         [[FKCache cache] updateLocalRequestWithModel:model];
     }
 }
