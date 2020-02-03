@@ -34,6 +34,10 @@
 		3D776F7223B84F4400AC6190 /* FKSessionDelegater.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D776F7023B84F4400AC6190 /* FKSessionDelegater.m */; };
 		3D82358223C1DF4800FE1D89 /* FKDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D82358123C1DF4800FE1D89 /* FKDownloaderTests.m */; };
 		3D82358423C1DF4800FE1D89 /* FKDownloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D6616FA23B75BA9008EBE8A /* FKDownloader.framework */; };
+		3D89D53623E7B9F60077855D /* FKMIMEType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D89D53423E7B9F60077855D /* FKMIMEType.h */; };
+		3D89D53723E7B9F60077855D /* FKMIMEType.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D89D53523E7B9F60077855D /* FKMIMEType.m */; };
+		3D89D53923E7CC3D0077855D /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D89D53823E7CC3D0077855D /* CoreServices.framework */; };
+		3D89D53A23E7CC560077855D /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D560E2E23CC5F800080500D /* CoreServices.framework */; };
 		3D933F0523BB4660006C6C95 /* FKControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0323BB4660006C6C95 /* FKControl.h */; };
 		3D933F0623BB4660006C6C95 /* FKControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0423BB4660006C6C95 /* FKControl.m */; };
 		3D933F0923BB46E9006C6C95 /* FKMiddleware.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0723BB46E9006C6C95 /* FKMiddleware.h */; };
@@ -110,6 +114,9 @@
 		3D82357F23C1DF4800FE1D89 /* FKDownloaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FKDownloaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D82358123C1DF4800FE1D89 /* FKDownloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKDownloaderTests.m; sourceTree = "<group>"; };
 		3D82358323C1DF4800FE1D89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3D89D53423E7B9F60077855D /* FKMIMEType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKMIMEType.h; sourceTree = "<group>"; };
+		3D89D53523E7B9F60077855D /* FKMIMEType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKMIMEType.m; sourceTree = "<group>"; };
+		3D89D53823E7CC3D0077855D /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		3D933F0323BB4660006C6C95 /* FKControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKControl.h; sourceTree = "<group>"; };
 		3D933F0423BB4660006C6C95 /* FKControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKControl.m; sourceTree = "<group>"; };
 		3D933F0723BB46E9006C6C95 /* FKMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKMiddleware.h; sourceTree = "<group>"; };
@@ -138,6 +145,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D89D53923E7CC3D0077855D /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,6 +161,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D89D53A23E7CC560077855D /* CoreServices.framework in Frameworks */,
 				3D82358423C1DF4800FE1D89 /* FKDownloader.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -201,6 +210,7 @@
 		3D560E2D23CC5F7F0080500D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3D89D53823E7CC3D0077855D /* CoreServices.framework */,
 				3D560E2E23CC5F800080500D /* CoreServices.framework */,
 			);
 			name = Frameworks;
@@ -264,6 +274,8 @@
 				3D6A396423C571A500A97A29 /* FKLogger.m */,
 				3D613ED523D00ADA00B25D44 /* FKCoder.h */,
 				3D613ED623D00ADA00B25D44 /* FKCoder.m */,
+				3D89D53423E7B9F60077855D /* FKMIMEType.h */,
+				3D89D53523E7B9F60077855D /* FKMIMEType.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -326,6 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D6616FF23B75BA9008EBE8A /* FKDownloader.h in Headers */,
+				3D89D53623E7B9F60077855D /* FKMIMEType.h in Headers */,
 				3DEC509323C03A5E009F7489 /* FKCommonHeader.h in Headers */,
 				3D36748423BD89BC0023E3A0 /* FKObserverModel.h in Headers */,
 				3D776F7123B84F4400AC6190 /* FKSessionDelegater.h in Headers */,
@@ -502,6 +515,7 @@
 				3D776F7223B84F4400AC6190 /* FKSessionDelegater.m in Sources */,
 				3DF8F74E23BB217600A9E363 /* FKConfigure.m in Sources */,
 				3DF8F76023BB2A6500A9E363 /* FKScheduler.m in Sources */,
+				3D89D53723E7B9F60077855D /* FKMIMEType.m in Sources */,
 				3D933F0623BB4660006C6C95 /* FKControl.m in Sources */,
 				3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */,
 				3DF8F74A23BB214900A9E363 /* FKEngine.m in Sources */,

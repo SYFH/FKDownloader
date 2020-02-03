@@ -11,6 +11,8 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <CoreServices/CoreServices.h>
 
+#import "FKMIMEType.h"
+
 @implementation NSString (FKCategory)
 
 - (NSString *)SHA256 {
@@ -38,6 +40,17 @@
     CFStringRef mimeType = (__bridge CFStringRef)self;
     CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType, NULL);
     NSString *fileExtension = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
+    
+    // 部分 MIMEType 无法找到对应的文件后缀
+    if (fileExtension.length == 0) {
+        fileExtension = [FKMIMEType extensionWithMIMEType:self];
+    }
+    
+    // 如果依然无法找到对应的文件后缀, 则使用 unknown
+    if (fileExtension.length == 0) {
+        fileExtension = @"unknown";
+    }
+    
     return fileExtension;
 }
 
