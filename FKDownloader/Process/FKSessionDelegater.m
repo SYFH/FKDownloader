@@ -67,31 +67,6 @@
 
 #pragma mark - NSURLSessionTaskDelegate
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
-                     willPerformHTTPRedirection:(NSHTTPURLResponse *)response
-                                     newRequest:(NSURLRequest *)request
-                              completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler {
-    
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
-                            didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
-                              completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * _Nullable credential))completionHandler {
-    
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
-                              needNewBodyStream:(void (^)(NSInputStream * _Nullable bodyStream))completionHandler {
-    
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
-                                didSendBodyData:(int64_t)bytesSent
-                                 totalBytesSent:(int64_t)totalBytesSent
-                       totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
-    
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
                            didCompleteWithError:(nullable NSError *)error {
     
     if (error) {
