@@ -44,6 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param downloadTask 下载任务
 - (void)removeCacheProgressWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask;
 
+/// 移除请求相关的多有监听
+/// @param requestID 请求标识
+- (void)removeObserverWithRequestID:(NSString *)requestID;
+
 @end
 
 @interface FKObserver (Block)

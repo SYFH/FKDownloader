@@ -20,6 +20,7 @@
 #import "FKLogger.h"
 #import "FKSessionDelegater.h"
 #import "FKFileManager.h"
+#import "FKSingleNumber.h"
 
 @interface FKEngine ()
 
@@ -49,6 +50,9 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        // 配置唯一编号
+        [self configtureSingleNumber];
+        
         // 配置线程
         [self configtureQueue];
         
@@ -56,6 +60,10 @@
         [self configtureNotification];
     }
     return self;
+}
+
+- (void)configtureSingleNumber {
+    [[FKSingleNumber shared] initialNumberWithNumber:[[FKFileManager manager] loadSingleNumber]];
 }
 
 - (void)configtureQueue {
@@ -275,6 +283,10 @@
             }
         }
     }];
+}
+
+- (void)trashRequestWithURL:(NSString *)url {
+    [[FKScheduler shared] trashRequestWithURL:url];
 }
 
 @end

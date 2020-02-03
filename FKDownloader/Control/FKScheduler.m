@@ -34,14 +34,14 @@
 
 - (void)prepareRequest:(FKCacheRequestModel *)request {
     // 检查是否已存在请求
-    BOOL isExist = [[FKCache cache] existRequestWithURL:request.url];
+    BOOL isExist = [[FKCache cache] existRequestWithRequestID:request.requestID];
     if (isExist) { [FKLogger debug:@"%@\n请求已存在", request.url]; return; }
     
     // 检查本地是否存在请求信息
     if ([[FKCache cache] existLocalRequestFileWithRequest:request]) {
         // 当添加的任务不在缓存表中, 但本地信息文件存在, 则重新添加到缓存表中, 不进行重复下载
         FKCacheRequestModel *localRequest = [[FKCache cache] localRequestFileWithRequestID:request.requestID];
-        localRequest.state = FKStateIdel;
+        // 清除错误信息
         localRequest.error = nil;
         
         [[FKCache cache] addRequestWithModel:localRequest];
@@ -143,6 +143,17 @@
         [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\naction -> cancen, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }
+}
+
+- (void)trashRequestWithURL:(NSString *)url {
+    // 取消请求
+    [[FKEngine engine] cancelRequestWithURL:url];
+    
+    // 删除监听
+    [[FKObserver observer] removeObserverWithRequestID:url.SHA256];
+    
+    // 删除本地文件
+    [[FKFileManager manager] deleteRequestFinderWithRequestID:url.SHA256];
 }
 
 @end

@@ -22,7 +22,7 @@
 /// 结构: {"SHA256(Request.URL)": Observer.Model}
 @property (nonatomic, strong) NSMapTable<NSString *, FKObserverModel *> *infoMap;
 
-/// 预约信息回调, 在正式添加到 blockMap 之前的预保留队列, 防止任务未开始就添加信息回调
+/// 预约信息回调, 在正式添加到 blockMap 之前的保留队列, 防止任务未开始就添加信息回调, 而导致监听缓存未添加, 回调不能保存
 /// 结构: {"SHA256(Request.URL)": MessagerInfoBlock}
 @property (nonatomic, strong) NSMapTable<NSString *, MessagerInfoBlock> *reserveBlockMap;
 
@@ -199,15 +199,20 @@
 }
 
 - (void)removeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    [downloadTask removeObserver:self
-                      forKeyPath:@"countOfBytesReceived"
-                         context:nil];
-    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"移除监听属性: countOfBytesReceived"];
-    
-    [downloadTask removeObserver:self
-                      forKeyPath:@"countOfBytesExpectedToReceive"
-                         context:nil];
-    [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"移除监听属性: countOfBytesExpectedToReceive"];
+    @try {
+        [downloadTask removeObserver:self
+                          forKeyPath:@"countOfBytesReceived"
+                             context:nil];
+        [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"移除监听属性: countOfBytesReceived"];
+        
+        [downloadTask removeObserver:self
+                          forKeyPath:@"countOfBytesExpectedToReceive"
+                             context:nil];
+    } @catch (NSException *exception) {
+        
+    } @finally {
+        [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"移除监听属性: countOfBytesExpectedToReceive"];
+    }
 }
 
 - (void)removeCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
@@ -239,6 +244,14 @@
         [self.infoMap setObject:info forKey:downloadTask.taskDescription];
     }];
     [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"删除任务缓存的进度数据"];
+}
+
+- (void)removeObserverWithRequestID:(NSString *)requestID {
+    NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
+    if (downloadTask) {
+        [[FKObserver observer] removeDownloadTask:downloadTask];
+        [[FKObserver observer] removeCacheWithDownloadTask:downloadTask];
+    }
 }
 
 @end

@@ -61,6 +61,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param url 请求链接
 - (void)cancelRequestWithURL:(NSString *)url;
 
+/// 彻底删除任务, 包括本地信息文件
+/// @param url 请求链接
+- (void)trashRequestWithURL:(NSString *)url;
+
 /// 将 Background Session 上所有任务取消
 - (void)cancelAllRequest;
 
