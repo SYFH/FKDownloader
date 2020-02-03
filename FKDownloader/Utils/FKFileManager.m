@@ -73,8 +73,10 @@
 - (unsigned long long)loadSingleNumber {
     unsigned long long number = 0;
     NSString *path = [self.workPath stringByAppendingPathComponent:@"singleNumner"];
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    [data getBytes:&number length:sizeof(unsigned long long)];
+    if ([self.fileManager fileExistsAtPath:path]) {
+        NSData *data = [NSData dataWithContentsOfFile:path];
+        [data getBytes:&number length:sizeof(unsigned long long)];
+    }
     return number;
 }
 

@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)shared;
 
-- (void)initialNumber;
 - (void)initialNumberWithNumber:(unsigned long long)number;
 - (unsigned long long)current;
 - (unsigned long long)number;

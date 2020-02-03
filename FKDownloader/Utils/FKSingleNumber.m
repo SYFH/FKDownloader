@@ -26,10 +26,6 @@
     return instance;
 }
 
-- (void)initialNumber {
-    self.atomicNumber = ATOMIC_VAR_INIT(0ull);
-}
-
 - (void)initialNumberWithNumber:(unsigned long long)number {
     self.atomicNumber = ATOMIC_VAR_INIT(number);
 }
