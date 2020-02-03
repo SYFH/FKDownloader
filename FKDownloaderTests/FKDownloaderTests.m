@@ -26,7 +26,6 @@
 @interface FKDownloaderTests : XCTestCase
 
 @property (nonatomic, strong) TestMiddleware *middleware;
-@property (nonatomic, assign) BOOL onceSuspend;
 
 @end
 
@@ -199,6 +198,7 @@
 }
 
 - (void)testControlDownloadURL {
+    __block BOOL onceSuspend = NO;
     NSString *URL = @"https://dl.softmgr.qq.com/original/Browser/QQBrowser_Setup_Qqpcmgr_10.5.3863.400.exe";
     
     [[FKConfigure configure] takeSession];
@@ -223,14 +223,13 @@
             } break;
                            
             case FKStateAction: {
-                if (countOfBytesExpectedToReceive > 0 && self.onceSuspend == NO) {
+                int64_t maxSize = 1000 * 1000 * 8;
+                if (countOfBytesExpectedToReceive > 0 && onceSuspend == NO) {
                     [FKControl suspendRequestWithURL:URL];
-                    self.onceSuspend = YES;
+                    onceSuspend = YES;
                     // 暂停后状态不会立即改变, 而是视断点续传数据返回情况改变
                 }
-                
-                int64_t maxSize = 1000 * 1000 * 8; // 8 mb
-                if (countOfBytesReceived > maxSize) {
+                else if (countOfBytesReceived > maxSize) {
                     [FKControl cancelRequestWithURL:URL];
                     FKState state = [FKControl stateWithURL:URL];
                     XCTAssertTrue(state == FKStateCancel);
