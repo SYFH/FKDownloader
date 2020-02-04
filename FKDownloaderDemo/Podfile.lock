@@ -1,14 +1,17 @@
 PODS:
   - FKDownloader (0.1.5)
   - Masonry (1.1.0)
+  - MBProgressHUD (1.2.0)
 
 DEPENDENCIES:
   - FKDownloader (from `../`)
   - Masonry
+  - MBProgressHUD
 
 SPEC REPOS:
   trunk:
     - Masonry
+    - MBProgressHUD
 
 EXTERNAL SOURCES:
   FKDownloader:
@@ -17,7 +20,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FKDownloader: c585ec78d4b47b7f5a75ce9b20c4f98d972a1687
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
 
-PODFILE CHECKSUM: 3533a6f5b18bdda4b071df7105c53d92d9fe41b6
+PODFILE CHECKSUM: 4589ae8d12d58e2c9cf08b397e545577968b8b6d
 
 COCOAPODS: 1.8.4

@@ -10,6 +10,7 @@
 
 #import <Masonry/Masonry.h>
 #import <FKDownloader/FKDownloader.h>
+#import <MBProgressHUD/MBProgressHUD.h>
 
 #import "InfoModel.h"
 #import "DownloadURLManager.h"
@@ -89,6 +90,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.label.text = @"已添加到下载队列";
+    [hud hideAnimated:YES afterDelay:2];
     
     InfoModel *info = [self.infoModels objectAtIndex:indexPath.row];
     [[FKBuilder buildWithURL:info.url] prepare];
