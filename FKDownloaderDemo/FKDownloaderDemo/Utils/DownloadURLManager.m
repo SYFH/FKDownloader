@@ -39,7 +39,7 @@
 }
 
 - (void)saveInfo:(InfoModel *)info {
-    if ([self.infoModels containsObject:info]) { return; }
+    if ([self existInfo:info]) { return; }
     self.infoModels = [self.infoModels arrayByAddingObject:info];
     [NSKeyedArchiver archiveRootObject:self.infoModels toFile:self.archivePath];
 }
@@ -51,6 +51,17 @@
         self.infoModels = [NSArray arrayWithArray:temp];
         [NSKeyedArchiver archiveRootObject:self.infoModels toFile:self.archivePath];
     }
+}
+
+- (BOOL)existInfo:(InfoModel *)info {
+    __block BOOL isExist = NO;
+    [self.infoModels enumerateObjectsUsingBlock:^(InfoModel *obj, NSUInteger idx, BOOL *stop) {
+        if ([obj.url isEqualToString:info.url]) {
+            isExist = YES;
+            *stop = YES;
+        }
+    }];
+    return isExist;
 }
 
 

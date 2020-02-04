@@ -238,6 +238,9 @@
 - (void)setUrl:(NSString *)url {
     _url = url;
     
+    // 防止直接进入下载列表后, 没有任务缓存导致信息回调无法运作
+    [[FKBuilder buildWithURL:url] prepare];
+    
     [self infoMessage];
 }
 
