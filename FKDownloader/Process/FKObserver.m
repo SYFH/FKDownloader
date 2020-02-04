@@ -323,12 +323,13 @@
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
         if (block) {
+            FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
             FKObserverModel *model = [self.infoMap objectForKey:requestID];
             NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
             FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
             if (block) {
-                block(model.countOfBytesReceived,
-                      model.countOfBytesExpectedToReceive,
+                block(MAX(model.countOfBytesReceived, info.receivedLength),
+                      MAX(model.countOfBytesExpectedToReceive, info.dataLength),
                       state,
                       error);
             }
@@ -341,11 +342,12 @@
     for (NSString *requestID in self.blockMap) {
         MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
         if (block) {
+            FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
             FKObserverModel *model = [self.infoMap objectForKey:requestID];
             NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
             FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
-            block(model.countOfBytesReceived,
-                  model.countOfBytesExpectedToReceive,
+            block(MAX(model.countOfBytesReceived, info.receivedLength),
+                  MAX(model.countOfBytesExpectedToReceive, info.dataLength),
                   state,
                   error);
         }
@@ -360,9 +362,10 @@
             int64_t countOfBytesExpectedToReceive = 0;
             
             for (NSString *requestID in urls) {
+                FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
                 FKObserverModel *model = [self.infoMap objectForKey:requestID];
-                countOfBytesReceived += model.countOfBytesReceived;
-                countOfBytesExpectedToReceive += model.countOfBytesExpectedToReceive;
+                countOfBytesReceived += MAX(model.countOfBytesReceived, info.receivedLength);
+                countOfBytesExpectedToReceive += MAX(model.countOfBytesExpectedToReceive, info.dataLength);
             }
             block(countOfBytesReceived, countOfBytesExpectedToReceive);
         }

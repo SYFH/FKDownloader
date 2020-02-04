@@ -17,6 +17,7 @@
     [coder encodeObject:self.url forKey:@"url"];
     [coder encodeObject:self.request forKey:@"request"];
     [coder encodeInteger:self.state forKey:@"state"];
+    [coder encodeInt64:self.receivedLength forKey:@"receivedLength"];
     [coder encodeInt64:self.dataLength forKey:@"dataLength"];
     [coder encodeObject:self.extension forKey:@"extension"];
     
@@ -38,6 +39,7 @@
         self.url = [coder decodeObjectForKey:@"url"];
         self.request = [coder decodeObjectForKey:@"request"];
         self.state = [coder decodeIntegerForKey:@"state"];
+        self.receivedLength = [coder decodeInt64ForKey:@"receivedLength"];
         self.dataLength = [coder decodeInt64ForKey:@"dataLength"];
         self.extension = [coder decodeObjectForKey:@"extension"];
         self.resumeData = [coder decodeObjectForKey:@"resumeData"];
