@@ -53,14 +53,19 @@
 
 配置完成后, 使配置生效    
 ```
-[[FKConfigure configure] take];
+[[FKConfigure configure] takeSession];
 ```    
+
+FKDownloader 采用计时器执行轮询执行任务, 间隔 1s, 默认情况下, 该计时器不会激活, 需要现式激活后才可进行任务    
+```
+[[FKConfigure configure] activateQueue];
+```     
 
 ### FKBuilder    
 
 构建者主要负责创建任务, 设定任务的基本信息等.    
     
-使用链接进行构建        
+使用链接进行构建    
 ```
 FKBuilder *builder = [FKBuilder buildWithURL:@"Download URL"];
 ```    
@@ -73,6 +78,8 @@ FKBuilder *builder = [FKBuilder buildWithURL:@"Download URL"];
 ```
 [builder prepare];
 ```    
+
+FKDownloader 的每一个任务都对应一个本地信息文件, 当 App 因为重启等原因丢失内存缓存时, 一些信息获取逻辑会在控制台提示任务不存在等信息, 这时就需要手动执行上述流程, 使任务信息加载到内存中. 该场景可在 Demo 中下载信息列表界面中, 每个 Cell 赋值 URL 时看到.
 
 ### FKControl
 主要负责控制任务状态    
@@ -94,7 +101,17 @@ FKBuilder *builder = [FKBuilder buildWithURL:@"Download URL"];
 
 取消任务, 对 FKStateAction 和 FKStateSuspend 状态生效    
 ```
-[FKControl resumeRequestWithURL:@"Download URL"];
+[FKControl cancelRequestWithURL:@"Download URL"];
+```    
+
+取消所有请求, 会对 Background Session 所有的, 状态为 NSURLSessionTaskStateRunning 的 Download Task 进行取消操作
+```
+[FKControl cancelAllRequest];
+```    
+
+删除任务所有文件, 可视作彻底移出任务, 但最好在任务已完成, 已取消的状态下执行, 其他状态可能会出现意外情况.      
+```
+[FKControl trashRequestWithURL:@"Download URL"];
 ```    
 
 直接获取下载链接对应任务的状态    
@@ -175,6 +192,13 @@ NSError *error = [FKControl errorWithURL:@"Download URL"];
 | 1.x | iOS 9 |
 | 0.x | iOS 8 |
 
+
+# Demo
+FKDownloaderDemo 文件夹内为测试程序.   
+
+# Unit Test
+FKDownloader 包含了单元测试, 可在 FKDownloader.xcodeproj 中选择 FKDownloaderTest scheme 进行单元测试.    
+
 # Install
 - CocoaPods  
 　　`pod 'FKDownloader'`  
@@ -185,7 +209,7 @@ NSError *error = [FKControl errorWithURL:@"Download URL"];
 　　
 # Change log
 - 1.0.0    
-    对 0.x 彻底重构, 完成框架完整逻辑, 机型/系统等 BUG 需要继续完善    
+    对 0.x 彻底重构, 完成框架完整逻辑, 机型/系统 BUG 等需要继续完善    
 
 # About
 如果觉得好用, 可以 Star 哟~  
