@@ -91,6 +91,7 @@
     
     if ([keyPath isEqualToString:@"countOfBytesReceived"]) {
         info.countOfBytesReceived = downloadTask.countOfBytesReceived;
+        model.receivedLength = downloadTask.countOfBytesReceived;
     }
     
     if ([keyPath isEqualToString:@"countOfBytesExpectedToReceive"]) {
@@ -265,24 +266,22 @@
         return;
     }
     
-    if ([[FKCache cache] stateRequestWithRequestID:requestID] == FKStateComplete) {
-        [FKLogger debug:@"%@\n%@", requestID, @"任务已完成, 不添加监听缓存"];
-        return;
+    // 防止任务未完成预处理就立即添加信息回调, 导致回调不能保存的问题
+    // 预约回调会在添加进度监听后转移到正式队列中, 所以以监听缓存是否存在为判断标准
+    if ([self.infoMap objectForKey:requestID]
+        || [[FKCache cache] requestWithRequestID:requestID].state != FKStateAction) {
+        
+        [[FKEngine engine].ioQueue addOperationWithBlock:^{
+            [self.blockMap setObject:block forKey:requestID];
+        }];
+    } else {
+        [[FKEngine engine].ioQueue addOperationWithBlock:^{
+            [self.reserveBlockMap setObject:block forKey:requestID];
+        }];
     }
-    
-    [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        [self.reserveBlockMap setObject:block forKey:requestID];
-    }];
     [FKLogger debug:@"%@\n%@", requestID, @"添加信息回调到监听缓存"];
     
-    [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        FKObserverModel *model = [self.infoMap objectForKey:requestID];
-        NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
-        block(model.countOfBytesReceived,
-              model.countOfBytesExpectedToReceive,
-              [[FKCache cache] stateRequestWithRequestID:requestID],
-              error);
-    }];
+    [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
     [FKLogger debug:@"%@\n%@", requestID, @"添加信息回调时进行快速响应"];
 }
 
@@ -321,16 +320,20 @@
 @implementation FKObserver (Exec)
 
 - (void)execFastInfoBlockWithRequestID:(NSString *)requestID {
-    MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
-    if (block) {
-        FKObserverModel *model = [self.infoMap objectForKey:requestID];
-        NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
-        FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
-        block(model.countOfBytesReceived,
-        model.countOfBytesExpectedToReceive,
-        state,
-        error);
-    }
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
+        if (block) {
+            FKObserverModel *model = [self.infoMap objectForKey:requestID];
+            NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
+            FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+            if (block) {
+                block(model.countOfBytesReceived,
+                      model.countOfBytesExpectedToReceive,
+                      state,
+                      error);
+            }
+        }
+    }];
 }
 
 - (void)execRequestInfoBlock {
