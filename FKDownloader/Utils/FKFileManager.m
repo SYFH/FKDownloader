@@ -49,6 +49,10 @@
     return self.workPath;
 }
 
+- (BOOL)fileExistsAtPath:(NSString *)path {
+    return [self.fileManager fileExistsAtPath:path];
+}
+
 
 #pragma mark - Getter/Setter
 - (NSFileManager *)fileManager {

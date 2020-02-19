@@ -24,6 +24,10 @@
     return [[FKCache cache] errorRequestWithRequestID:url.SHA256];
 }
 
++ (NSString *)downloadedFilePathWithURL:(NSString *)url {
+    return [[FKFileManager manager] filePathWithRequestID:url.SHA256];
+}
+
 + (void)actionRequestWithURL:(NSString *)url {
     [[FKEngine engine] actionRequestWithURL:url];
 }

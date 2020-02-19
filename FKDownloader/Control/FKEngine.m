@@ -168,6 +168,16 @@
             return;
         }
         
+        // 检查下载是否有对应的文件
+        NSString *downloadedFilePath = [[FKFileManager manager] filePathWithRequestID:requestModel.requestID];
+        if ([[FKFileManager manager] fileExistsAtPath:downloadedFilePath]) {
+            requestModel.state = FKStateComplete;
+            [[FKCache cache] updateRequestWithModel:requestModel];
+            [[FKCache cache] updateLocalRequestWithModel:requestModel];
+            [FKLogger debug:@"%@\n需要下载的资源资源已存在", [FKLogger requestCacheModelDebugInfo:requestModel]];
+            return;
+        }
+        
         // 处理请求
         NSMutableURLRequest *request = requestModel.request;
         for (id<FKRequestMiddlewareProtocol> middleware in [FKMiddleware shared].requestMiddlewareArray) {

@@ -34,6 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param url 请求链接
 + (NSError * _Nullable)errorWithURL:(NSString *)url;
 
+/// 获取下载完成后文件的路径, 文件可能为空
+/// @param url 请求链接
++ (NSString *)downloadedFilePathWithURL:(NSString *)url;
+
 /// 激活任务, 对 cancel/error 状态任务起作用
 /// @param url 请求链接
 + (void)actionRequestWithURL:(NSString *)url;

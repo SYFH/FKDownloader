@@ -25,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// FKDownloader 工作目录
 - (NSString *)workFinder;
 
+/// 文件/文件夹是否存在
+/// @param path 路径
+- (BOOL)fileExistsAtPath:(NSString *)path;
+
 @end
 
 @interface FKFileManager (SingleNumber)
