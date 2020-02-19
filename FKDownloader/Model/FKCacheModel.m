@@ -13,7 +13,6 @@
 - (void)encodeWithCoder:(nonnull NSCoder *)coder {
     [coder encodeObject:self.requestID forKey:@"requestID"];
     [coder encodeObject:self.requestSingleID forKey:@"requestSingleID"];
-    [coder encodeObject:[NSNumber numberWithUnsignedLongLong:self.idx] forKey:@"idx"];
     [coder encodeObject:self.url forKey:@"url"];
     [coder encodeObject:self.request forKey:@"request"];
     [coder encodeInteger:self.state forKey:@"state"];
@@ -35,7 +34,6 @@
     if (self) {
         self.requestID = [coder decodeObjectForKey:@"requestID"];
         self.requestSingleID = [coder decodeObjectForKey:@"requestSingleID"];
-        self.idx = [[coder decodeObjectForKey:@"idx"] unsignedLongLongValue];
         self.url = [coder decodeObjectForKey:@"url"];
         self.request = [coder decodeObjectForKey:@"request"];
         self.state = [coder decodeIntegerForKey:@"state"];
