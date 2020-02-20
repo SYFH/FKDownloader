@@ -21,9 +21,9 @@
 对 0.x 版本彻底重构, 移除部分冗余逻辑, 一切只为了更好的下载体验.
 
 # Framework Process
-![](https://pic.downk.cc/item/5e2556dc2fb38b8c3c996a09.jpg)
+![](https://pic.downk.cc/item/5e4d253e48b86553eea38f27.png)
 
-部分逻辑参考了 Scrapy 这个广为人知的爬虫框架    
+部分逻辑参考了 Scrapy 这个广为人知的爬虫框架, 具体请看[我的博客](https://syfh.github.io/2020/02/03/%E5%AF%B9%20FKDownloader%20%E7%9A%84%E5%AE%8C%E5%85%A8%E9%87%8D%E6%9E%84/)    
 
 # Usage
 在使用 FKDownloader 时主要是对 5 个类进行操作.
