@@ -16,6 +16,7 @@
 #import "FKLogger.h"
 #import "FKEngine.h"
 #import "FKObserver.h"
+#import "FKResumeData.h"
 
 @interface FKScheduler ()
 
@@ -111,7 +112,8 @@
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
     if (info.state == FKStateSuspend) {
         if (info.resumeData.length) {
-            NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithResumeData:info.resumeData];
+            NSData *resumeData = [FKResumeData correctResumeData:info.resumeData];
+            NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithResumeData:resumeData];
             downloadTask.taskDescription = info.requestID;
             [downloadTask resume];
             
@@ -138,6 +140,10 @@
         [[FKObserver observer] removeCacheProgressWithDownloadTask:downloadTask];
         
         info.state = FKStateCancel;
+        info.resumeData = nil;
+        info.error = nil;
+        info.receivedLength = 0;
+        
         [[FKCache cache] updateRequestWithModel:info];
         [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];

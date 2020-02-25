@@ -18,6 +18,7 @@
 
 @interface FKObserver ()
 
+// TODO: 将缓存移入 FKCache 中
 /// 请求信息
 /// 结构: {"SHA256(Request.URL)": Observer.Model}
 @property (nonatomic, strong) NSMapTable<NSString *, FKObserverModel *> *infoMap;
@@ -261,6 +262,7 @@
 @implementation FKObserver (Block)
 
 - (void)addBlock:(MessagerInfoBlock)block requestID:(NSString *)requestID {
+    // TODO: 去除限制, block 在任何时候都起效
     if (![[FKCache cache] existRequestWithRequestID:requestID]) {
         [FKLogger debug:@"%@\n%@", requestID, @"任务不存在, 不添加监听缓存"];
         return;

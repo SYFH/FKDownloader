@@ -96,6 +96,7 @@
 
 - (void)configtureNotification {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationdidFinishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
+    // TODO: 监听后台/前台切换, 解决进度监听无效的问题
 }
 
 - (void)applicationdidFinishLaunching:(NSNotification *)notify {
