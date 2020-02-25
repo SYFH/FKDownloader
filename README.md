@@ -124,6 +124,11 @@ FKState state = [FKControl stateWithURL:@"Download URL"];
 NSError *error = [FKControl errorWithURL:@"Download URL"];
 ```    
 
+直接获取下载链接对应文件的路径, 文件可能不存在
+```
+NSString *path = [FKControl downloadedFilePathWithURL:@"Download URL"];
+```     
+
 ### FKMessager
 负责获取任务对应的信息    
 
@@ -206,8 +211,13 @@ FKDownloader 包含了单元测试, 可在 FKDownloader.xcodeproj 中选择 FKDo
 　　`github 'SYFH/FKDownloader'`  
 - Manual  
 　　将`FKDownloader` 文件夹复制到项目中, `#import "FKDownloader.h"` 即可开始  
-　　
+
 # Change log
+- 1.0.1     
+    1. 针对特定版本修正恢复数据
+    2. 针对特定版本修复前后台切换导致的下载进度监听无效的问题
+    3. 优化 FKObserver, 将缓存移入 FKCache 中
+    4. Demo 添加强制退出选项
 - 1.0.0    
     对 0.x 彻底重构, 完成框架完整逻辑, 机型/系统 BUG 等需要继续完善    
 
