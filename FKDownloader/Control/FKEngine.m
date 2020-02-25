@@ -27,6 +27,7 @@
 @property (nonatomic, strong) dispatch_source_t timer;
 @property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, assign, getter=isProcessingNextRequest) BOOL processingNextRequest;
+@property (nonatomic, assign, getter=isEnterBackgrounded) BOOL enterBackgrounded;
 
 @end
 
@@ -96,12 +97,54 @@
 
 - (void)configtureNotification {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationdidFinishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
-    // TODO: 监听后台/前台切换, 解决进度监听无效的问题
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)applicationdidFinishLaunching:(NSNotification *)notify {
     [self configtureSession];
     [self loadSessionRequest];
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notify {
+    self.enterBackgrounded = YES;
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notify {
+    if (self.isEnterBackgrounded == NO) { return; }
+    self.enterBackgrounded = NO;
+    
+    if ([NSProcessInfo processInfo].operatingSystemVersion.majorVersion == 12
+        && ([NSProcessInfo processInfo].operatingSystemVersion.minorVersion == 0
+         || [NSProcessInfo processInfo].operatingSystemVersion.minorVersion == 1)) {
+        
+        [self fixProgress];
+    }
+}
+
+- (void)fixProgress {
+    // 暂停计时器
+    if (self.timer) {
+        dispatch_suspend(self.timer);
+    }
+    
+    // 将正在执行的任务暂停再继续
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"state == %ld", FKStateAction];
+    NSArray<FKCacheRequestModel *> *requests = [[FKCache cache] requestArray];
+    NSArray<FKCacheRequestModel *> *actionRequests = [requests filteredArrayUsingPredicate:predicate];
+    for (FKCacheRequestModel *model in actionRequests) {
+        [[FKScheduler shared] suspendRequestWithURL:model.url];
+        
+        // 防止恢复数据未生成而导致的恢复下载失败
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [[FKScheduler shared] resumeRequestWithURL:model.url];
+        });
+    }
+    
+    // 恢复计时器
+    if (self.timer) {
+        dispatch_resume(self.timer);
+    }
 }
 
 - (void)loadSessionRequest {
