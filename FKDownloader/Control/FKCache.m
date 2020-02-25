@@ -16,6 +16,7 @@
 
 @interface FKCache ()
 
+#pragma mark - Request
 /// 请求表, 包含所有请求信息, {SingleNumber_SHA256(Request.URL): Cache.Request.Model}
 @property (nonatomic, strong) NSMapTable<NSString *, FKCacheRequestModel *> *requestMap;
 
@@ -24,6 +25,32 @@
 
 /// 请求索引表, {SHA256(Request.URL): SingleNumber_SHA256(Request.URL)}
 @property (nonatomic, strong) NSMapTable<NSString *, NSString *> *requestIndexMap;
+
+
+#pragma mark - Oberser
+/// 请求信息
+/// 结构: {"SHA256(Request.URL)": Observer.Model}
+@property (nonatomic, strong) NSMapTable<NSString *, FKObserverModel *> *infoMap;
+
+/// 预约信息回调, 在正式添加到 blockMap 之前的保留队列, 防止任务未开始就添加信息回调, 而导致监听缓存未添加, 回调不能保存
+/// 结构: {"SHA256(Request.URL)": MessagerInfoBlock}
+@property (nonatomic, strong) NSMapTable<NSString *, MessagerInfoBlock> *reserveBlockMap;
+
+/// 信息回调
+/// 结构: {"SHA256(Request.URL)": MessagerInfoBlock}
+@property (nonatomic, strong) NSMapTable<NSString *, MessagerInfoBlock> *blockMap;
+
+/// 集合任务
+/// 结构: {"Barrel": Array(SHA256(Request.URL))}
+@property (nonatomic, strong) NSMapTable<NSString *, NSArray<NSString *> *> *barrelMap;
+
+/// 集合任务信息回调
+/// 结构: {"Barrel": MessagerBarrelBlock}
+@property (nonatomic, strong) NSMapTable<NSString *, MessagerBarrelBlock> *barrelBlockMap;
+
+/// 任务与集合对应表
+/// 结构: {SHA256(Request.URL): Barrel}
+@property (nonatomic, strong) NSMapTable<NSString *, NSString *> *barrelIndexMap;
 
 @end
 
@@ -45,6 +72,12 @@
         NSUInteger count = self.requestMap.count;
         count = self.requestIndexMap.count;
         count = self.taskMap.count;
+        count = self.infoMap.count;
+        count = self.reserveBlockMap.count;
+        count = self.blockMap.count;
+        count = self.barrelMap.count;
+        count = self.barrelBlockMap.count;
+        count = self.barrelIndexMap.count;
     }
     return self;
 }
@@ -73,6 +106,54 @@
                                                  valueOptions:NSPointerFunctionsStrongMemory];
     }
     return _requestIndexMap;
+}
+
+- (NSMapTable<NSString *,FKObserverModel *> *)infoMap {
+    if (!_infoMap) {
+        _infoMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                         valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _infoMap;
+}
+
+- (NSMapTable<NSString *,MessagerInfoBlock> *)reserveBlockMap {
+    if (!_reserveBlockMap) {
+        _reserveBlockMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                                 valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _reserveBlockMap;
+}
+
+- (NSMapTable<NSString *,MessagerInfoBlock> *)blockMap {
+    if (!_blockMap) {
+        _blockMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                          valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _blockMap;
+}
+
+- (NSMapTable<NSString *,NSArray<NSString *> *> *)barrelMap {
+    if (!_barrelMap) {
+        _barrelMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                           valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _barrelMap;
+}
+
+- (NSMapTable<NSString *, MessagerBarrelBlock> *)barrelBlockMap {
+    if (!_barrelBlockMap) {
+        _barrelBlockMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                                valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _barrelBlockMap;
+}
+
+- (NSMapTable<NSString *,NSString *> *)barrelIndexMap {
+    if (!_barrelIndexMap) {
+        _barrelIndexMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
+                                                valueOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _barrelIndexMap;
 }
 
 @end
@@ -225,5 +306,95 @@
     FKCacheRequestModel *info = [self requestWithRequestID:requestID];
     return info.error;
 }
+
+@end
+
+@implementation FKCache (Observer)
+
+- (void)addObserverInfo:(FKObserverModel *)info forRequestID:(NSString *)requestID {
+    [self.infoMap setObject:info forKey:requestID];
+}
+
+- (void)removeObserverInfoWithRequestID:(NSString *)requestID {
+    [self.infoMap removeObjectForKey:requestID];
+}
+
+- (FKObserverModel *)observerInfoWithRequestID:(NSString *)requestID {
+    return [self.infoMap objectForKey:requestID];
+}
+
+
+- (void)addReserveObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID {
+    [self.reserveBlockMap setObject:block forKey:requestID];
+}
+
+- (void)removeReserveObserverBlockWithRequestID:(NSString *)requestID {
+    [self.reserveBlockMap removeObjectForKey:requestID];
+}
+
+- (MessagerInfoBlock)reserveObserverBlockWithRequestID:(NSString *)requestID {
+    return [self.reserveBlockMap objectForKey:requestID];
+}
+
+
+- (NSMapTable *)observerBlockTable {
+    return self.blockMap;
+}
+
+- (void)addObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID {
+    [self.blockMap setObject:block forKey:requestID];
+}
+
+- (void)removeObserverBlockWithRequestID:(NSString *)requestID {
+    [self.blockMap removeObjectForKey:requestID];
+}
+
+- (MessagerInfoBlock)observerBlockWithRequestID:(NSString *)requestID {
+    return [self.blockMap objectForKey:requestID];
+}
+
+
+- (void)addObserverBarrelIndex:(NSString *)barre forURL:(NSString *)url {
+    [self.barrelIndexMap setObject:barre forKey:url];
+}
+
+- (void)removeObserverBarrelIndexWithRequestID:(NSString *)requestID {
+    [self.barrelIndexMap removeObjectForKey:requestID];
+}
+
+- (NSString *)observerBarrelIndexWithRequestID:(NSString *)requestID {
+    return [self.barrelIndexMap objectForKey:requestID];
+}
+
+
+- (NSMapTable *)observerBarrelTable {
+    return self.barrelMap;
+}
+
+- (void)addObserverBarrelWithURLs:(NSArray<NSString *> *)urls forBarrel:(NSString *)barrel {
+    [self.barrelMap setObject:urls forKey:barrel];
+}
+
+- (void)removeObserverBarrelWithBarrel:(NSString *)barrel {
+    [self.barrelMap removeObjectForKey:barrel];
+}
+
+- (NSArray<NSString *> *)observerBarrelWithBarrel:(NSString *)barrel {
+    return [self.barrelMap objectForKey:barrel];
+}
+
+
+- (void)addObserverBarrelBlock:(MessagerBarrelBlock)block forBarrel:(NSString *)barrel {
+    [self.barrelBlockMap setObject:block forKey:barrel];
+}
+
+- (void)removeObserverBarrelBlockWithBarrel:(NSString *)barrel {
+    [self.barrelBlockMap removeObjectForKey:barrel];
+}
+
+- (MessagerBarrelBlock)observerBarrelBlockWithBarrel:(NSString *)barrel {
+    return [self.barrelBlockMap objectForKey:barrel];
+}
+
 
 @end

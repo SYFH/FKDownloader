@@ -18,31 +18,6 @@
 
 @interface FKObserver ()
 
-// TODO: 将缓存移入 FKCache 中
-/// 请求信息
-/// 结构: {"SHA256(Request.URL)": Observer.Model}
-@property (nonatomic, strong) NSMapTable<NSString *, FKObserverModel *> *infoMap;
-
-/// 预约信息回调, 在正式添加到 blockMap 之前的保留队列, 防止任务未开始就添加信息回调, 而导致监听缓存未添加, 回调不能保存
-/// 结构: {"SHA256(Request.URL)": MessagerInfoBlock}
-@property (nonatomic, strong) NSMapTable<NSString *, MessagerInfoBlock> *reserveBlockMap;
-
-/// 信息回调
-/// 结构: {"SHA256(Request.URL)": MessagerInfoBlock}
-@property (nonatomic, strong) NSMapTable<NSString *, MessagerInfoBlock> *blockMap;
-
-/// 集合任务
-/// 结构: {"Barrel": Array(SHA256(Request.URL))}
-@property (nonatomic, strong) NSMapTable<NSString *, NSArray<NSString *> *> *barrelMap;
-
-/// 集合任务信息回调
-/// 结构: {"Barrel": MessagerBarrelBlock}
-@property (nonatomic, strong) NSMapTable<NSString *, MessagerBarrelBlock> *barrelBlockMap;
-
-/// 任务与集合对应表
-/// 结构: {SHA256(Request.URL): Barrel}
-@property (nonatomic, strong) NSMapTable<NSString *, NSString *> *barrelIndexMap;
-
 @end
 
 @implementation FKObserver
@@ -59,12 +34,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        NSUInteger count = self.infoMap.count;
-        count = self.reserveBlockMap.count;
-        count = self.blockMap.count;
-        count = self.barrelMap.count;
-        count = self.barrelBlockMap.count;
-        count = self.barrelIndexMap.count;
+        
     }
     return self;
 }
@@ -75,7 +45,7 @@
     
     NSURLSessionDownloadTask *downloadTask = object;
     NSString *requestID = downloadTask.taskDescription;
-    FKObserverModel *info = [self.infoMap objectForKey:requestID];
+    FKObserverModel *info = [[FKCache cache] observerInfoWithRequestID:requestID];
     
     // 更新下载文件后缀
     BOOL hasUpdate = NO;
@@ -113,56 +83,6 @@
     }
 }
 
-
-#pragma mark - Getter/Setter
-- (NSMapTable<NSString *,FKObserverModel *> *)infoMap {
-    if (!_infoMap) {
-        _infoMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                         valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _infoMap;
-}
-
-- (NSMapTable<NSString *,MessagerInfoBlock> *)reserveBlockMap {
-    if (!_reserveBlockMap) {
-        _reserveBlockMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                                 valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _reserveBlockMap;
-}
-
-- (NSMapTable<NSString *,MessagerInfoBlock> *)blockMap {
-    if (!_blockMap) {
-        _blockMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                          valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _blockMap;
-}
-
-- (NSMapTable<NSString *,NSArray<NSString *> *> *)barrelMap {
-    if (!_barrelMap) {
-        _barrelMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                           valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _barrelMap;
-}
-
-- (NSMapTable<NSString *, MessagerBarrelBlock> *)barrelBlockMap {
-    if (!_barrelBlockMap) {
-        _barrelBlockMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                                valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _barrelBlockMap;
-}
-
-- (NSMapTable<NSString *,NSString *> *)barrelIndexMap {
-    if (!_barrelIndexMap) {
-        _barrelIndexMap = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory
-                                                valueOptions:NSPointerFunctionsStrongMemory];
-    }
-    return _barrelIndexMap;
-}
-
 @end
 
 
@@ -187,14 +107,14 @@
     info.requestID = downloadTask.taskDescription;
     info.countOfBytesReceived = 0;
     info.countOfBytesExpectedToReceive = 0;
-    [self.infoMap setObject:info forKey:downloadTask.taskDescription];
+    [[FKCache cache] addObserverInfo:info forRequestID:downloadTask.taskDescription];
     [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"添加监听缓存"];
     
     // 将预约回调添加到正式回调队列中
-    if ([self.reserveBlockMap objectForKey:info.requestID]) {
+    if ([[FKCache cache] reserveObserverBlockWithRequestID:info.requestID]) {
         [[FKEngine engine].ioQueue addOperationWithBlock:^{
-            [self.blockMap setObject:[self.reserveBlockMap objectForKey:info.requestID] forKey:info.requestID];
-            [self.reserveBlockMap removeObjectForKey:info.requestID];
+            [[FKCache cache] addObserverBlock:[[FKCache cache] reserveObserverBlockWithRequestID:info.requestID] forRequestID:info.requestID];
+            [[FKCache cache] removeReserveObserverBlockWithRequestID:info.requestID];
         }];
     }
     [FKLogger debug:@"%@\n%@", info.requestID, @"将预约回调移动到正式回调队列中"];
@@ -219,20 +139,20 @@
 
 - (void)removeCacheWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        [self.infoMap removeObjectForKey:downloadTask.taskDescription];
-        [self.blockMap removeObjectForKey:downloadTask.taskDescription];
+        [[FKCache cache] removeObserverInfoWithRequestID:downloadTask.taskDescription];
+        [[FKCache cache] removeObserverBlockWithRequestID:downloadTask.taskDescription];
         
-        NSString *barrel = [self.barrelIndexMap objectForKey:downloadTask.taskDescription];
+        NSString *barrel = [[FKCache cache] observerBarrelIndexWithRequestID:downloadTask.taskDescription];
         if (barrel.length) {// 有所属集合
-            NSMutableArray<NSString *> *urls = [NSMutableArray arrayWithArray:[self.barrelMap objectForKey:barrel]];
+            NSMutableArray<NSString *> *urls = [NSMutableArray arrayWithArray:[[FKCache cache] observerBarrelWithBarrel:barrel]];
             [urls removeObject:downloadTask.taskDescription];
             if (urls.count == 0) {
-                [self.barrelMap removeObjectForKey:barrel];
-                [self.barrelBlockMap removeObjectForKey:barrel];
-                [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
+                [[FKCache cache] removeObserverBarrelWithBarrel:barrel];
+                [[FKCache cache] removeObserverBarrelBlockWithBarrel:barrel];
+                [[FKCache cache] removeObserverBarrelIndexWithRequestID:downloadTask.taskDescription];
             } else {
-                [self.barrelMap setObject:[NSArray arrayWithArray:urls] forKey:barrel];
-                [self.barrelIndexMap removeObjectForKey:downloadTask.taskDescription];
+                [[FKCache cache] addObserverBarrelWithURLs:[NSArray arrayWithArray:urls] forBarrel:barrel];
+                [[FKCache cache] removeObserverBarrelIndexWithRequestID:downloadTask.taskDescription];
             }
         }
     }];
@@ -241,9 +161,9 @@
 
 - (void)removeCacheProgressWithDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        FKObserverModel *info = [self.infoMap objectForKey:downloadTask.taskDescription];
+        FKObserverModel *info = [[FKCache cache] observerInfoWithRequestID:downloadTask.taskDescription];
         info.countOfBytesReceived = 0;
-        [self.infoMap setObject:info forKey:downloadTask.taskDescription];
+        [[FKCache cache] addObserverInfo:info forRequestID:downloadTask.taskDescription];
     }];
     [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"删除任务缓存的进度数据"];
 }
@@ -262,7 +182,6 @@
 @implementation FKObserver (Block)
 
 - (void)addBlock:(MessagerInfoBlock)block requestID:(NSString *)requestID {
-    // TODO: 去除限制, block 在任何时候都起效
     if (![[FKCache cache] existRequestWithRequestID:requestID]) {
         [FKLogger debug:@"%@\n%@", requestID, @"任务不存在, 不添加监听缓存"];
         return;
@@ -270,15 +189,15 @@
     
     // 防止任务未完成预处理就立即添加信息回调, 导致回调不能保存的问题
     // 预约回调会在添加进度监听后转移到正式队列中, 所以以监听缓存是否存在为判断标准
-    if ([self.infoMap objectForKey:requestID]
+    if ([[FKCache cache] observerInfoWithRequestID:requestID]
         || [[FKCache cache] requestWithRequestID:requestID].state != FKStateAction) {
         
         [[FKEngine engine].ioQueue addOperationWithBlock:^{
-            [self.blockMap setObject:block forKey:requestID];
+            [[FKCache cache] addObserverBlock:block forRequestID:requestID];
         }];
     } else {
         [[FKEngine engine].ioQueue addOperationWithBlock:^{
-            [self.reserveBlockMap setObject:block forKey:requestID];
+            [[FKCache cache] addReserveObserverBlock:block forRequestID:requestID];
         }];
     }
     [FKLogger debug:@"%@\n%@", requestID, @"添加信息回调到监听缓存"];
@@ -289,9 +208,9 @@
 
 - (void)addBarrel:(NSString *)barrel urls:(NSArray<NSString *> *)urls {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        [self.barrelMap setObject:urls forKey:barrel];
+        [[FKCache cache] addObserverBarrelWithURLs:urls forBarrel:barrel];
         for (NSString *url in urls) {
-            [self.barrelIndexMap setObject:barrel forKey:url];
+            [[FKCache cache] addObserverBarrelIndex:barrel forURL:url];
         }
     }];
     [FKLogger debug:@"添加任务集合: %@ 到监听缓存", barrel];
@@ -299,19 +218,19 @@
 
 - (void)removeBarrel:(NSString *)barrel {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
+        NSArray<NSString *> *urls = [[FKCache cache] observerBarrelWithBarrel:barrel];
         for (NSString *requestID in urls) {
-            [self.barrelIndexMap removeObjectForKey:requestID];
+            [[FKCache cache] removeObserverBarrelIndexWithRequestID:requestID];
         }
-        [self.barrelBlockMap removeObjectForKey:barrel];
-        [self.barrelMap removeObjectForKey:barrel];
+        [[FKCache cache] removeObserverBarrelBlockWithBarrel:barrel];
+        [[FKCache cache] removeObserverBarrelWithBarrel:barrel];
     }];
     [FKLogger debug:@"从监听缓存移除任务集合: %@", barrel];
 }
 
 - (void)addBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        [self.barrelBlockMap setObject:info forKey:barrel];
+        [[FKCache cache] addObserverBarrelBlock:info forBarrel:barrel];
     }];
     [FKLogger debug:@"添加任务集合: %@ 信息回调到监听缓存", barrel];
 }
@@ -323,10 +242,10 @@
 
 - (void)execFastInfoBlockWithRequestID:(NSString *)requestID {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
-        MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
+        MessagerInfoBlock block = [[FKCache cache] observerBlockWithRequestID:requestID];
         if (block) {
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-            FKObserverModel *model = [self.infoMap objectForKey:requestID];
+            FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
             NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
             FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
             if (block) {
@@ -341,11 +260,11 @@
 
 - (void)execRequestInfoBlock {
     // 处理单一请求的信息回调
-    for (NSString *requestID in self.blockMap) {
-        MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
+    for (NSString *requestID in [[FKCache cache] observerBlockTable]) {
+        MessagerInfoBlock block = [[FKCache cache] observerBlockWithRequestID:requestID];
         if (block) {
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-            FKObserverModel *model = [self.infoMap objectForKey:requestID];
+            FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
             NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
             FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
             block(MAX(model.countOfBytesReceived, info.receivedLength),
@@ -356,16 +275,16 @@
     }
     
     // 处理请求集合的信息回调
-    for (NSString *barrel in self.barrelMap) {
-        MessagerBarrelBlock block = [self.barrelBlockMap objectForKey:barrel];
+    for (NSString *barrel in [[FKCache cache] observerBarrelTable]) {
+        MessagerBarrelBlock block = [[FKCache cache] observerBarrelBlockWithBarrel:barrel];
         if (block) {
-            NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
+            NSArray<NSString *> *urls = [[FKCache cache] observerBarrelWithBarrel:barrel];
             int64_t countOfBytesReceived = 0;
             int64_t countOfBytesExpectedToReceive = 0;
             
             for (NSString *requestID in urls) {
                 FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-                FKObserverModel *model = [self.infoMap objectForKey:requestID];
+                FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
                 countOfBytesReceived += MAX(model.countOfBytesReceived, info.receivedLength);
                 countOfBytesExpectedToReceive += MAX(model.countOfBytesExpectedToReceive, info.dataLength);
             }

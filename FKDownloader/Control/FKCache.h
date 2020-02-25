@@ -13,6 +13,8 @@
 #import <Foundation/Foundation.h>
 
 #import "FKCommonHeader.h"
+#import "FKObserver.h"
+#import "FKObserverModel.h"
 
 @class FKBuilder;
 @class FKCacheRequestModel;
@@ -107,6 +109,36 @@ NS_ASSUME_NONNULL_BEGIN
 /// 获取链接对应的错误信息
 /// @param requestID 请求编号
 - (NSError * _Nullable)errorRequestWithRequestID:(NSString *)requestID;
+
+@end
+
+@interface FKCache (Observer)
+
+- (void)addObserverInfo:(FKObserverModel *)info forRequestID:(NSString *)requestID;
+- (void)removeObserverInfoWithRequestID:(NSString *)requestID;
+- (FKObserverModel *)observerInfoWithRequestID:(NSString *)requestID;
+
+- (void)addReserveObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID;
+- (void)removeReserveObserverBlockWithRequestID:(NSString *)requestID;
+- (MessagerInfoBlock)reserveObserverBlockWithRequestID:(NSString *)requestID;
+
+- (NSMapTable *)observerBlockTable;
+- (void)addObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID;
+- (void)removeObserverBlockWithRequestID:(NSString *)requestID;
+- (MessagerInfoBlock)observerBlockWithRequestID:(NSString *)requestID;
+
+- (void)addObserverBarrelIndex:(NSString *)barre forURL:(NSString *)url;
+- (void)removeObserverBarrelIndexWithRequestID:(NSString *)requestID;
+- (NSString *)observerBarrelIndexWithRequestID:(NSString *)requestID;
+
+- (NSMapTable *)observerBarrelTable;
+- (void)addObserverBarrelWithURLs:(NSArray<NSString *> *)urls forBarrel:(NSString *)barrel;
+- (void)removeObserverBarrelWithBarrel:(NSString *)barrel;
+- (NSArray<NSString *> *)observerBarrelWithBarrel:(NSString *)barrel;
+
+- (void)addObserverBarrelBlock:(MessagerBarrelBlock)block forBarrel:(NSString *)barrel;
+- (void)removeObserverBarrelBlockWithBarrel:(NSString *)barrel;
+- (MessagerBarrelBlock)observerBarrelBlockWithBarrel:(NSString *)barrel;
 
 @end
 
