@@ -35,4 +35,8 @@
     [self.navigationController pushViewController:downloadManageController animated:YES];
 }
 
+- (IBAction)exitDidTap:(UIButton *)sender {
+    exit(0);
+}
+
 @end

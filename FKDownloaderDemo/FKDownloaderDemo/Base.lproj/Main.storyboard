@@ -30,10 +30,19 @@
                                     <action selector="downloadManageDidTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9FX-6t-ADj"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ALc-vD-jDd">
+                                <rect key="frame" x="176" y="388" width="62" height="30"/>
+                                <state key="normal" title="强制退出"/>
+                                <connections>
+                                    <action selector="exitDidTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="oN3-56-aKO"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="nCC-op-4A2" firstAttribute="top" secondItem="owP-Xd-zyD" secondAttribute="bottom" constant="20" id="CKx-YR-UO3"/>
+                            <constraint firstItem="ALc-vD-jDd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FeA-Xh-dSn"/>
+                            <constraint firstItem="ALc-vD-jDd" firstAttribute="top" secondItem="nCC-op-4A2" secondAttribute="bottom" constant="20" id="Hum-FK-9WZ"/>
                             <constraint firstItem="owP-Xd-zyD" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="200" id="MnU-TY-Z0I"/>
                             <constraint firstItem="owP-Xd-zyD" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="SCx-BU-Xlm"/>
                             <constraint firstItem="nCC-op-4A2" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="fNS-wv-GPW"/>
