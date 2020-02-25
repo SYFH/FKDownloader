@@ -132,7 +132,8 @@
 - (void)cancelRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (info.state == FKStateAction || info.state == FKStateSuspend) {
+    if (info.state == FKStateAction || info.state == FKStateSuspend || info.state == FKStateIdel || info.state == FKStateError) {
+        
         NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
         [downloadTask cancel];
         
