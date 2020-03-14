@@ -183,7 +183,7 @@
     return FKStateIdel;
 }
 
-- (void)timerAction {
+- (void)timerAction { // TODO: 逻辑分离, 进度单独一个计时器, 使用配置控制间隔时间
     // 任务: 执行下一个请求
     [self actionNextRequest];
     
