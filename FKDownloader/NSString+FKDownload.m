@@ -119,7 +119,7 @@
             NSRange range = [obj rangeOfString:@"="];
             NSString *key = [obj substringToIndex:range.location];
             NSString *value = [obj substringFromIndex:range.location + 1];
-            return [NSString stringWithFormat:@"%@=%@", AFPercentEscapedStringFromString(key), AFPercentEscapedStringFromString(value)];
+            return [NSString stringWithFormat:@"%@=%@", FKPercentEscapedStringFromString(key), FKPercentEscapedStringFromString(value)];
         }] componentsJoinedByString:@"&"];
         return [NSString stringWithFormat:@"%@?%@", main, encode];
     } else {
@@ -149,7 +149,7 @@
  - parameter string: The string to be percent-escaped.
  - returns: The percent-escaped string.
  */
-NSString * AFPercentEscapedStringFromString(NSString *string) {
+NSString * FKPercentEscapedStringFromString(NSString *string) {
     static NSString * const kAFCharactersGeneralDelimitersToEncode = @":#[]@"; // does not include "?" or "/" due to RFC 3986 - Section 3.4
     static NSString * const kAFCharactersSubDelimitersToEncode = @"!$&'()*+,;=";
     
