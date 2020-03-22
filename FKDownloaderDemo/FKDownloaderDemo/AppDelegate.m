@@ -25,7 +25,7 @@
     [[FKMiddleware shared] registeRequestMiddleware:[CustomRequestMiddleware new]];
     [[FKMiddleware shared] registeResponseMiddleware:[CustomResponseMiddleware new]];
     
-    [FKConfigure configure].distributeRate = 1;
+    [FKConfigure configure].distributeSpeed = 1;
     [[FKConfigure configure] takeSession];
     [[FKConfigure configure] activateQueue];
     return YES;

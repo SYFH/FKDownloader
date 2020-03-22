@@ -119,6 +119,7 @@
     
     __weak typeof(self) weak = self;
     [FKMessager messagerWithURL:self.url info:^(int64_t countOfBytesReceived,
+                                                int64_t countOfBytesPreviousReceived,
                                                 int64_t countOfBytesExpectedToReceive,
                                                 FKState state,
                                                 NSError * _Nullable error) {
@@ -129,7 +130,11 @@
             if (countOfBytesExpectedToReceive > 0 && countOfBytesReceived > 0) {
                 CGFloat progress = countOfBytesReceived * 1.0 / countOfBytesExpectedToReceive;
                 self.progressView.progress = progress;
-                self.progressInfoLabel.text = [NSString stringWithFormat:@"%lld/%lld",countOfBytesReceived, countOfBytesExpectedToReceive];
+                
+                // 计算速度
+                double speed = (countOfBytesReceived - countOfBytesPreviousReceived) / ([FKConfigure configure].distributeSpeed * [FKConfigure configure].distributeTimeinterval);
+                NSString *speedDesc = [NSByteCountFormatter stringFromByteCount:(long long)speed countStyle:NSByteCountFormatterCountStyleFile];
+                self.progressInfoLabel.text = [NSString stringWithFormat:@"%lld/%lld     %@/s",countOfBytesReceived, countOfBytesExpectedToReceive, speedDesc];
             } else {
                 self.progressInfoLabel.text = @"";
                 self.progressView.progress = 0;
@@ -144,6 +149,9 @@
 - (void)controlTitleWithState:(FKState)state {
     self.state = state;
     switch (state) {
+        case FKStateUnknown: {
+            
+        } break;
         case FKStatePrepare: {
             [self.controlButton setTitle:@"处理中" forState:UIControlStateNormal];
             self.controlButton.enabled = NO;
@@ -184,6 +192,8 @@
 
 - (NSString *)stateTransform:(FKState)state {
     switch (state) {
+        case FKStateUnknown:
+            return @"状态: 未知";
         case FKStatePrepare:
             return @"状态: 预处理";
         case FKStateIdel:
@@ -205,6 +215,9 @@
 #pragma mark - Action
 - (void)controlDidTap:(UIButton *)sender {
     switch (self.state) {
+        case FKStateUnknown: {
+            
+        } break;
         case FKStatePrepare: {
             
         } break;
