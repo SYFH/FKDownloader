@@ -22,7 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 信息分发计时器间隔倍率, 最低为 1x = 0.2s, 最高 10x = 2s, 默认 5x
 /// 初始化前设置, 配置生效后, 再次改变无效
-@property (nonatomic, assign) unsigned int distributeRate;
+@property (nonatomic, assign) unsigned int distributeSpeed;
+
+/// 信息分发计时器间隔, 0.2s
+@property (nonatomic, assign, readonly) float distributeTimeinterval;
 
 /// 配置模版, 后台下载, 默认为支持蜂窝网络, 可进行更多自定义配置
 @property (nonatomic, strong, readonly) NSURLSessionConfiguration *templateBackgroundConfiguration;

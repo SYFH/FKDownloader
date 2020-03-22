@@ -13,6 +13,7 @@
 @interface FKConfigure ()
 
 @property (nonatomic, strong) NSURLSessionConfiguration *templateBackgroundConfiguration;
+@property (nonatomic, assign) float distributeTimeinterval;
 
 @end
 
@@ -31,7 +32,8 @@
     self = [super init];
     if (self) {
         self.maxAction = 3;
-        self.distributeRate = 5;
+        self.distributeSpeed = 5;
+        self.distributeTimeinterval = 0.2;
     }
     return self;
 }
@@ -57,13 +59,13 @@
     }
 }
 
-- (void)setDistributeRate:(unsigned int)distributeRate {
+- (void)setDistributeSpeed:(unsigned int)distributeRate {
     if (distributeRate > 10) {
-        _distributeRate = 10;
+        _distributeSpeed = 10;
     } else if (distributeRate < 1) {
-        _distributeRate = 1;
+        _distributeSpeed = 1;
     } else {
-        _distributeRate = distributeRate;
+        _distributeSpeed = distributeRate;
     }
 }
 

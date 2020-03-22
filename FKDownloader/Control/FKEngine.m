@@ -107,7 +107,7 @@
         self.distributeInfoTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.timerQueue);
         dispatch_source_set_timer(self.distributeInfoTimer,
                                   DISPATCH_TIME_NOW,
-                                  [FKConfigure configure].distributeRate * 0.2 * NSEC_PER_SEC,
+                                  [FKConfigure configure].distributeSpeed * [FKConfigure configure].distributeTimeinterval * NSEC_PER_SEC,
                                   0 * NSEC_PER_SEC);
         dispatch_source_set_event_handler(self.distributeInfoTimer, ^{
             __strong typeof(weak) self = weak;
