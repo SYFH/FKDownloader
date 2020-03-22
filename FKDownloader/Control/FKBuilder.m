@@ -21,6 +21,7 @@
 @property (nonatomic, strong) NSString *normalURL;
 @property (nonatomic, strong) NSString *urlHash;
 @property (nonatomic, strong) NSString *requestSingleID;
+@property (nonatomic, assign) unsigned long long idx;
 @property (nonatomic, assign, getter=isPrepared) BOOL prepared;
 
 @end
@@ -46,7 +47,8 @@
         self.urlHash = self.normalURL.SHA256;
         
         // 创建请求编号
-        self.requestSingleID = [NSString stringWithFormat:@"%09llu_%@", FKSingleNumber.shared.number, self.urlHash];
+        self.idx = FKSingleNumber.shared.number;
+        self.requestSingleID = [NSString stringWithFormat:@"%09llu_%@", self.idx, self.urlHash];
         [FKLogger debug:@"%@\n创建唯一请求编号", self.requestSingleID];
     }
     return self;
@@ -60,6 +62,7 @@
     FKCacheRequestModel *model = [[FKCacheRequestModel alloc] init];
     model.requestID = self.urlHash;
     model.requestSingleID = self.requestSingleID;
+    model.idx = self.idx;
     model.url = self.normalURL;
     model.request = [self copy];
     [FKLogger debug:@"%@\n%@\n%@\n创建请求缓存", model.requestID, model.requestSingleID, model.url];
