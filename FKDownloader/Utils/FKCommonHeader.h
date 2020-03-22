@@ -10,6 +10,7 @@
 #define FKCommonHeader_h
 
 typedef NS_ENUM(NSInteger, FKState) {
+    FKStateUnknown  = -1,// 未知
     FKStatePrepare  = 0, // 准备
     FKStateIdel     = 1, // 等待
     FKStateAction   = 2, // 执行
