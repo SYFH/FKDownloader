@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 的任务不受影响, 直至正在执行任务数量小于此值后, 之后的任务才可被控制
 @property (nonatomic, assign) unsigned int maxAction;
 
+/// 信息分发计时器间隔倍率, 最低为 1x = 0.2s, 最高 10x = 2s, 默认 5x
+/// 初始化前设置, 配置生效后, 再次改变无效
+@property (nonatomic, assign) unsigned int distributeRate;
+
 /// 配置模版, 后台下载, 默认为支持蜂窝网络, 可进行更多自定义配置
 @property (nonatomic, strong, readonly) NSURLSessionConfiguration *templateBackgroundConfiguration;
 

@@ -89,7 +89,7 @@
 }
 
 /// 测试配置参数
-- (void)testTakeConfigture {
+- (void)testTakeConfigure {
     // 无法输入附属
     [FKConfigure configure].maxAction = -1;
     XCTAssertTrue([FKConfigure configure].maxAction == 6);

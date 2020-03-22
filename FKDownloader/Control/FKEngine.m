@@ -24,7 +24,8 @@
 
 @interface FKEngine ()
 
-@property (nonatomic, strong) dispatch_source_t timer;
+@property (nonatomic, strong) dispatch_source_t execTimer;
+@property (nonatomic, strong) dispatch_source_t distributeInfoTimer;
 @property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, assign, getter=isProcessingNextRequest) BOOL processingNextRequest;
 @property (nonatomic, assign, getter=isEnterBackgrounded) BOOL enterBackgrounded;
@@ -52,57 +53,78 @@
     self = [super init];
     if (self) {
         // 配置唯一编号
-        [self configtureSingleNumber];
+        [self configureSingleNumber];
         
         // 配置线程
-        [self configtureQueue];
+        [self configureQueue];
         
         // 配置通知监听
-        [self configtureNotification];
+        [self configureNotification];
     }
     return self;
 }
 
-- (void)configtureSingleNumber {
+- (void)configureSingleNumber {
     [[FKSingleNumber shared] initialNumberWithNumber:[[FKFileManager manager] loadSingleNumber]];
 }
 
-- (void)configtureQueue {
+- (void)configureQueue {
     self.ioQueue.maxConcurrentOperationCount = 1;
     self.messagerQueue.maxConcurrentOperationCount = 6;
     
     self.timerQueue = dispatch_queue_create("com.fk.downloader.queue.timer", DISPATCH_QUEUE_SERIAL);
 }
 
-- (void)configtureSession {
+- (void)configureSession {
     NSURLSessionConfiguration *backgroundConfiguration = [[FKConfigure configure].templateBackgroundConfiguration copy];
     self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:[FKSessionDelegater delegater] delegateQueue:nil];
     [FKLogger debug:@"根据配置生成后台下载 Session"];
 }
 
-- (void)configtureTimer {
-    if (self.timer) {
+- (void)configureExecTimer {
+    if (self.execTimer) {
         return;
     } else {
         __weak typeof(self) weak = self;
-        self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.timerQueue);
-        dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-        dispatch_source_set_event_handler(self.timer, ^{
+        self.execTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.timerQueue);
+        dispatch_source_set_timer(self.execTimer,
+                                  DISPATCH_TIME_NOW,
+                                  1 * NSEC_PER_SEC,
+                                  0 * NSEC_PER_SEC);
+        dispatch_source_set_event_handler(self.execTimer, ^{
             __strong typeof(weak) self = weak;
-            [self timerAction];
+            [self execTimerAction];
         });
-        dispatch_resume(self.timer);
+        dispatch_resume(self.execTimer);
     }
 }
 
-- (void)configtureNotification {
+- (void)configureDistributeInfoTimer {
+    if (self.distributeInfoTimer) {
+        return;
+    } else {
+        __weak typeof(self) weak = self;
+        self.distributeInfoTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.timerQueue);
+        dispatch_source_set_timer(self.distributeInfoTimer,
+                                  DISPATCH_TIME_NOW,
+                                  [FKConfigure configure].distributeRate * 0.2 * NSEC_PER_SEC,
+                                  0 * NSEC_PER_SEC);
+        dispatch_source_set_event_handler(self.distributeInfoTimer, ^{
+            __strong typeof(weak) self = weak;
+            [self distributeTimerAction];
+        });
+        dispatch_resume(self.distributeInfoTimer);
+    }
+}
+
+- (void)configureNotification {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationdidFinishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)applicationdidFinishLaunching:(NSNotification *)notify {
-    [self configtureSession];
+    [self configureSession];
     [self loadSessionRequest];
 }
 
@@ -114,6 +136,7 @@
     if (self.isEnterBackgrounded == NO) { return; }
     self.enterBackgrounded = NO;
     
+    // iOS Version == 12.0 || 12.1
     if ([NSProcessInfo processInfo].operatingSystemVersion.majorVersion == 12
         && ([NSProcessInfo processInfo].operatingSystemVersion.minorVersion == 0
          || [NSProcessInfo processInfo].operatingSystemVersion.minorVersion == 1)) {
@@ -124,8 +147,8 @@
 
 - (void)fixProgress {
     // 暂停计时器
-    if (self.timer) {
-        dispatch_suspend(self.timer);
+    if (self.execTimer) {
+        dispatch_suspend(self.execTimer);
     }
     
     // 将正在执行的任务暂停再继续
@@ -142,8 +165,8 @@
     }
     
     // 恢复计时器
-    if (self.timer) {
-        dispatch_resume(self.timer);
+    if (self.execTimer) {
+        dispatch_resume(self.execTimer);
     }
 }
 
@@ -183,10 +206,12 @@
     return FKStateIdel;
 }
 
-- (void)timerAction { // TODO: 逻辑分离, 进度单独一个计时器, 使用配置控制间隔时间
+- (void)execTimerAction {
     // 任务: 执行下一个请求
     [self actionNextRequest];
-    
+}
+
+- (void)distributeTimerAction {
     // 信息: 执行信息分发回调
     [self distributeRequestInfo];
 }

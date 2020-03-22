@@ -31,16 +31,18 @@
     self = [super init];
     if (self) {
         self.maxAction = 3;
+        self.distributeRate = 5;
     }
     return self;
 }
 
 - (void)takeSession {
-    [[FKEngine engine] configtureSession];
+    [[FKEngine engine] configureSession];
 }
 
 - (void)activateQueue {
-    [[FKEngine engine] configtureTimer];
+    [[FKEngine engine] configureExecTimer];
+    [[FKEngine engine] configureDistributeInfoTimer];
 }
 
 
@@ -52,6 +54,16 @@
         _maxAction = 1;
     } else {
         _maxAction = maxAction;
+    }
+}
+
+- (void)setDistributeRate:(unsigned int)distributeRate {
+    if (distributeRate > 10) {
+        _distributeRate = 10;
+    } else if (distributeRate < 1) {
+        _distributeRate = 1;
+    } else {
+        _distributeRate = distributeRate;
     }
 }
 

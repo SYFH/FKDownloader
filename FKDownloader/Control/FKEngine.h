@@ -31,10 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)engine;
 
 /// 配置 Session
-- (void)configtureSession;
+- (void)configureSession;
 
-/// 配置计时器
-- (void)configtureTimer;
+/// 配置任务执行计时器
+- (void)configureExecTimer;
+
+/// 配置信息分发计时器
+- (void)configureDistributeInfoTimer;
 
 /// 处理下载完成流程
 /// @param downloadTask 下载任务
