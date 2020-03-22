@@ -39,6 +39,11 @@
 配置最大下载数量, 默认 3, 设定范围 1 ~ 6    
 ```
 [FKConfigure configure].maxAction = 3;
+```   
+
+配置信息分发速率, 默认 5 倍, 最小 1 倍, 最大 10 倍, 1 倍为 0.2 秒    
+```
+[FKConfigure configure].distributeSpeed = 5;
 ```    
 
 配置 NSURLSessionConfiguration, 鉴于系统类中包含了新的特性, 所以配置相关都在一个模版上进行配置, FKDownloader 会以此模版进行配置 Session, 其中 `allowsCellularAccess` 为默认开启    
@@ -103,7 +108,7 @@ FKDownloader 的每一个任务都对应一个本地信息文件, 当 App 因为
 [FKControl resumeRequestWithURL:@"Download URL"];
 ```    
 
-取消任务, 对 FKStateAction 和 FKStateSuspend 状态生效    
+取消任务, 对 FKStateAction, FKStateSuspend, FKStateIdel 和 FKStateError 状态生效    
 ```
 [FKControl cancelRequestWithURL:@"Download URL"];
 ```    
@@ -139,6 +144,7 @@ NSString *path = [FKControl downloadedFilePathWithURL:@"Download URL"];
 获取下载链接对应任务信息, 注意, 回调不在主线程, 如需 UI 操作请自行切换线程    
 ```
 [FKMessager messagerWithURL:@"Download URL" info:^(int64_t countOfBytesReceived,
+                                                   int64_t countOfBytesPreviousReceived,
                                                    int64_t countOfBytesExpectedToReceive,
                                                    FKState state,
                                                    NSError * _Nullable error) {
@@ -156,9 +162,9 @@ NSString *path = [FKControl downloadedFilePathWithURL:@"Download URL"];
 [FKMessager removeMessagerBarrel:@"name"];
 ```    
 
-获取一个集合的任务信息, 基本上, 集合信息只是最基本的数据, 只有总大小和已下载大小, 状态之类的数据请自行记录和控制    
+获取一个集合的任务信息, 基本上, 集合信息只是最基本的数据, 只有总大小, 上次已下载大小和已下载大小, 状态之类的数据请自行记录和控制    
 ```    
-[FKMessager messagerWithBarrel:@"name" info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive) {
+[FKMessager messagerWithBarrel:@"name" info:^(int64_t countOfBytesReceived, int64_t countOfBytesPreviousReceived, int64_t countOfBytesExpectedToReceive) {
     // do something...
 }];
 ```    
@@ -217,6 +223,11 @@ FKDownloader 包含了单元测试, 可在 FKDownloader.xcodeproj 中选择 FKDo
 　　将`FKDownloader` 文件夹复制到项目中, `#import "FKDownloader.h"` 即可开始  
 
 # Change log
+- 1.0.2
+    1. 取消操作增加允许的状态
+    2. 将信息分发计时器独立, 并支持自定义速率配置
+    3. 分发信息添加上次已下载数据长度, 可进行速度计算
+    4. 修复一些问题
 - 1.0.1     
     1. 针对特定版本修正恢复数据
     2. 针对特定版本修复前后台切换导致的下载进度监听无效的问题
