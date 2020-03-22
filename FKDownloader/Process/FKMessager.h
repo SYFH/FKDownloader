@@ -14,13 +14,14 @@
 
 #import "FKCommonHeader.h"
 
-// TODO: 信息包装为对象, 添加上次已接收长度, 便于计算速度
 typedef void(^MessagerInfoBlock)(int64_t countOfBytesReceived,
+                                 int64_t countOfBytesPreviousReceived,
                                  int64_t countOfBytesExpectedToReceive,
                                  FKState state,
                                  NSError * _Nullable error);
 
 typedef void(^MessagerBarrelBlock)(int64_t countOfBytesReceived,
+                                   int64_t countOfBytesPreviousReceived,
                                    int64_t countOfBytesExpectedToReceive);
 
 NS_ASSUME_NONNULL_BEGIN

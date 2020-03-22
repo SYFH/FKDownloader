@@ -61,6 +61,7 @@
     }
     
     if ([keyPath isEqualToString:@"countOfBytesReceived"]) {
+        info.countOfBytesPreviousReceived = info.countOfBytesReceived;
         info.countOfBytesReceived = downloadTask.countOfBytesReceived;
         model.receivedLength = downloadTask.countOfBytesReceived;
     }
@@ -250,6 +251,7 @@
             FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
             if (block) {
                 block(MAX(model.countOfBytesReceived, info.receivedLength),
+                      model.countOfBytesPreviousReceived,
                       MAX(model.countOfBytesExpectedToReceive, info.dataLength),
                       state,
                       error);
@@ -268,6 +270,7 @@
             NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
             FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
             block(MAX(model.countOfBytesReceived, info.receivedLength),
+                  model.countOfBytesPreviousReceived,
                   MAX(model.countOfBytesExpectedToReceive, info.dataLength),
                   state,
                   error);
@@ -280,15 +283,17 @@
         if (block) {
             NSArray<NSString *> *urls = [[FKCache cache] observerBarrelWithBarrel:barrel];
             int64_t countOfBytesReceived = 0;
+            int64_t countOfBytesPreviousReceived = 0;
             int64_t countOfBytesExpectedToReceive = 0;
             
             for (NSString *requestID in urls) {
                 FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
                 FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
                 countOfBytesReceived += MAX(model.countOfBytesReceived, info.receivedLength);
+                countOfBytesPreviousReceived += model.countOfBytesPreviousReceived;
                 countOfBytesExpectedToReceive += MAX(model.countOfBytesExpectedToReceive, info.dataLength);
             }
-            block(countOfBytesReceived, countOfBytesExpectedToReceive);
+            block(countOfBytesReceived, countOfBytesPreviousReceived, countOfBytesExpectedToReceive);
         }
     }
 }
