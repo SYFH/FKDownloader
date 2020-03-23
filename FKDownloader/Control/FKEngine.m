@@ -76,10 +76,6 @@
 }
 
 - (void)configureSession {
-    [self configureBackgroundSession];
-}
-
-- (void)configureBackgroundSession {
     NSURLSessionConfiguration *backgroundConfiguration = [[FKConfigure configure].templateBackgroundConfiguration copy];
     self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:[FKSessionDelegater delegater] delegateQueue:nil];
     [FKLogger debug:@"根据配置生成后台下载 Session"];
@@ -318,58 +314,6 @@
     [FKLogger debug:@"%@\n清除任务缓存", [FKLogger downloadTaskDebugInfo:downloadTask]];
 }
 
-- (void)processTask:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error {
-    NSString *requestID = task.taskDescription;
-    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (!info) { return; }
-    
-    if (error) {
-        // 区分错误状态
-        NSInteger code = error.code;
-        NSDictionary *errorUserInfo = error.userInfo;
-        if (code == NSURLErrorCancelled) {
-            if ([errorUserInfo.allKeys containsObject:@"NSURLSessionDownloadTaskResumeData"]) {
-                // 下载任务进行带有恢复数据的暂停
-                NSData *resumeData = [errorUserInfo objectForKey:@"NSURLSessionDownloadTaskResumeData"];
-                info.resumeData = resumeData;
-                info.state = FKStateSuspend;
-            } else {
-                // 普通取消或不支持断点下载的链接
-                info.state = FKStateCancel;
-            }
-        } else {
-            // 其他错误, 如网路未连接, 超时, 返回数据错误等
-            info.state = FKStateError;
-            info.error = error;
-            
-            // 使用中间件处理响应
-            [self processResponseMiddlewareWithTask:task error:error fromRequest:info];
-        }
-        [[FKCache cache] updateRequestWithModel:info];
-        [[FKCache cache] updateLocalRequestWithModel:info];
-        [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
-    } else {
-        // 使用中间件处理响应
-        [self processResponseMiddlewareWithTask:task error:error fromRequest:info];
-    }
-}
-
-- (void)processResponseMiddlewareWithTask:(NSURLSessionTask *)task error:(nullable NSError *)error fromRequest:(FKCacheRequestModel *)request {
-    
-    // 使用中间件处理响应
-    for (id<FKResponseMiddlewareProtocol> middleware in [FKMiddleware shared].responseMiddlewareArray) {
-        if ([middleware respondsToSelector:@selector(processResponse:)]) {
-            FKResponse *response = [[FKResponse alloc] init];
-            response.originalURL = request.url;
-            response.response = task.response;
-            response.filePath = [[FKCache cache] requestExpectedFilePathWithRequestID:task.taskDescription];
-            response.error = error;
-            [middleware processResponse:response];
-        }
-    }
-    [FKLogger debug:@"对响应进行中间件处理"];
-}
-
 
 #pragma mark - Getter/Setter
 - (NSOperationQueue *)ioQueue {
@@ -381,11 +325,11 @@
 }
 
 - (NSOperationQueue *)messagerQueue {
-    if (!_messagerQueue) {
-        _messagerQueue = [[NSOperationQueue alloc] init];
-        _messagerQueue.name = @"com.fk.queue.cache.messager";
+    if (!_ioQueue) {
+        _ioQueue = [[NSOperationQueue alloc] init];
+        _ioQueue.name = @"com.fk.queue.cache.messager";
     }
-    return _messagerQueue;
+    return _ioQueue;
 }
 
 @end
