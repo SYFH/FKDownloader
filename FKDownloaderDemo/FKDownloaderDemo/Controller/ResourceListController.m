@@ -92,11 +92,14 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.mode = MBProgressHUDModeText;
     hud.label.text = @"已添加到下载队列";
-    [hud hideAnimated:YES afterDelay:2];
+    [hud hideAnimated:YES afterDelay:1];
     
     InfoModel *info = [self.infoModels objectAtIndex:indexPath.row];
-    [[FKBuilder buildWithURL:info.url] prepare];
+    FKBuilder *builder = [FKBuilder buildWithURL:info.url];
+    builder.downloadType = FKDownloadTypeForeground;
+    [builder prepare];
     [[DownloadURLManager manager] saveInfo:info];
 }
 

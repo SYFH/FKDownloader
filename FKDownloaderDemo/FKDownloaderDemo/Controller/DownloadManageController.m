@@ -66,6 +66,19 @@
     return 66.f;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"删除";
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    InfoModel *infoModel = [[DownloadURLManager manager].infoModels objectAtIndex:indexPath.row];
+    [FKControl cancelRequestWithURL:infoModel.url];
+    [FKControl trashRequestWithURL:infoModel.url];
+    [[DownloadURLManager manager] deleteInfo:infoModel];
+    [tableView reloadData];
+}
+
 
 #pragma mark - Getter/Setter
 - (UITableView *)listView {
