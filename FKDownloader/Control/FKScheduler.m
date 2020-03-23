@@ -12,6 +12,7 @@
 
 #import "FKCommonHeader.h"
 #import "FKCache.h"
+#import "FKConfigure.h"
 #import "FKCacheModel.h"
 #import "FKFileManager.h"
 #import "FKLogger.h"
@@ -100,51 +101,71 @@
 - (void)suspendRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (info.state == FKStateAction) {
-        NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
-        if (info.downloadType == FKDownloadTypeBackground) {
-            [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
-                // 此处不做处理, 统一在代理中处理所有错误
-            }];
-        } else {
-            [downloadTask suspend];
-        }
+    if (info.state != FKStateAction) { return; }
+    
+    NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
+    if (info.downloadType == FKDownloadTypeBackground) {
+        [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
+            // 此处不做处理, 统一在代理中处理所有错误
+        }];
+    } else {
+        [downloadTask suspend];
     }
 }
 
 - (void)resumeRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (info.state == FKStateSuspend) {
-        if (info.resumeData.length) {
-            if (info.downloadType == FKDownloadTypeBackground) {
-                NSData *resumeData = [FKResumeData correctResumeData:info.resumeData];
-                NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithResumeData:resumeData];
-                downloadTask.taskDescription = info.requestID;
-                [downloadTask resume];
-                
-                // 替换下载任务缓存
-                [[FKCache cache] repleaceDownloadTask:downloadTask];
-                [[FKObserver observer] observerDownloadTask:downloadTask];
-            } else {
-                NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
-                [downloadTask resume];
-            }
-            
-            info.state = FKStateAction;
-            [[FKCache cache] updateRequestWithModel:info];
-            [[FKCache cache] updateLocalRequestWithModel:info];
-            [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
-            [FKLogger debug:@"%@\nsuspend -> action, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
-        }
+    if (info.state != FKStateSuspend) { return; }
+    
+    if ([[FKCache cache] actionRequestCount] >= [FKConfigure configure].maxAction) {
+        // 超出可执行数量
+        info.state = FKStateIdel;
+
+        [[FKCache cache] updateRequestWithModel:info];
+        [[FKCache cache] updateLocalRequestWithModel:info];
+        [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
+        [FKLogger debug:@"%@\nsuspend -> action, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
+        return;
     }
+    
+    if (info.downloadType == FKDownloadTypeBackground) {
+        if (info.resumeData.length > 0) {
+            // 使用正确的恢复数据恢复下载任务
+            NSData *resumeData = [FKResumeData correctResumeData:info.resumeData];
+            NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithResumeData:resumeData];
+            downloadTask.taskDescription = info.requestID;
+            [downloadTask resume];
+            
+            // 替换下载任务缓存
+            [[FKCache cache] repleaceDownloadTask:downloadTask];
+            [[FKObserver observer] observerDownloadTask:downloadTask];
+        } else {
+            // 重新创建下载任务
+            NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithRequest:info.request];
+            downloadTask.taskDescription = info.requestID;
+            [downloadTask resume];
+            
+            // 替换下载任务缓存
+            [[FKCache cache] repleaceDownloadTask:downloadTask];
+            [[FKObserver observer] observerDownloadTask:downloadTask];
+        }
+    } else {
+        NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
+        [downloadTask resume];
+    }
+    
+    info.state = FKStateAction;
+    [[FKCache cache] updateRequestWithModel:info];
+    [[FKCache cache] updateLocalRequestWithModel:info];
+    [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
+    [FKLogger debug:@"%@\nsuspend -> action, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
 }
 
 - (void)cancelRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
     if (info.state == FKStateAction || info.state == FKStateSuspend || info.state == FKStateIdel || info.state == FKStateError) {
-        
         NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
         [downloadTask cancel];
         
@@ -172,6 +193,10 @@
     
     // 删除本地文件
     [[FKFileManager manager] deleteRequestFinderWithRequestID:url.SHA256];
+    
+    // 删除缓存
+    [[FKCache cache] removeDownloadTask:[[FKCache cache] downloadTaskWithRequestID:url.SHA256]];
+    [[FKCache cache] removeRequestWithRequestID:url.SHA256];
 }
 
 @end

@@ -184,6 +184,21 @@
     }];
 }
 
+- (void)removeRequestWithModel:(FKCacheRequestModel *)model {
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.requestMap removeObjectForKey:model.requestSingleID];
+        [self.requestIndexMap removeObjectForKey:model.requestID];
+    }];
+}
+
+- (void)removeRequestWithRequestID:(NSString *)requestID {
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+        [self.requestMap removeObjectForKey:requestSingleID];
+        [self.requestIndexMap removeObjectForKey:requestID];
+    }];
+}
+
 - (void)updateRequestWithModel:(FKCacheRequestModel *)model {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         NSString *requestSingleID = [self.requestIndexMap objectForKey:model.requestID];

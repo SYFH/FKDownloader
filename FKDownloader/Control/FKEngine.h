@@ -44,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param location 缓存文件地址
 - (void)processCompleteDownload:(NSURLSessionDownloadTask *)downloadTask location:(NSURL *)location;
 
+- (void)processTask:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error;
+
 @end
 
 @interface FKEngine (Control)

@@ -242,7 +242,7 @@
 @implementation FKObserver (Exec)
 
 - (void)execFastInfoBlockWithRequestID:(NSString *)requestID {
-    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+    [[FKEngine engine].messagerQueue addOperationWithBlock:^{
         MessagerInfoBlock block = [[FKCache cache] observerBlockWithRequestID:requestID];
         if (block) {
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];

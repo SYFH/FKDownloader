@@ -45,6 +45,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param model 请求
 - (void)addRequestWithModel:(FKCacheRequestModel *)model;
 
+/// 删除缓存请求
+/// @param model 请求
+- (void)removeRequestWithModel:(FKCacheRequestModel *)model;
+
+/// 删除缓存请求
+/// @param requestID 请求标识
+- (void)removeRequestWithRequestID:(NSString *)requestID;
+
 /// 更新请求缓存
 /// @param model 请求
 - (void)updateRequestWithModel:(FKCacheRequestModel *)model;
