@@ -69,46 +69,7 @@
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
                            didCompleteWithError:(nullable NSError *)error {
 
-    NSString *requestID = task.taskDescription;
-    FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (!info) { return; }
-    
-    if (error) {
-        // 区分错误状态
-        NSInteger code = error.code;
-        NSDictionary *errorUserInfo = error.userInfo;
-        if (code == NSURLErrorCancelled) {
-            if ([errorUserInfo.allKeys containsObject:@"NSURLSessionDownloadTaskResumeData"]) {
-                // 下载任务进行带有恢复数据的暂停
-                NSData *resumeData = [errorUserInfo objectForKey:@"NSURLSessionDownloadTaskResumeData"];
-                info.resumeData = resumeData;
-                info.state = FKStateSuspend;
-            } else {
-                // 普通取消或不支持断点下载的链接
-                info.state = FKStateCancel;
-            }
-        } else {
-            // 其他错误, 如网路未连接, 超时, 返回数据错误等
-            info.state = FKStateError;
-            info.error = error;
-        }
-        [[FKCache cache] updateRequestWithModel:info];
-        [[FKCache cache] updateLocalRequestWithModel:info];
-        [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
-    }
-    
-    // 使用中间件处理响应
-    for (id<FKResponseMiddlewareProtocol> middleware in [FKMiddleware shared].responseMiddlewareArray) {
-        if ([middleware respondsToSelector:@selector(processResponse:)]) {
-            FKResponse *response = [[FKResponse alloc] init];
-            response.originalURL = info.url;
-            response.response = task.response;
-            response.filePath = [[FKCache cache] requestExpectedFilePathWithRequestID:task.taskDescription];
-            response.error = error;
-            [middleware processResponse:response];
-        }
-    }
-    [FKLogger debug:@"对响应进行中间件处理"];
+    [[FKEngine engine] processTask:task didCompleteWithError:error];
 }
 
 
