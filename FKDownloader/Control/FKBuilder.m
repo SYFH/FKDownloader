@@ -65,6 +65,7 @@
     model.idx = self.idx;
     model.url = self.normalURL;
     model.request = [self copy];
+    model.downloadType = self.downloadType;
     [FKLogger debug:@"%@\n%@\n%@\n创建请求缓存", model.requestID, model.requestSingleID, model.url];
     
     // 进行预处理

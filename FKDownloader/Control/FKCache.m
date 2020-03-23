@@ -226,10 +226,7 @@
 
 - (FKCacheRequestModel *)requestWithRequestID:(NSString *)requestID {
     NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
-    __block FKCacheRequestModel *info = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        info = [self.requestMap objectForKey:requestSingleID];
-    }]] waitUntilFinished:YES];
+    FKCacheRequestModel *info = [self.requestMap objectForKey:requestSingleID];
     return info;
 }
 

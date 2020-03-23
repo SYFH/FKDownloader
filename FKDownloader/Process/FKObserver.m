@@ -164,7 +164,7 @@
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         FKObserverModel *info = [[FKCache cache] observerInfoWithRequestID:downloadTask.taskDescription];
         info.countOfBytesReceived = 0;
-        [[FKCache cache] addObserverInfo:info forRequestID:downloadTask.taskDescription];
+        [[FKCache cache] removeObserverInfoWithRequestID:downloadTask.taskDescription];
     }];
     [FKLogger debug:@"%@\n%@", [FKLogger downloadTaskDebugInfo:downloadTask], @"删除任务缓存的进度数据"];
 }

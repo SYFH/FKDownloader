@@ -28,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 后台下载
 @property (nonatomic, strong, readonly) NSURLSession *backgroundSession;
 
+/// 前台下载
+@property (nonatomic, strong, readonly) NSURLSession *foregroundSession;
+
 + (instancetype)engine;
 
 /// 配置 Session

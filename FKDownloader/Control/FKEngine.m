@@ -367,6 +367,8 @@
             // 使用中间件处理响应
             [self processResponseMiddlewareWithTask:task responseError:error fromRequest:info];
         }
+        
+        // 更新状态
         [[FKCache cache] updateRequestWithModel:info];
         [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];

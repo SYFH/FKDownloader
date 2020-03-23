@@ -47,6 +47,12 @@
         // 清除错误信息
         localRequest.error = nil;
         
+        if (localRequest.downloadType == FKDownloadTypeForeground) {
+            localRequest.state = FKStateSuspend;
+            localRequest.receivedLength = 0;
+            localRequest.resumeData = nil;
+        }
+        
         [[FKCache cache] addRequestWithModel:localRequest];
         [FKLogger debug:@"%@\n请求文件已在本地存在, 直接添加到缓存队列", [FKLogger requestCacheModelDebugInfo:localRequest]];
     }
@@ -110,6 +116,12 @@
         }];
     } else {
         [downloadTask suspend];
+        info.state = FKStateSuspend;
+        
+        // 更新状态
+        [[FKCache cache] updateRequestWithModel:info];
+        [[FKCache cache] updateLocalRequestWithModel:info];
+        [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
     }
 }
 
@@ -140,6 +152,7 @@
             // 替换下载任务缓存
             [[FKCache cache] repleaceDownloadTask:downloadTask];
             [[FKObserver observer] observerDownloadTask:downloadTask];
+            [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
         } else {
             // 重新创建下载任务
             NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithRequest:info.request];
@@ -149,10 +162,24 @@
             // 替换下载任务缓存
             [[FKCache cache] repleaceDownloadTask:downloadTask];
             [[FKObserver observer] observerDownloadTask:downloadTask];
+            [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
         }
     } else {
         NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
-        [downloadTask resume];
+        if (downloadTask) {
+            [downloadTask resume];
+        } else {
+            downloadTask = [[FKEngine engine].foregroundSession downloadTaskWithRequest:info.request];
+            downloadTask.taskDescription = info.requestID;
+            [downloadTask resume];
+            
+            // 缓存请求任务
+            [[FKCache cache] addDownloadTask:downloadTask];
+            
+            // 添加 KVO
+            [[FKObserver observer] observerDownloadTask:downloadTask];
+            [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
+        }
     }
     
     info.state = FKStateAction;
