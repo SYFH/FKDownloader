@@ -46,9 +46,10 @@
 [FKConfigure configure].distributeSpeed = 5;
 ```    
 
-配置 NSURLSessionConfiguration, 鉴于系统类中包含了新的特性, 所以配置相关都在一个模版上进行配置, FKDownloader 会以此模版进行配置 Session, 其中 `allowsCellularAccess` 为默认开启    
+配置 NSURLSessionConfiguration, 包含 `Background Session` 和 `Foreground Session`. 鉴于系统类中包含了新的特性, 所以配置相关都在一个模版上进行配置, FKDownloader 会以此模版进行配置 Session, 其中 `allowsCellularAccess` 为默认开启    
 ```
 [FKConfigure configure].templateBackgroundConfiguration.allowsCellularAccess = NO;
+[FKConfigure configure].templateForegroundConfiguration.allowsCellularAccess = NO;
 ```    
 
 配置后台下载的系统回调, 此方法在 `-[AppDelegate application:handleEventsForBackgroundURLSession:completionHandler]` 中使用    
@@ -79,6 +80,11 @@ FKDownloader 采用计时器执行轮询执行任务, 间隔 1s, 默认情况下
 FKBuilder *builder = [FKBuilder buildWithURL:@"Download URL"];
 ```    
 
+配置下载类型, 支持前台下载和后台下载, 默认为后台下载    
+```
+builder.downloadType = FKDownloadBackground;
+```     
+
 对下载链接进行预处理, 这一步主要流程为:    
 1. 创建下载任务对应的文件夹与信息描述文件    
 2. 生成内部使用的唯一任务编号    
@@ -104,6 +110,7 @@ FKDownloader 的每一个任务都对应一个本地信息文件, 当 App 因为
 ```    
 
 继续任务, 对 FKStateSuspend 状态生效    
+对于前台任务, 重启 App 后, 状态会重置为暂停, 执行继续将重新下载    
 ```
 [FKControl resumeRequestWithURL:@"Download URL"];
 ```    
@@ -118,7 +125,7 @@ FKDownloader 的每一个任务都对应一个本地信息文件, 当 App 因为
 [FKControl cancelAllRequest];
 ```    
 
-删除任务所有文件, 可视作彻底移出任务, 但最好在任务已完成, 已取消的状态下执行, 其他状态可能会出现意外情况.      
+删除任务所有文件, 可视作彻底移除任务, 但最好在任务已完成, 或已取消的状态下执行, 其他状态可能会出现意外情况.      
 ```
 [FKControl trashRequestWithURL:@"Download URL"];
 ```    
@@ -223,6 +230,13 @@ FKDownloader 包含了单元测试, 可在 FKDownloader.xcodeproj 中选择 FKDo
 　　将`FKDownloader` 文件夹复制到项目中, `#import "FKDownloader.h"` 即可开始  
 
 # Change log
+- 1.0.3
+    1. 支持前台下载
+    2. 优化下载完成流程, 响应中间件只在请求完成, 数据接收错误时执行
+    3. 修改下载暂停操作, 防止使用恢复操作绕过最大执行数限制
+    4. 修复删除任务不完全的问题
+    5. Demo 支持删除任务操作
+    6. 修复消息分发队列代码错误
 - 1.0.2
     1. 取消操作增加允许的状态
     2. 将信息分发计时器独立, 并支持自定义速率配置
