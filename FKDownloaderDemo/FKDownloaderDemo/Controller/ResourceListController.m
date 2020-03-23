@@ -98,7 +98,7 @@
     
     InfoModel *info = [self.infoModels objectAtIndex:indexPath.row];
     FKBuilder *builder = [FKBuilder buildWithURL:info.url];
-    builder.downloadType = FKDownloadTypeForeground;
+//    builder.downloadType = FKDownloadTypeForeground;
     [builder prepare];
     [[DownloadURLManager manager] saveInfo:info];
 }
