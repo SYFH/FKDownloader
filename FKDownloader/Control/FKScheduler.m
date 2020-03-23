@@ -47,6 +47,7 @@
         // 清除错误信息
         localRequest.error = nil;
         
+        // 对前台下载任务重置部分信息
         if (localRequest.downloadType == FKDownloadTypeForeground) {
             localRequest.state = FKStateSuspend;
             localRequest.receivedLength = 0;
@@ -169,6 +170,7 @@
         if (downloadTask) {
             [downloadTask resume];
         } else {
+            // 重新进行下载流程
             downloadTask = [[FKEngine engine].foregroundSession downloadTaskWithRequest:info.request];
             downloadTask.taskDescription = info.requestID;
             [downloadTask resume];
