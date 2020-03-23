@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *url; // 原始请求链接
 @property (nonatomic, strong) NSMutableURLRequest *request; // 请求
 @property (nonatomic, assign) FKState state; // 请求状态
+@property (nonatomic, assign) FKDownloadType downloadType; // 下载类型
 @property (nonatomic, assign) int64_t receivedLength; // 接收的数据长度
 @property (nonatomic, assign) int64_t dataLength; // 数据长度
 @property (nonatomic, strong) NSString *extension; // 文件后缀, `.*`

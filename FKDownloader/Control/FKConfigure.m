@@ -13,6 +13,7 @@
 @interface FKConfigure ()
 
 @property (nonatomic, strong) NSURLSessionConfiguration *templateBackgroundConfiguration;
+@property (nonatomic, strong) NSURLSessionConfiguration *templateForegroundConfiguration;
 @property (nonatomic, assign) float distributeTimeinterval;
 
 @end
@@ -75,6 +76,14 @@
         _templateBackgroundConfiguration.allowsCellularAccess = YES;
     }
     return _templateBackgroundConfiguration;
+}
+
+- (NSURLSessionConfiguration *)templateForegroundConfiguration {
+    if (!_templateForegroundConfiguration) {
+        _templateForegroundConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        _templateForegroundConfiguration.allowsCellularAccess = YES;
+    }
+    return _templateForegroundConfiguration;
 }
 
 - (NSString *)backgroundSessionIdentifier {

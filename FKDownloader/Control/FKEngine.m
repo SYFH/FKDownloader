@@ -27,6 +27,7 @@
 @property (nonatomic, strong) dispatch_source_t execTimer;
 @property (nonatomic, strong) dispatch_source_t distributeInfoTimer;
 @property (nonatomic, strong) NSURLSession *backgroundSession;
+@property (nonatomic, strong) NSURLSession *foregroundSession;
 @property (nonatomic, assign, getter=isProcessingNextRequest) BOOL processingNextRequest;
 @property (nonatomic, assign, getter=isEnterBackgrounded) BOOL enterBackgrounded;
 
@@ -76,9 +77,20 @@
 }
 
 - (void)configureSession {
+    [self configureBackgroundSession];
+    [self configureForegroundSession];
+}
+
+- (void)configureBackgroundSession {
     NSURLSessionConfiguration *backgroundConfiguration = [[FKConfigure configure].templateBackgroundConfiguration copy];
     self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:[FKSessionDelegater delegater] delegateQueue:nil];
     [FKLogger debug:@"根据配置生成后台下载 Session"];
+}
+
+- (void)configureForegroundSession {
+    NSURLSessionConfiguration *foregroundConfiguration = [[FKConfigure configure].templateForegroundConfiguration copy];
+    self.foregroundSession = [NSURLSession sessionWithConfiguration:foregroundConfiguration delegate:[FKSessionDelegater delegater] delegateQueue:nil];
+    [FKLogger debug:@"根据配置生成前台下载 Session"];
 }
 
 - (void)configureExecTimer {
@@ -257,7 +269,8 @@
         [FKLogger debug:@"%@\n%@\n对请求进行中间件处理", requestModel.request, request];
         
         // 执行请求, 添加释放时调用方法以删除 KVO
-        NSURLSessionDownloadTask *downloadTask = [self.backgroundSession downloadTaskWithRequest:request];
+        NSURLSession *session = [[FKEngine engine] sessionWithRequestModel:requestModel];
+        NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithRequest:request];
         downloadTask.taskDescription = [NSString stringWithFormat:@"%@", requestModel.requestID];
         [downloadTask resume];
         [FKLogger debug:@"%@\n根据请求创建下载任务", [FKLogger downloadTaskDebugInfo:downloadTask]];
@@ -279,6 +292,15 @@
     } else {
         [FKLogger debug:@"执行任务数量已到达上限"];
         self.processingNextRequest = NO;
+    }
+}
+
+- (NSURLSession *)sessionWithRequestModel:(FKCacheRequestModel *)requestModel {
+    if (requestModel.downloadType == FKDownloadTypeBackground) {
+        return self.backgroundSession;
+    }
+    else {
+        return self.foregroundSession;
     }
 }
 

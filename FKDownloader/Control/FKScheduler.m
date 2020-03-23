@@ -10,6 +10,7 @@
 
 #import "NSString+FKCategory.h"
 
+#import "FKCommonHeader.h"
 #import "FKCache.h"
 #import "FKCacheModel.h"
 #import "FKFileManager.h"
@@ -101,9 +102,13 @@
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
     if (info.state == FKStateAction) {
         NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
-        [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
-            // 此处不做处理, 统一在代理中处理所有错误
-        }];
+        if (info.downloadType == FKDownloadTypeBackground) {
+            [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
+                // 此处不做处理, 统一在代理中处理所有错误
+            }];
+        } else {
+            [downloadTask suspend];
+        }
     }
 }
 
@@ -112,13 +117,19 @@
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
     if (info.state == FKStateSuspend) {
         if (info.resumeData.length) {
-            NSData *resumeData = [FKResumeData correctResumeData:info.resumeData];
-            NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithResumeData:resumeData];
-            downloadTask.taskDescription = info.requestID;
-            [downloadTask resume];
-            
-            [[FKCache cache] repleaceDownloadTask:downloadTask];
-            [[FKObserver observer] observerDownloadTask:downloadTask];
+            if (info.downloadType == FKDownloadTypeBackground) {
+                NSData *resumeData = [FKResumeData correctResumeData:info.resumeData];
+                NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithResumeData:resumeData];
+                downloadTask.taskDescription = info.requestID;
+                [downloadTask resume];
+                
+                // 替换下载任务缓存
+                [[FKCache cache] repleaceDownloadTask:downloadTask];
+                [[FKObserver observer] observerDownloadTask:downloadTask];
+            } else {
+                NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
+                [downloadTask resume];
+            }
             
             info.state = FKStateAction;
             [[FKCache cache] updateRequestWithModel:info];

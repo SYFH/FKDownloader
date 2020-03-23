@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 配置模版, 后台下载, 默认为支持蜂窝网络, 可进行更多自定义配置
 @property (nonatomic, strong, readonly) NSURLSessionConfiguration *templateBackgroundConfiguration;
 
+/// 配置模版, 前台下载, 默认为支持蜂窝网络, 可进行更多自定义配置
+@property (nonatomic, strong, readonly) NSURLSessionConfiguration *templateForegroundConfiguration;
+
 /// 后台下载标识符
 @property (nonatomic, strong, readonly) NSString *backgroundSessionIdentifier;
 
