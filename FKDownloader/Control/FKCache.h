@@ -122,28 +122,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKCache (Observer)
 
+// 监听缓存
 - (void)addObserverInfo:(FKObserverModel *)info forRequestID:(NSString *)requestID;
 - (void)removeObserverInfoWithRequestID:(NSString *)requestID;
 - (FKObserverModel *)observerInfoWithRequestID:(NSString *)requestID;
 
+// 预备监听缓存
 - (void)addReserveObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID;
 - (void)removeReserveObserverBlockWithRequestID:(NSString *)requestID;
 - (MessagerInfoBlock)reserveObserverBlockWithRequestID:(NSString *)requestID;
 
+// 请求监听回调
 - (NSMapTable *)observerBlockTable;
 - (void)addObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID;
 - (void)removeObserverBlockWithRequestID:(NSString *)requestID;
 - (MessagerInfoBlock)observerBlockWithRequestID:(NSString *)requestID;
 
+// 集合监听索引
 - (void)addObserverBarrelIndex:(NSString *)barre forURL:(NSString *)url;
 - (void)removeObserverBarrelIndexWithRequestID:(NSString *)requestID;
 - (NSString *)observerBarrelIndexWithRequestID:(NSString *)requestID;
 
+// 集合监听缓存
 - (NSMapTable *)observerBarrelTable;
 - (void)addObserverBarrelWithURLs:(NSArray<NSString *> *)urls forBarrel:(NSString *)barrel;
+- (void)addURL:(NSString *)url fromObserverBarrel:(NSString *)barrel;
+- (void)removeURL:(NSString *)url fromObserverBarrel:(NSString *)barrel;
 - (void)removeObserverBarrelWithBarrel:(NSString *)barrel;
 - (NSArray<NSString *> *)observerBarrelWithBarrel:(NSString *)barrel;
 
+// 集合监听回调
 - (void)addObserverBarrelBlock:(MessagerBarrelBlock)block forBarrel:(NSString *)barrel;
 - (void)removeObserverBarrelBlockWithBarrel:(NSString *)barrel;
 - (MessagerBarrelBlock)observerBarrelBlockWithBarrel:(NSString *)barrel;

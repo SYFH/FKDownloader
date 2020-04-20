@@ -387,6 +387,24 @@
     [self.barrelMap setObject:urls forKey:barrel];
 }
 
+- (void)addURL:(NSString *)url fromObserverBarrel:(NSString *)barrel {
+    NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
+    if (urls) {
+        NSMutableArray<NSString *> *temp = [NSMutableArray arrayWithArray:urls];
+        [temp addObject:url];
+        [[FKCache cache] addObserverBarrelWithURLs:[NSArray arrayWithArray:temp] forBarrel:barrel];
+    }
+}
+
+- (void)removeURL:(NSString *)url fromObserverBarrel:(NSString *)barrel {
+    NSArray<NSString *> *urls = [self.barrelMap objectForKey:barrel];
+    if ([urls containsObject:url]) {
+        NSMutableArray<NSString *> *temp = [NSMutableArray arrayWithArray:urls];
+        [temp removeObject:url];
+        [[FKCache cache] addObserverBarrelWithURLs:[NSArray arrayWithArray:temp] forBarrel:barrel];
+    }
+}
+
 - (void)removeObserverBarrelWithBarrel:(NSString *)barrel {
     [self.barrelMap removeObjectForKey:barrel];
 }

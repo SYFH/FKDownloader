@@ -57,10 +57,24 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param requestID 请求标识
 - (void)addBlock:(MessagerInfoBlock)block requestID:(NSString *)requestID;
 
+/// 移除指定请求的信息回调
+/// @param requestID 请求标识
+- (void)removeBlockWithRequestID:(NSString *)requestID;
+
 /// 添加一个链接集合
 /// @param barrel 集合名
 /// @param urls 多个链接
 - (void)addBarrel:(NSString *)barrel urls:(NSArray<NSString *> *)urls;
+
+/// 添加一个链接到指定集合
+/// @param url 链接
+/// @param barrel 集合名
+- (void)addURL:(NSString *)url fromBarrel:(NSString *)barrel;
+
+/// 从指定集合移除一个链接
+/// @param url 链接
+/// @param barrel 集合名
+- (void)removeURL:(NSString *)url fromBarrel:(NSString *)barrel;
 
 /// 移除一个链接集合
 /// @param barrel 集合名

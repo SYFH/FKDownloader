@@ -34,6 +34,18 @@
     return [[FKMessager alloc] initWithURL:url info:info];
 }
 
++ (void)addURL:(NSString *)url fromBarrel:(NSString *)barrel {
+    [[FKObserver observer] addURL:url fromBarrel:barrel];
+}
+
++ (void)removeURL:(NSString *)url fromBarrel:(NSString *)barrel {
+    [[FKObserver observer] removeURL:url fromBarrel:barrel];
+}
+
++ (void)removeMessagerInfoWithURL:(NSString *)url {
+    [[FKObserver observer] removeBlockWithRequestID:url.SHA256];
+}
+
 + (void)addMessagerWithURLs:(NSArray<NSString *> *)urls barrel:(NSString *)barrel {
     NSMutableArray<NSString *> *urlsTemp = [NSMutableArray arrayWithCapacity:urls.count];
     for (NSString *url in urls) {
