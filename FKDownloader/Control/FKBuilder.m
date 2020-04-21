@@ -54,8 +54,13 @@
     return self;
 }
 
++ (void)loadCacheWithURL:(NSString *)url {
+    [[FKScheduler shared] loadCacheWithURL:url];
+}
+
 - (void)prepare {
     if (self.prepared) { return; }
+    if (self.normalURL.length == 0) { return; }
     self.prepared = YES;
     
     // 创建缓存模型

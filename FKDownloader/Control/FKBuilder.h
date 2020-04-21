@@ -18,7 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKBuilder : NSMutableURLRequest
 
+/// 根据链接创建请求信息
+/// @param url 链接
 + (instancetype)buildWithURL:(NSString *)url;
+
+/// 从磁盘缓存加载链接信息
+/// @param url 链接
++ (void)loadCacheWithURL:(NSString *)url;
 
 /// 下载类型, 默认为后台下载. 执行预处理前可改动, 预处理后改动不会生效
 @property (nonatomic, assign) FKDownloadType downloadType;
