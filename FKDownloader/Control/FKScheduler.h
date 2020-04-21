@@ -20,6 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)shared;
 
+/// 从磁盘缓存加载人物信息
+/// @param url 请求链接
+- (void)loadCacheWithURL:(NSString *)url;
+
+/// 预处理任务
+/// @param request 请求信息
 - (void)prepareRequest:(FKCacheRequestModel *)request;
 
 /// 激活任务

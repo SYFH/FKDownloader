@@ -35,6 +35,19 @@
     return instance;
 }
 
+- (void)loadCacheWithURL:(NSString *)url {
+    FKCacheRequestModel *localRequest = [[FKCache cache] localRequestFileWithRequestID:url.SHA256];
+    if (localRequest) {
+        // 清除错误信息
+        localRequest.error = nil;
+        
+        // 添加并更新请求信息
+        [[FKCache cache] addRequestWithModel:localRequest];
+        [[FKCache cache] updateRequestWithModel:localRequest];
+        [FKLogger debug:@"%@\n加载本地请求信息", [FKLogger requestCacheModelDebugInfo:localRequest]];
+    }
+}
+
 - (void)prepareRequest:(FKCacheRequestModel *)request {
     // 检查是否已存在请求
     BOOL isExist = [[FKCache cache] existRequestWithRequestID:request.requestID];
