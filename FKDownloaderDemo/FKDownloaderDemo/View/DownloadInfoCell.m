@@ -103,6 +103,13 @@
     }];
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    // 在 cell 被复用前清除信息回调
+    [FKMessager removeMessagerInfoWithURL:self.url];
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
@@ -251,8 +258,8 @@
 - (void)setUrl:(NSString *)url {
     _url = url;
     
-    // 防止直接进入下载列表后, 没有任务缓存导致信息回调无法运作
-    [[FKBuilder buildWithURL:url] prepare];
+    // 加载缓存, 获取任务信息
+    [FKBuilder loadCacheWithURL:url];
     
     [self infoMessage];
 }
