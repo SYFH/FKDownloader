@@ -23,8 +23,6 @@
 
 在使用时, 本框架并不会输出过多的信息, 比如 0.x 版本会有下载列表相关的信息, 但 1.x 并不会提供这些信息, 用户需要自己来管理这些业务相关的信息. 也不会要求输入过多的信息, 如 1.x 中整个下载流程都仅需要下载链接.
 
-目前仅支持后台下载, 以后的版本也许会支持普通下载, 分片下载等.
-
 # Framework Process
 ![](https://pic.downk.cc/item/5e4d253e48b86553eea38f27.png)
 
@@ -231,6 +229,12 @@ FKDownloader 包含了单元测试, 可在 FKDownloader.xcodeproj 中选择 FKDo
 　　将`FKDownloader` 文件夹复制到项目中, `#import "FKDownloader.h"` 即可开始  
 
 # Change log
+- 1.0.4
+    1. 对 FKMessager 添加删除回调缓存 API, 单次获取任务信息 API, 对集合增删改查链接信息 API
+    2. 调整 FKControl API
+    3. FKBuilder 添加从缓存加载任务 API, 减少预处理操作面
+    4. 修改系统下载回调逻辑
+    5. 补充单元测试
 - 1.0.3
     1. 支持前台下载
     2. 优化下载完成流程, 响应中间件只在请求完成, 数据接收错误时执行
