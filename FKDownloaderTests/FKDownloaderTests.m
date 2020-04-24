@@ -71,6 +71,35 @@
     XCTAssertTrue([URL isEqualToString:decodeURL]);
 }
 
+/// 测试对集合增删链接
+- (void)testBarrelControl {
+    // 初始化
+    [[FKBuilder buildWithURL:@"https://baidu.com/000.jpg"] prepare];
+    [[FKBuilder buildWithURL:@"https://baidu.com/001.jpg"] prepare];
+    [[FKBuilder buildWithURL:@"https://baidu.com/002.jpg"] prepare];
+    [[FKBuilder buildWithURL:@"https://baidu.com/003.jpg"] prepare];
+    
+    // 创建集合
+    [FKMessager addMessagerWithURLs:@[@"https://baidu.com/000.jpg",
+                                      @"https://baidu.com/001.jpg",
+                                      @"https://baidu.com/002.jpg"]
+                             barrel:@"testBarrel"];
+    
+    // 添加新链接到已有集合
+    [FKMessager addURL:@"https://baidu.com/003.jpg" fromBarrel:@"testBarrel"];
+    XCTAssertTrue([[FKMessager acquireURLsWithBarrel:@"testBarrel"] containsObject:@"https://baidu.com/003.jpg"]);
+    
+    // 从集合中删除已有链接
+    [FKMessager removeURL:@"https://baidu.com/000.jpg" fromBarrel:@"testBarrel"];
+    XCTAssertFalse([[FKMessager acquireURLsWithBarrel:@"testBarrel"] containsObject:@"https://baidu.com/000.jpg"]);
+    
+    // 清理
+    [FKControl trashRequestWithURL:@"https://baidu.com/000.jpg"];
+    [FKControl trashRequestWithURL:@"https://baidu.com/001.jpg"];
+    [FKControl trashRequestWithURL:@"https://baidu.com/002.jpg"];
+    [FKControl trashRequestWithURL:@"https://baidu.com/003.jpg"];
+}
+
 /// 测试 MIME Type 转换文件后缀名问题
 - (void)testMIMETypeConvertFileExtension {
     NSString *MIMEType = @"application/vnd.android.package-archive";
@@ -90,7 +119,7 @@
 
 /// 测试配置参数
 - (void)testTakeConfigure {
-    // 无法输入附属
+    // 最大任务执行数量
     [FKConfigure configure].maxAction = -1;
     XCTAssertTrue([FKConfigure configure].maxAction == 6);
     
@@ -99,6 +128,16 @@
     
     [FKConfigure configure].maxAction = 3;
     XCTAssertTrue([FKConfigure configure].maxAction == 3);
+    
+    // 信息分发计时器间隔倍率
+    [FKConfigure configure].distributeSpeed = -1;
+    XCTAssertTrue([FKConfigure configure].distributeSpeed == 10);
+    
+    [FKConfigure configure].distributeSpeed = 11;
+    XCTAssertTrue([FKConfigure configure].distributeSpeed == 10);
+    
+    [FKConfigure configure].distributeSpeed = 5;
+    XCTAssertTrue([FKConfigure configure].distributeSpeed == 5);
     
     [[FKConfigure configure] takeSession];
     
@@ -109,8 +148,8 @@
 - (void)testNotExistURL {
     NSString *URL = @"https://images.unsplash.com/photo-1580411787588-98a9629d7a7f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9";
     
-    XCTAssertEqual([FKControl stateWithURL:URL], FKStatePrepare);
-    XCTAssertNil([FKControl errorWithURL:URL]);
+    XCTAssertEqual([FKMessager stateWithURL:URL], FKStatePrepare);
+    XCTAssertNil([FKMessager errorWithURL:URL]);
     
     [FKControl actionRequestWithURL:URL];
     [FKControl suspendRequestWithURL:URL];
@@ -173,7 +212,7 @@
     [[FKBuilder buildWithURL:URL] prepare];
     
     [FKMessager addMessagerWithURLs:@[URL] barrel:@"test"];
-    [FKMessager messagerWithBarrel:@"test" info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive) {
+    [FKMessager messagerWithBarrel:@"test" info:^(int64_t countOfBytesReceived, int64_t countOfBytesPreviousReceived, int64_t countOfBytesExpectedToReceive) {
         
     }];
     
@@ -181,7 +220,7 @@
     // 错误信息: Code=4099 "The connection to service on pid 0 named com.apple.nsurlsessiond was invalidated from this process."
     // 相关信息请查看 [Testing Background Session Code](https://forums.developer.apple.com/thread/14855)
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"testActivateDownloadURL"];
-    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
+    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesPreviousReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
         
         if (error) {
             // 直接停止测试
@@ -199,8 +238,19 @@
             }
         }
     }];
+    
+    // 单次获取任务信息
+    [FKMessager acqireMessagerInfo:^(int64_t countOfBytesReceived, int64_t countOfBytesPreviousReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
+        
+    } url:URL];
     [self waitForExpectations:@[expectation]
                       timeout:[FKConfigure configure].templateBackgroundConfiguration.timeoutIntervalForRequest];
+    
+    // 移除信息监听
+    [FKMessager removeMessagerInfoWithURL:URL];
+    
+    // 删除
+    [FKControl trashRequestWithURL:URL];
 }
 
 /// 测试完整下载文件流程
@@ -213,7 +263,7 @@
     [[FKBuilder buildWithURL:URL] prepare];
 
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"testActivateDownloadURL"];
-    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
+    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesPreviousReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
         
         if (error) {
             // 直接停止测试
@@ -235,6 +285,12 @@
     }];
     [self waitForExpectations:@[expectation]
                       timeout:[FKConfigure configure].templateBackgroundConfiguration.timeoutIntervalForRequest];
+    
+    // 移除信息监听
+    [FKMessager removeMessagerInfoWithURL:URL];
+    
+    // 删除
+    [FKControl trashRequestWithURL:URL];
 }
 
 /// 测试对下载任务的控制操作, 流程为 Prepare -> Idel -> Action -> Suspend -> Action -> Cancel
@@ -248,11 +304,11 @@
     [[FKBuilder buildWithURL:URL] prepare];
     
     [FKControl actionRequestWithURL:URL];
-    FKState state = [FKControl stateWithURL:URL];
+    FKState state = [FKMessager stateWithURL:URL];
     XCTAssertTrue(state == FKStateIdel || state == FKStateAction || state == FKStatePrepare);
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"testControlDownloadURL"];
-    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
+    [FKMessager messagerWithURL:URL info:^(int64_t countOfBytesReceived, int64_t countOfBytesPreviousReceived, int64_t countOfBytesExpectedToReceive, FKState state, NSError * _Nullable error) {
         
         switch (state) {
             case FKStatePrepare: {
@@ -272,19 +328,19 @@
                 }
                 else if (countOfBytesReceived > maxSize) {
                     [FKControl cancelRequestWithURL:URL];
-                    FKState state = [FKControl stateWithURL:URL];
+                    FKState state = [FKMessager stateWithURL:URL];
                     XCTAssertTrue(state == FKStateCancel);
                 }
             } break;
                            
             case FKStateSuspend: {
                 [FKControl resumeRequestWithURL:URL];
-                FKState state = [FKControl stateWithURL:URL];
+                FKState state = [FKMessager stateWithURL:URL];
                 XCTAssertTrue(state == FKStateAction);
             } break;
                            
             case FKStateCancel: {
-                NSError *error = [FKControl errorWithURL:URL];
+                NSError *error = [FKMessager errorWithURL:URL];
                 [FKLogger debug:@"contrl test, download error: %@", error];
                 
                 // 最后取消时, 完成测试
@@ -303,6 +359,12 @@
     }];
     [self waitForExpectations:@[expectation]
                       timeout:[FKConfigure configure].templateBackgroundConfiguration.timeoutIntervalForRequest];
+    
+    // 移除信息监听
+    [FKMessager removeMessagerInfoWithURL:URL];
+    
+    // 删除
+    [FKControl trashRequestWithURL:URL];
 }
 
 @end
