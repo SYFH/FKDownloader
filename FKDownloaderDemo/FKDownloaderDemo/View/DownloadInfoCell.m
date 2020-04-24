@@ -106,7 +106,7 @@
 - (void)prepareForReuse {
     [super prepareForReuse];
     
-    // 在 cell 被复用前清除信息回调
+    // 在 cell 被复用前清除旧的信息回调
     [FKMessager removeMessagerInfoWithURL:self.url];
 }
 
@@ -150,7 +150,7 @@
             [self controlTitleWithState:state];
         });
     }];
-    [self controlTitleWithState:[FKControl stateWithURL:self.url]];
+    [self controlTitleWithState:[FKMessager stateWithURL:self.url]];
 }
 
 - (void)controlTitleWithState:(FKState)state {
