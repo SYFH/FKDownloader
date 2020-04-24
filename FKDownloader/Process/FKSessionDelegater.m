@@ -59,8 +59,8 @@
     if ([FKConfigure configure].completionHandler) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [FKConfigure configure].completionHandler();
+            [FKConfigure configure].completionHandler = nil;
         });
-        [FKConfigure configure].completionHandler = nil;
     }
 }
 
