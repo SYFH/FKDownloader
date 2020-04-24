@@ -320,4 +320,18 @@
     }
 }
 
+- (void)execAcquireInfo:(MessagerInfoBlock)info requestID:(NSString *)requestID {
+    FKCacheRequestModel *cacheModel = [[FKCache cache] requestWithRequestID:requestID];
+    if (info && cacheModel) {
+        FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
+        NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
+        FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+        info(MAX(model.countOfBytesReceived, cacheModel.receivedLength),
+             model.countOfBytesPreviousReceived,
+             MAX(model.countOfBytesExpectedToReceive, cacheModel.dataLength),
+             state,
+             error);
+    }
+}
+
 @end

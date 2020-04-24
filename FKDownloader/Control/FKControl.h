@@ -26,18 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKControl : NSObject
 
-/// 链接对应的状态
-/// @param url 请求链接
-+ (FKState)stateWithURL:(NSString *)url;
-
-/// 链接对应的错误信息
-/// @param url 请求链接
-+ (NSError * _Nullable)errorWithURL:(NSString *)url;
-
-/// 获取下载完成后文件的路径, 文件可能为空
-/// @param url 请求链接
-+ (NSString *)downloadedFilePathWithURL:(NSString *)url;
-
 /// 激活任务, 对 cancel/error 状态任务起作用
 /// @param url 请求链接
 + (void)actionRequestWithURL:(NSString *)url;

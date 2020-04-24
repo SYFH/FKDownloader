@@ -96,6 +96,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param requestID 请求标识
 - (void)execFastInfoBlockWithRequestID:(NSString *)requestID;
 
+/// 执行获取指定请求信息
+/// @param info 信息回调
+/// @param requestID 请求标识
+- (void)execAcquireInfo:(MessagerInfoBlock)info requestID:(NSString *)requestID;
+
 @end
 
 NS_ASSUME_NONNULL_END

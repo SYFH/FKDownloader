@@ -11,27 +11,33 @@
 #import "NSString+FKCategory.h"
 
 #import "FKObserver.h"
+#import "FKCache.h"
+#import "FKFileManager.h"
 
 @implementation FKMessager
 
-- (instancetype)initWithBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
-    self = [super init];
-    if (self) {
-        [[FKObserver observer] addBarrel:barrel info:info];
-    }
-    return self;
++ (FKState)stateWithURL:(NSString *)url {
+    return [[FKCache cache] stateRequestWithRequestID:url.SHA256];
 }
 
-- (instancetype)initWithURL:(NSString *)url info:(MessagerInfoBlock)info {
-    self = [super init];
-    if (self) {
-        [[FKObserver observer] addBlock:info requestID:url.SHA256];
-    }
-    return self;
++ (NSError *)errorWithURL:(NSString *)url {
+    return [[FKCache cache] errorRequestWithRequestID:url.SHA256];
 }
 
-+ (instancetype)messagerWithURL:(NSString *)url info:(MessagerInfoBlock)info {
-    return [[FKMessager alloc] initWithURL:url info:info];
++ (NSString *)downloadedFilePathWithURL:(NSString *)url {
+    return [[FKFileManager manager] filePathWithRequestID:url.SHA256];
+}
+
++ (void)messagerWithURL:(NSString *)url info:(MessagerInfoBlock)info {
+    [[FKObserver observer] addBlock:info requestID:url.SHA256];
+}
+
++ (void)acqireMessagerInfo:(MessagerInfoBlock)info url:(NSString *)url {
+    [[FKObserver observer] execAcquireInfo:info requestID:url.SHA256];
+}
+
++ (void)removeMessagerInfoWithURL:(NSString *)url {
+    [[FKObserver observer] removeBlockWithRequestID:url.SHA256];
 }
 
 + (void)addURL:(NSString *)url fromBarrel:(NSString *)barrel {
@@ -40,10 +46,6 @@
 
 + (void)removeURL:(NSString *)url fromBarrel:(NSString *)barrel {
     [[FKObserver observer] removeURL:url fromBarrel:barrel];
-}
-
-+ (void)removeMessagerInfoWithURL:(NSString *)url {
-    [[FKObserver observer] removeBlockWithRequestID:url.SHA256];
 }
 
 + (void)addMessagerWithURLs:(NSArray<NSString *> *)urls barrel:(NSString *)barrel {
@@ -58,8 +60,8 @@
     [[FKObserver observer] removeBarrel:barrel];
 }
 
-+ (instancetype)messagerWithBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
-    return [[FKMessager alloc] initWithBarrel:barrel info:info];
++ (void)messagerWithBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
+    [[FKObserver observer] addBarrel:barrel info:info];
 }
 
 @end
