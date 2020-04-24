@@ -228,6 +228,7 @@
 - (void)addURL:(NSString *)url fromBarrel:(NSString *)barrel {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         [[FKCache cache] addURL:url fromObserverBarrel:barrel];
+        [[FKCache cache] addObserverBarrelIndex:barrel forURL:url];
     }];
     [FKLogger debug:@"添加链接: %@ 到任务集合: %@", url, barrel];
 }
@@ -235,6 +236,7 @@
 - (void)removeURL:(NSString *)url fromBarrel:(NSString *)barrel {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         [[FKCache cache] removeURL:url fromObserverBarrel:barrel];
+        [[FKCache cache] removeObserverBarrelIndexWithRequestID:url];
     }];
     [FKLogger debug:@"从任务集合: %@ 移除链接: %@", barrel, url];
 }
@@ -256,6 +258,14 @@
         [[FKCache cache] addObserverBarrelBlock:info forBarrel:barrel];
     }];
     [FKLogger debug:@"添加任务集合: %@ 信息回调到监听缓存", barrel];
+}
+
+- (NSArray<NSString *> *)acquireURLsWithBarrel:(NSString *)barrel {
+    __block NSArray<NSString *> *urls = [NSArray array];
+    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
+        urls = [[FKCache cache] observerBarrelWithBarrel:barrel];
+    }]] waitUntilFinished:YES];
+    return urls;
 }
 
 @end

@@ -41,11 +41,11 @@
 }
 
 + (void)addURL:(NSString *)url fromBarrel:(NSString *)barrel {
-    [[FKObserver observer] addURL:url fromBarrel:barrel];
+    [[FKObserver observer] addURL:url.SHA256 fromBarrel:barrel];
 }
 
 + (void)removeURL:(NSString *)url fromBarrel:(NSString *)barrel {
-    [[FKObserver observer] removeURL:url fromBarrel:barrel];
+    [[FKObserver observer] removeURL:url.SHA256 fromBarrel:barrel];
 }
 
 + (void)addMessagerWithURLs:(NSArray<NSString *> *)urls barrel:(NSString *)barrel {
@@ -62,6 +62,10 @@
 
 + (void)messagerWithBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info {
     [[FKObserver observer] addBarrel:barrel info:info];
+}
+
++ (NSArray<NSString *> *)acquireURLsWithBarrel:(NSString *)barrel {
+    return [[FKObserver observer] acquireURLsWithBarrel:barrel];
 }
 
 @end

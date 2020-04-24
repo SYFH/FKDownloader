@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addMessagerWithURLs:(NSArray<NSString *> *)urls
                      barrel:(NSString *)barrel;
 
-/// 将链接添加到指定集合中
+/// 将链接添加到指定集合中, 注意, 链接对应的任务必须存在
 /// @param url 链接
 /// @param barrel 集合名
 + (void)addURL:(NSString *)url
@@ -84,6 +84,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param info 下载信息
 + (void)messagerWithBarrel:(NSString *)barrel
                       info:(MessagerBarrelBlock)info;
+
+/// 获取集合中的已有链接
+/// @param barrel 集合名
++ (NSArray<NSString *> *)acquireURLsWithBarrel:(NSString *)barrel;
 
 @end
 

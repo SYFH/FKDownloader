@@ -410,7 +410,16 @@
 }
 
 - (NSArray<NSString *> *)observerBarrelWithBarrel:(NSString *)barrel {
-    return [self.barrelMap objectForKey:barrel];
+    NSArray<NSString *> *requestIDs = [self.barrelMap objectForKey:barrel];
+    NSMutableArray <NSString *> *urls = [NSMutableArray arrayWithCapacity:requestIDs.count];
+    for (NSString *requestID in requestIDs) {
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+        FKCacheRequestModel *model = [self.requestMap objectForKey:requestSingleID];
+        if (model.url.length) {
+            [urls addObject:model.url];
+        }
+    }
+    return [NSArray arrayWithArray:urls];
 }
 
 

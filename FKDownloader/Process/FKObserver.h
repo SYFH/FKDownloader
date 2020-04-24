@@ -85,6 +85,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param info 信息回调
 - (void)addBarrel:(NSString *)barrel info:(MessagerBarrelBlock)info;
 
+/// 获取集合的所有链接
+/// @param barrel 集合名
+- (NSArray<NSString *> *)acquireURLsWithBarrel:(NSString *)barrel;
+
 @end
 
 @interface FKObserver (Exec)
