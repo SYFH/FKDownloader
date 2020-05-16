@@ -8,6 +8,9 @@
 
 #import "FKDownloader.h"
 
+#import "FKCache.h"
+#import "FKCacheModel.h"
+
 @implementation FKDownloader
 
 /// 添加并开始方法
@@ -22,6 +25,13 @@
     } else {
         [[FKBuilder buildWithURL:url] prepare];
     }
+}
+
+/// 开始所有任务
++ (void)startAllTask {
+    [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
+        [FKControl actionRequestWithURL:model.url];
+    }];
 }
 
 /// 获取任务所有信息
@@ -42,9 +52,23 @@
     [FKControl suspendRequestWithURL:url];
 }
 
+/// 暂停所有任务
++ (void)suspendAllTask {
+    [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
+        [FKControl suspendRequestWithURL:model.url];
+    }];
+}
+
 /// 恢复
 + (void)resumeWithURL:(NSString *)url {
     [FKControl resumeRequestWithURL:url];
+}
+
+/// 恢复所有任务
++ (void)resumeAllTask {
+    [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
+        [FKControl resumeRequestWithURL:model.url];
+    }];
 }
 
 /// 取消并删除任务
