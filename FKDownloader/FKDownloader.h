@@ -6,15 +6,11 @@
 //  Copyright © 2019 norld. All rights reserved.
 //
 
+/*
+ 简单实用类, 对外开放
+ */
+
 #import <Foundation/Foundation.h>
-
-//! Project version number for FKDownloader.
-FOUNDATION_EXPORT double FKDownloaderVersionNumber;
-
-//! Project version string for FKDownloader.
-FOUNDATION_EXPORT const unsigned char FKDownloaderVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <FKDownloader/PublicHeader.h>
 
 // Control
 #import <FKDownloader/FKConfigure.h>
@@ -32,3 +28,28 @@ FOUNDATION_EXPORT const unsigned char FKDownloaderVersionString[];
 
 // Model
 #import <FKDownloader/FKResponse.h>
+
+@interface FKDownloader : NSObject
+
+/// 添加并开始任务
+/// @param url 连接
++ (void)addURL:(NSString *)url;
+
+/// 获取任务所有信息
+/// @param url 连接
+/// @param complete 信息回调
++ (void)getInfoWithURL:(NSString *)url complete:(MessagerInfoBlock)complete;
+
+/// 暂停
+/// @param url 连接
++ (void)suspendWithURL:(NSString *)url;
+
+/// 恢复
+/// @param url 连接
++ (void)resumeWithURL:(NSString *)url;
+
+/// 取消并删除任务
+/// @param url 连接
++ (void)cancelWithURL:(NSString *)url;
+
+@end

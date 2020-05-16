@@ -44,6 +44,7 @@
 		3D933F0A23BB46E9006C6C95 /* FKMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0823BB46E9006C6C95 /* FKMiddleware.m */; };
 		3D933F0E23BB54C1006C6C95 /* FKSingleNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */; };
 		3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */; };
+		3D999C6A246F8E2F00F94E77 /* FKDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D999C69246F8E2F00F94E77 /* FKDownloader.m */; };
 		3DB8FB2F23D584B2002B7450 /* FKResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB8FB2D23D584B2002B7450 /* FKResponse.h */; };
 		3DB8FB3023D584B2002B7450 /* FKResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB8FB2E23D584B2002B7450 /* FKResponse.m */; };
 		3DE51F4024036406009C9A6F /* FKResumeData.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DE51F3E24036406009C9A6F /* FKResumeData.h */; };
@@ -125,6 +126,7 @@
 		3D933F0823BB46E9006C6C95 /* FKMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKMiddleware.m; sourceTree = "<group>"; };
 		3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSingleNumber.h; sourceTree = "<group>"; };
 		3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSingleNumber.m; sourceTree = "<group>"; };
+		3D999C69246F8E2F00F94E77 /* FKDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKDownloader.m; sourceTree = "<group>"; };
 		3DB8FB2D23D584B2002B7450 /* FKResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKResponse.h; sourceTree = "<group>"; };
 		3DB8FB2E23D584B2002B7450 /* FKResponse.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKResponse.m; sourceTree = "<group>"; };
 		3DE51F3E24036406009C9A6F /* FKResumeData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKResumeData.h; sourceTree = "<group>"; };
@@ -251,6 +253,7 @@
 				3DF8F75C23BB2A0100A9E363 /* Middleware */,
 				3DF8F75B23BB29E600A9E363 /* Control */,
 				3D6616FD23B75BA9008EBE8A /* FKDownloader.h */,
+				3D999C69246F8E2F00F94E77 /* FKDownloader.m */,
 				3D6616FE23B75BA9008EBE8A /* Info.plist */,
 			);
 			path = FKDownloader;
@@ -527,6 +530,7 @@
 				3D933F0623BB4660006C6C95 /* FKControl.m in Sources */,
 				3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */,
 				3DF8F74A23BB214900A9E363 /* FKEngine.m in Sources */,
+				3D999C6A246F8E2F00F94E77 /* FKDownloader.m in Sources */,
 				3D36748923BD8FB40023E3A0 /* FKCacheModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
