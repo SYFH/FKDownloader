@@ -32,9 +32,11 @@
     // 校验 URL 是否合法
     NSString *encodeURL = [FKCoder encode:url];
     NSURL *URL = [NSURL URLWithString:encodeURL];
-    NSParameterAssert(URL);
-    
-    return [[FKBuilder alloc] initWithNormalURL:url];
+    if (URL) {
+        return [[FKBuilder alloc] initWithNormalURL:url];
+    } else {
+        return nil;
+    }
 }
 
 - (instancetype)initWithNormalURL:(NSString *)URL {

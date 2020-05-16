@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKBuilder : NSMutableURLRequest
 
-/// 根据链接创建请求信息
+/// 根据链接创建请求信息, 连接不合法时返回 nil
 /// @param url 链接
 + (instancetype)buildWithURL:(NSString *)url;
 
