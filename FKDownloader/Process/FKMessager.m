@@ -16,6 +16,16 @@
 
 @implementation FKMessager
 
++ (BOOL)existWithURL:(NSString *)url {
+    BOOL isExist = NO;
+    if ([[FKCache cache] existRequestWithURL:url.SHA256]) {
+        isExist = YES;
+    } else if ([[FKFileManager manager] existLocalRequestWithRequestID:url.SHA256]) {
+        isExist = YES;
+    }
+    return isExist;
+}
+
 + (FKState)stateWithURL:(NSString *)url {
     return [[FKCache cache] stateRequestWithRequestID:url.SHA256];
 }

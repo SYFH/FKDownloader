@@ -63,6 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param request 请求信息
 - (BOOL)existLocalRequestWithRequest:(FKCacheRequestModel *)request;
 
+/// 检查请求文件是否存在
+/// @param request 请求链接
+- (BOOL)existLocalRequestWithRequestID:(NSString *)request;
+
 /// 根据请求标识读取本地信息文件
 /// @param requestID 请求标识
 - (FKCacheRequestModel* _Nullable)loadLocalRequestWithRequestID:(NSString *)requestID;

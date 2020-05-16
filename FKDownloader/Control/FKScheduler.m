@@ -230,6 +230,9 @@
     // 取消请求
     [[FKEngine engine] cancelRequestWithURL:url];
     
+    // 删除回调
+    [FKMessager removeMessagerInfoWithURL:url];
+    
     // 删除监听
     [[FKObserver observer] removeObserverWithRequestID:url.SHA256];
     

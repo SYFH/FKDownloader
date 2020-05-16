@@ -117,7 +117,11 @@
 }
 
 - (BOOL)existLocalRequestWithRequest:(FKCacheRequestModel *)request {
-    NSString *requestPath = [self requestFilePath:request.requestID extension:self.requestFileExtension];
+    return [self existLocalRequestWithRequestID:request.requestID];
+}
+
+- (BOOL)existLocalRequestWithRequestID:(NSString *)request {
+    NSString *requestPath = [self requestFilePath:request extension:self.requestFileExtension];
     return [self.fileManager fileExistsAtPath:requestPath];
 }
 

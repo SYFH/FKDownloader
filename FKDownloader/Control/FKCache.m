@@ -311,7 +311,7 @@
 
 - (FKState)stateRequestWithRequestID:(NSString *)requestID {
     FKCacheRequestModel *info = [self requestWithRequestID:requestID];
-    return info.state;
+    return info ? info.state : FKStateUnknown;
 }
 
 - (NSError *)errorRequestWithRequestID:(NSString *)requestID {

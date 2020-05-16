@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKMessager : NSObject
 
+/// 链接对应的任务是否存在
+/// @param url 请求链接
++ (BOOL)existWithURL:(NSString *)url;
+
 /// 链接对应的状态
 /// @param url 请求链接
 + (FKState)stateWithURL:(NSString *)url;
