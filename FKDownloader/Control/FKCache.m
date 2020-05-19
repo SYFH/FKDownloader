@@ -252,7 +252,7 @@
 
 - (FKCacheRequestModel *)firstIdelRequest {
     NSSortDescriptor *requestSort = [NSSortDescriptor sortDescriptorWithKey:@"idx" ascending:YES];
-    NSArray<FKCacheRequestModel *> *allRequestArray = [self requestArray];
+    NSArray<FKCacheRequestModel *> *allRequestArray = [[FKCache cache] requestArray];
     NSArray<FKCacheRequestModel *> *requestArray = [allRequestArray sortedArrayUsingDescriptors:@[requestSort]];
     FKCacheRequestModel *requestModel = nil;
     for (FKCacheRequestModel *model in requestArray) {

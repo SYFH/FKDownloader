@@ -68,6 +68,7 @@
         }
         
         [[FKCache cache] addRequestWithModel:localRequest];
+        [[FKCache cache] updateLocalRequestWithModel:localRequest];
         [FKLogger debug:@"%@\n请求文件已在本地存在, 直接添加到缓存队列", [FKLogger requestCacheModelDebugInfo:localRequest]];
     }
     
@@ -121,13 +122,24 @@
 - (void)suspendRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    if (info.state != FKStateAction) { return; }
+    if (!(info.state == FKStateAction || info.state == FKStateIdel)) { return; }
     
     NSURLSessionDownloadTask *downloadTask = [[FKCache cache] downloadTaskWithRequestID:requestID];
     if (info.downloadType == FKDownloadTypeBackground) {
-        [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
-            // 此处不做处理, 统一在代理中处理所有错误
-        }];
+        if (info.state == FKStateAction) {
+            [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
+                // 此处不做处理, 统一在代理中处理所有错误
+            }];
+        }
+        else if (info.state == FKStateIdel) {
+            // 等待中任务的暂停只标记状态
+            info.state = FKStateSuspend;
+            
+            // 更新状态
+            [[FKCache cache] updateRequestWithModel:info];
+            [[FKCache cache] updateLocalRequestWithModel:info];
+            [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
+        }
     } else {
         [downloadTask suspend];
         info.state = FKStateSuspend;
@@ -162,6 +174,7 @@
             NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithResumeData:resumeData];
             downloadTask.taskDescription = info.requestID;
             [downloadTask resume];
+            [FKLogger debug:@"使用恢复数据创建 %@", downloadTask];
             
             // 替换下载任务缓存
             [[FKCache cache] repleaceDownloadTask:downloadTask];
@@ -172,6 +185,7 @@
             NSURLSessionDownloadTask *downloadTask = [[FKEngine engine].backgroundSession downloadTaskWithRequest:info.request];
             downloadTask.taskDescription = info.requestID;
             [downloadTask resume];
+            [FKLogger debug:@"重新创建 %@", downloadTask];
             
             // 替换下载任务缓存
             [[FKCache cache] repleaceDownloadTask:downloadTask];

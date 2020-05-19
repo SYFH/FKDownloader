@@ -63,13 +63,12 @@
     if ([keyPath isEqualToString:@"countOfBytesReceived"]) {
         info.countOfBytesPreviousReceived = info.countOfBytesReceived;
         info.countOfBytesReceived = downloadTask.countOfBytesReceived;
-        model.receivedLength = downloadTask.countOfBytesReceived;
     }
     
     if ([keyPath isEqualToString:@"countOfBytesExpectedToReceive"]) {
         info.countOfBytesExpectedToReceive = downloadTask.countOfBytesExpectedToReceive;
         
-        // 更新下载文件大小
+        // 更新下载文件总大小
         if (model.dataLength == 0) {
             model.dataLength = info.countOfBytesExpectedToReceive;
             hasUpdate = YES;

@@ -27,13 +27,6 @@
     }
 }
 
-/// 开始所有任务
-+ (void)startAllTask {
-    [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
-        [FKControl actionRequestWithURL:model.url];
-    }];
-}
-
 /// 获取任务所有信息
 + (void)getInfoWithURL:(NSString *)url complete:(MessagerInfoBlock)complete {
     if ([FKMessager existWithURL:url]) {
@@ -67,7 +60,11 @@
 /// 恢复所有任务
 + (void)resumeAllTask {
     [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
-        [FKControl resumeRequestWithURL:model.url];
+        if (model.state == FKStateSuspend) {
+            [FKControl resumeRequestWithURL:model.url];
+        } else {
+            [FKControl actionRequestWithURL:model.url];
+        }
     }];
 }
 

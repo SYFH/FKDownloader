@@ -80,6 +80,8 @@
 - (void)configureSession {
     [self configureBackgroundSession];
     [self configureForegroundSession];
+    
+    [self loadSessionRequest];
 }
 
 - (void)configureBackgroundSession {
@@ -131,14 +133,8 @@
 }
 
 - (void)configureNotification {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationdidFinishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-}
-
-- (void)applicationdidFinishLaunching:(NSNotification *)notify {
-    [self configureSession];
-    [self loadSessionRequest];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notify {
@@ -190,7 +186,9 @@
         for (NSURLSessionDownloadTask *task in downloadTasks) {
             // 获取本地请求缓存
             NSString *requestID = task.taskDescription;
-            FKCacheRequestModel *info = [[FKCache cache] localRequestFileWithRequestID:requestID];;
+            FKCacheRequestModel *info = [[FKCache cache] localRequestFileWithRequestID:requestID];
+            if (!info) { return; }
+            
             info.state = [self stateTransform:task.state];
             
             // 更新缓存
@@ -202,6 +200,7 @@
             [[FKObserver observer] observerDownloadTask:task];
             [[FKObserver observer] observerCacheWithDownloadTask:task];
         }
+        [FKLogger debug:@"从 Background Session 加载了 %lu 个任务", downloadTasks.count];
     }];
 }
 
@@ -242,6 +241,7 @@
             self.processingNextRequest = NO;
             return;
         }
+        [FKLogger debug:@"%@\n获取待执行任务", [FKLogger requestCacheModelDebugInfo:requestModel]];
         
         // 检查下载是否有对应的文件
         NSString *downloadedFilePath = [[FKFileManager manager] filePathWithRequestID:requestModel.requestID];
@@ -272,6 +272,7 @@
         // 更新请求缓存
         requestModel.state = FKStateAction;
         [[FKCache cache] updateRequestWithModel:requestModel];
+        [[FKCache cache] updateLocalRequestWithModel:requestModel];
         [FKLogger debug:@"%@\nidel -> action, 更新本地请求缓存", [FKLogger requestCacheModelDebugInfo:requestModel]];
         
         // 缓存请求任务
@@ -284,7 +285,6 @@
         
         self.processingNextRequest = NO;
     } else {
-        [FKLogger debug:@"执行任务数量已到达上限"];
         self.processingNextRequest = NO;
     }
 }
@@ -302,9 +302,13 @@
     
     if (requestModel.downloadType == FKDownloadTypeBackground && requestModel.resumeData.length > 0) {
         NSData *resumeData = [FKResumeData correctResumeData:requestModel.resumeData];
-        return [session downloadTaskWithResumeData:resumeData];
+        NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithResumeData:resumeData];
+        [FKLogger debug:@"使用恢复数据创建 %@", downloadTask];
+        return downloadTask;
     } else {
-        return [session downloadTaskWithRequest:request];
+        NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithRequest:request];
+        [FKLogger debug:@"创建新的 %@", downloadTask];
+        return downloadTask;
     }
 }
 
@@ -355,9 +359,11 @@
                 NSData *resumeData = [errorUserInfo objectForKey:@"NSURLSessionDownloadTaskResumeData"];
                 info.resumeData = resumeData;
                 info.state = FKStateSuspend;
+                [FKLogger debug:@"%@已暂停任务", [FKLogger requestCacheModelDebugInfo:info]];
             } else {
                 // 普通取消或不支持断点下载的链接
                 info.state = FKStateCancel;
+                [FKLogger debug:@"%@已取消任务", [FKLogger requestCacheModelDebugInfo:info]];
             }
         } else {
             // 其他错误, 如网路未连接, 超时, 返回数据错误等

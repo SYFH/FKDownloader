@@ -35,9 +35,6 @@
 /// @param url 连接
 + (void)addURL:(NSString *)url;
 
-/// 开始所有任务
-+ (void)startAllTask;
-
 /// 获取任务所有信息
 /// @param url 连接
 /// @param complete 信息回调
