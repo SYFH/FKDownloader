@@ -61,7 +61,7 @@
     }
     
     if ([keyPath isEqualToString:@"countOfBytesReceived"]) {
-        info.countOfBytesPreviousReceived = info.countOfBytesReceived;
+        info.countOfBytesAccumulateReceived += downloadTask.countOfBytesReceived - info.countOfBytesReceived;
         info.countOfBytesReceived = downloadTask.countOfBytesReceived;
     }
     
@@ -282,10 +282,11 @@
             FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
             if (block) {
                 block(MAX(model.countOfBytesReceived, info.receivedLength),
-                      model.countOfBytesPreviousReceived,
+                      model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
                       MAX(model.countOfBytesExpectedToReceive, info.dataLength),
                       state,
                       error);
+                model.countOfBytesAccumulateReceived = 0;
             }
         }
     }];
@@ -300,11 +301,13 @@
             FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
             NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
             FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+            
             block(MAX(model.countOfBytesReceived, info.receivedLength),
-                  model.countOfBytesPreviousReceived,
+                  model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
                   MAX(model.countOfBytesExpectedToReceive, info.dataLength),
                   state,
                   error);
+            model.countOfBytesAccumulateReceived = 0;
         }
     }
     
@@ -321,8 +324,9 @@
                 FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
                 FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
                 countOfBytesReceived += MAX(model.countOfBytesReceived, info.receivedLength);
-                countOfBytesPreviousReceived += model.countOfBytesPreviousReceived;
+                countOfBytesPreviousReceived += model.countOfBytesReceived -model.countOfBytesAccumulateReceived;
                 countOfBytesExpectedToReceive += MAX(model.countOfBytesExpectedToReceive, info.dataLength);
+                model.countOfBytesAccumulateReceived = 0;
             }
             block(countOfBytesReceived, countOfBytesPreviousReceived, countOfBytesExpectedToReceive);
         }
@@ -336,7 +340,7 @@
         NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
         FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
         info(MAX(model.countOfBytesReceived, cacheModel.receivedLength),
-             model.countOfBytesPreviousReceived,
+             model.countOfBytesAccumulateReceived,
              MAX(model.countOfBytesExpectedToReceive, cacheModel.dataLength),
              state,
              error);
