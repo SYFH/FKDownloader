@@ -165,7 +165,7 @@
             self.progressInfoLabel.hidden = YES;
         } break;
         case FKStateIdel: {
-            [self.controlButton setTitle:@"取消" forState:UIControlStateNormal];
+            [self.controlButton setTitle:@"暂停" forState:UIControlStateNormal];
             self.controlButton.enabled = YES;
             self.progressInfoLabel.hidden = NO;
         } break;
@@ -229,7 +229,7 @@
             
         } break;
         case FKStateIdel: {
-            [FKControl cancelRequestWithURL:self.url];
+            [FKControl suspendRequestWithURL:self.url];
         } break;
         case FKStateAction: {
             [FKControl suspendRequestWithURL:self.url];

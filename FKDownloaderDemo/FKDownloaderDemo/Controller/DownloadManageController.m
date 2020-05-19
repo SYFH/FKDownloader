@@ -17,6 +17,7 @@
 @interface DownloadManageController ()<UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) UITableView *listView;
+@property (nonatomic, assign, getter=isAllSuspended) BOOL allSuspended;
 
 @end
 
@@ -33,6 +34,9 @@
     self.listView.dataSource = self;
     self.listView.delegate = self;
     [self.view addSubview:self.listView];
+    
+    self.allSuspended = YES;
+    [self settingRightItem];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -43,6 +47,25 @@
         make.left.right.equalTo(self.view);
         make.bottom.equalTo(self.view.mas_bottomMargin);
     }];
+}
+
+- (void)settingRightItem {
+    if (self.isAllSuspended) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"全部开始" style:UIBarButtonItemStyleDone target:self action:@selector(rightItemDidTap:)];
+    } else {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"全部暂停" style:UIBarButtonItemStyleDone target:self action:@selector(rightItemDidTap:)];
+    }
+}
+
+- (void)rightItemDidTap:(UIBarButtonItem *)sender {
+    if (self.isAllSuspended) {
+        [FKDownloader resumeAllTask];
+    } else {
+        [FKDownloader suspendAllTask];
+    }
+    
+    self.allSuspended = !self.allSuspended;
+    [self settingRightItem];
 }
 
 
