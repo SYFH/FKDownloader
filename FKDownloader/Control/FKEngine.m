@@ -253,40 +253,45 @@
             return;
         }
         
-        // 处理请求
-        NSMutableURLRequest *request = requestModel.request;
-        for (id<FKRequestMiddlewareProtocol> middleware in [FKMiddleware shared].requestMiddlewareArray) {
-            if ([middleware respondsToSelector:@selector(processRequest:)]) {
-                request = [middleware processRequest:request];
-            }
-        }
-        [FKLogger debug:@"%@\n%@\n对请求进行中间件处理", requestModel.request, request];
-        
-        // 执行请求
-        NSURLSession *session = [[FKEngine engine] sessionWithRequestModel:requestModel];
-        NSURLSessionDownloadTask *downloadTask = [[FKEngine engine] createDownloadTaskWithRequest:request session:session fromRequestModel:requestModel];
-        downloadTask.taskDescription = [NSString stringWithFormat:@"%@", requestModel.requestID];
-        [downloadTask resume];
-        [FKLogger debug:@"%@\n根据请求创建下载任务", [FKLogger downloadTaskDebugInfo:downloadTask]];
-        
-        // 更新请求缓存
-        requestModel.state = FKStateAction;
-        [[FKCache cache] updateRequestWithModel:requestModel];
-        [[FKCache cache] updateLocalRequestWithModel:requestModel];
-        [FKLogger debug:@"%@\nidel -> action, 更新本地请求缓存", [FKLogger requestCacheModelDebugInfo:requestModel]];
-        
-        // 缓存请求任务
-        [[FKCache cache] addDownloadTask:downloadTask];
-        [FKLogger debug:@"%@\n保存下载任务", [FKLogger requestCacheModelDebugInfo:requestModel]];
-        
-        // 添加 KVO
-        [[FKObserver observer] observerDownloadTask:downloadTask];
-        [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
+        // 开始任务
+        [self createDownloadTaskAndResumeWithRequest:requestModel];
         
         self.processingNextRequest = NO;
     } else {
         self.processingNextRequest = NO;
     }
+}
+
+- (void)createDownloadTaskAndResumeWithRequest:(FKCacheRequestModel *)requestModel {
+    // 处理请求
+    NSMutableURLRequest *request = requestModel.request;
+    for (id<FKRequestMiddlewareProtocol> middleware in [FKMiddleware shared].requestMiddlewareArray) {
+        if ([middleware respondsToSelector:@selector(processRequest:)]) {
+            request = [middleware processRequest:request];
+        }
+    }
+    [FKLogger debug:@"%@\n%@\n对请求进行中间件处理", requestModel.request, request];
+    
+    // 执行请求
+    NSURLSession *session = [[FKEngine engine] sessionWithRequestModel:requestModel];
+    NSURLSessionDownloadTask *downloadTask = [[FKEngine engine] createDownloadTaskWithRequest:request session:session fromRequestModel:requestModel];
+    downloadTask.taskDescription = [NSString stringWithFormat:@"%@", requestModel.requestID];
+    [downloadTask resume];
+    [FKLogger debug:@"%@\n根据请求创建下载任务", [FKLogger downloadTaskDebugInfo:downloadTask]];
+    
+    // 更新请求缓存
+    requestModel.state = FKStateAction;
+    [[FKCache cache] updateRequestWithModel:requestModel];
+    [[FKCache cache] updateLocalRequestWithModel:requestModel];
+    [FKLogger debug:@"%@\nidel -> action, 更新本地请求缓存", [FKLogger requestCacheModelDebugInfo:requestModel]];
+    
+    // 缓存请求任务
+    [[FKCache cache] addDownloadTask:downloadTask];
+    [FKLogger debug:@"%@\n保存下载任务", [FKLogger requestCacheModelDebugInfo:requestModel]];
+    
+    // 添加 KVO
+    [[FKObserver observer] observerDownloadTask:downloadTask];
+    [[FKObserver observer] observerCacheWithDownloadTask:downloadTask];
 }
 
 - (NSURLSession *)sessionWithRequestModel:(FKCacheRequestModel *)requestModel {
