@@ -70,6 +70,9 @@
         [[FKCache cache] addRequestWithModel:localRequest];
         [[FKCache cache] updateLocalRequestWithModel:localRequest];
         [FKLogger debug:@"%@\n请求文件已在本地存在, 直接添加到缓存队列", [FKLogger requestCacheModelDebugInfo:localRequest]];
+        
+        // 下载中间件返回任务状态
+        [[FKEngine engine] downloadMiddlewareStateWithRequest:localRequest];
     }
     
     else {
@@ -83,6 +86,9 @@
         [[FKCache cache] addRequestWithModel:request];
         [[FKCache cache] updateLocalRequestWithModel:request];
         [FKLogger debug:@"%@\nprepare -> idel, 添加到缓存列表", [FKLogger requestCacheModelDebugInfo:request]];
+        
+        // 下载中间件返回任务状态
+        [[FKEngine engine] downloadMiddlewareStateWithRequest:request];
     }
     
     // 保存唯一编号到磁盘
@@ -117,6 +123,9 @@
         [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\nerror -> idel, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
     }
+    
+    // 调用下载中间件状态返回方法
+    [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
 }
 
 - (void)suspendRequestWithURL:(NSString *)url {
@@ -139,6 +148,9 @@
             [[FKCache cache] updateRequestWithModel:info];
             [[FKCache cache] updateLocalRequestWithModel:info];
             [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
+
+            // 调用下载中间件状态返回方法
+            [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
         }
     } else {
         [downloadTask suspend];
@@ -148,6 +160,9 @@
         [[FKCache cache] updateRequestWithModel:info];
         [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:requestID];
+
+        // 调用下载中间件状态返回方法
+        [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
     }
 }
 
@@ -164,6 +179,9 @@
         [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\nsuspend -> action, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
+
+        // 调用下载中间件状态返回方法
+        [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
         return;
     }
     
@@ -216,6 +234,9 @@
     [[FKCache cache] updateLocalRequestWithModel:info];
     [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
     [FKLogger debug:@"%@\nsuspend -> action, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
+    
+    // 调用下载中间件状态返回方法
+    [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
 }
 
 - (void)cancelRequestWithURL:(NSString *)url {
@@ -237,6 +258,9 @@
         [[FKCache cache] updateLocalRequestWithModel:info];
         [[FKObserver observer] execFastInfoBlockWithRequestID:info.requestID];
         [FKLogger debug:@"%@\naction -> cancen, 更新本地缓存", [FKLogger requestCacheModelDebugInfo:info]];
+
+        // 调用下载中间件状态返回方法
+        [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
     }
 }
 

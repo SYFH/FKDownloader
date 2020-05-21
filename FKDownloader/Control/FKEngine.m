@@ -250,6 +250,8 @@
             [[FKCache cache] updateRequestWithModel:requestModel];
             [[FKCache cache] updateLocalRequestWithModel:requestModel];
             [FKLogger debug:@"%@\n需要下载的资源资源已存在", [FKLogger requestCacheModelDebugInfo:requestModel]];
+            
+            [[FKEngine engine] downloadMiddlewareStateWithRequest:requestModel];
             return;
         }
         
@@ -284,6 +286,9 @@
     [[FKCache cache] updateRequestWithModel:requestModel];
     [[FKCache cache] updateLocalRequestWithModel:requestModel];
     [FKLogger debug:@"%@\nidel -> action, 更新本地请求缓存", [FKLogger requestCacheModelDebugInfo:requestModel]];
+    
+    // 下载中间件返回任务状态
+    [[FKEngine engine] downloadMiddlewareStateWithRequest:requestModel];
     
     // 缓存请求任务
     [[FKCache cache] addDownloadTask:downloadTask];
@@ -347,6 +352,9 @@
     // 移除缓存任务进行释放
     [[FKCache cache] removeDownloadTask:downloadTask];
     [FKLogger debug:@"%@\n清除任务缓存", [FKLogger downloadTaskDebugInfo:downloadTask]];
+    
+    // 下载中间件返回任务状态
+    [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
 }
 
 - (void)processTask:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
@@ -365,6 +373,9 @@
                 info.resumeData = resumeData;
                 info.state = FKStateSuspend;
                 [FKLogger debug:@"%@已暂停任务", [FKLogger requestCacheModelDebugInfo:info]];
+                
+                [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
+                [FKLogger debug:@"调用下载中间件"];
             } else {
                 // 普通取消或不支持断点下载的链接
                 info.state = FKStateCancel;
@@ -377,6 +388,9 @@
             
             // 使用中间件处理响应
             [self processResponseMiddlewareWithTask:task responseError:error fromRequest:info];
+            
+            [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
+            [FKLogger debug:@"调用下载中间件"];
         }
         
         // 更新状态
@@ -456,6 +470,15 @@
 
 - (void)trashRequestWithURL:(NSString *)url {
     [[FKScheduler shared] trashRequestWithURL:url];
+}
+
+- (void)downloadMiddlewareStateWithRequest:(FKCacheRequestModel *)request {
+    for (id<FKDownloadMiddlewareProtocol> middleware in [[FKMiddleware shared] downloadMiddlewareArray]) {
+        if ([middleware respondsToSelector:@selector(downloadURL:state:)]) {
+            [middleware downloadURL:request.url state:request.state];
+        }
+    }
+    [FKLogger debug:@"调用下载中间件返回任务状态"];
 }
 
 @end

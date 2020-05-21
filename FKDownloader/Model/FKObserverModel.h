@@ -11,15 +11,17 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <stdatomic.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FKObserverModel : NSObject
 
 @property (nonatomic, strong) NSString *requestID; // SHA256(Request.URL)
-@property (nonatomic, assign) int64_t countOfBytesReceived;
-@property (nonatomic, assign) int64_t countOfBytesAccumulateReceived;
-@property (nonatomic, assign) int64_t countOfBytesExpectedToReceive;
+@property (nonatomic, assign) atomic_uint_fast64_t countOfBytesReceived;
+@property (nonatomic, assign) atomic_uint_fast64_t countOfBytesPreviousReceived;
+@property (nonatomic, assign) atomic_uint_fast64_t countOfBytesAccumulateReceived;
+@property (nonatomic, assign) atomic_uint_fast64_t countOfBytesExpectedToReceive;
 
 @end
 

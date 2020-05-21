@@ -15,6 +15,7 @@
 #import "FKObserverModel.h"
 #import "FKLogger.h"
 #import "FKEngine.h"
+#import "FKMiddleware.h"
 
 @interface FKObserver ()
 
@@ -59,8 +60,9 @@
         }
         hasUpdate = YES;
     }
-    
+
     if ([keyPath isEqualToString:@"countOfBytesReceived"]) {
+        info.countOfBytesPreviousReceived = info.countOfBytesReceived;
         info.countOfBytesAccumulateReceived += downloadTask.countOfBytesReceived - info.countOfBytesReceived;
         info.countOfBytesReceived = downloadTask.countOfBytesReceived;
     }
@@ -74,6 +76,14 @@
             hasUpdate = YES;
         } else {
             info.countOfBytesExpectedToReceive = model.dataLength;
+        }
+    }
+    
+    // 下载中间件返回任务进度
+    for (id<FKDownloadMiddlewareProtocol> middleware in [[FKMiddleware shared] downloadMiddlewareArray]) {
+        if ([middleware respondsToSelector:@selector(downloadURL:countOfBytesReceived:countOfBytesPreviousReceived:countOfBytesExpectedToReceive:)]) {
+            
+            [middleware downloadURL:model.url countOfBytesReceived:info.countOfBytesReceived countOfBytesPreviousReceived:info.countOfBytesPreviousReceived countOfBytesExpectedToReceive:info.countOfBytesExpectedToReceive];
         }
     }
 

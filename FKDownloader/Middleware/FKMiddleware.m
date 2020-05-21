@@ -14,6 +14,7 @@
 @interface FKMiddleware ()
 
 @property (nonatomic, strong) NSHashTable<id<FKRequestMiddlewareProtocol>> *requestMiddlewares;
+@property (nonatomic, strong) NSHashTable<id<FKDownloadMiddlewareProtocol>> *downloadMiddlewares;
 @property (nonatomic, strong) NSHashTable<id<FKResponseMiddlewareProtocol>> *responseMiddlewares;
 
 @end
@@ -36,6 +37,13 @@
     [FKLogger debug:@"%@\n注册请求中间件", middleware];
 }
 
+- (void)registeDownloadMiddleware:(id<FKDownloadMiddlewareProtocol>)middleware {
+    [[FKEngine engine].ioQueue addOperationWithBlock:^{
+        [self.downloadMiddlewares addObject:middleware];
+    }];
+    [FKLogger debug:@"%@\n注册下载中间件", middleware];
+}
+
 - (void)registeResponseMiddleware:(id<FKResponseMiddlewareProtocol>)middleware {
     [[FKEngine engine].ioQueue addOperationWithBlock:^{
         [self.responseMiddlewares addObject:middleware];
@@ -50,6 +58,16 @@
     }]] waitUntilFinished:YES];
     NSSortDescriptor *requestMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
     NSArray<id<FKRequestMiddlewareProtocol>> *middlewares = [allRequestMiddleware sortedArrayUsingDescriptors:@[requestMiddlewareSort]];
+    return middlewares;
+}
+
+- (NSArray<id<FKDownloadMiddlewareProtocol>> *)downloadMiddlewareArray {
+    __block NSArray<id<FKDownloadMiddlewareProtocol>> *allDownloadMiddleware = @[];
+    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
+        allDownloadMiddleware = self.downloadMiddlewares.objectEnumerator.allObjects;
+    }]] waitUntilFinished:YES];
+    NSSortDescriptor *downloadMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
+    NSArray<id<FKDownloadMiddlewareProtocol>> *middlewares = [allDownloadMiddleware sortedArrayUsingDescriptors:@[downloadMiddlewareSort]];
     return middlewares;
 }
 
@@ -70,6 +88,13 @@
         _requestMiddlewares = [NSHashTable hashTableWithOptions:NSPointerFunctionsStrongMemory];
     }
     return _requestMiddlewares;
+}
+
+- (NSHashTable<id<FKDownloadMiddlewareProtocol>> *)downloadMiddlewares {
+    if (!_downloadMiddlewares) {
+        _downloadMiddlewares = [NSHashTable hashTableWithOptions:NSPointerFunctionsStrongMemory];
+    }
+    return _downloadMiddlewares;
 }
 
 - (NSHashTable<id<FKResponseMiddlewareProtocol>> *)responseMiddlewares {

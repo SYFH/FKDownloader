@@ -11,6 +11,7 @@
  */
 
 #import <Foundation/Foundation.h>
+@class FKCacheRequestModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -75,6 +76,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 将 Background Session 上所有任务取消
 - (void)cancelAllRequest;
+
+/// 调用下载中间件返回任务状态
+/// @param request 任务信息
+- (void)downloadMiddlewareStateWithRequest:(FKCacheRequestModel *)request;
 
 @end
 
