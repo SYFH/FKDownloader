@@ -65,6 +65,14 @@
         info.countOfBytesPreviousReceived = info.countOfBytesReceived;
         info.countOfBytesAccumulateReceived += downloadTask.countOfBytesReceived - info.countOfBytesReceived;
         info.countOfBytesReceived = downloadTask.countOfBytesReceived;
+        
+        // 下载中间件返回任务进度
+        for (id<FKDownloadMiddlewareProtocol> middleware in [[FKMiddleware shared] downloadMiddlewareArray]) {
+            if ([middleware respondsToSelector:@selector(downloadURL:countOfBytesReceived:countOfBytesPreviousReceived:countOfBytesExpectedToReceive:)]) {
+                
+                [middleware downloadURL:model.url countOfBytesReceived:info.countOfBytesReceived countOfBytesPreviousReceived:info.countOfBytesPreviousReceived countOfBytesExpectedToReceive:info.countOfBytesExpectedToReceive];
+            }
+        }
     }
     
     if ([keyPath isEqualToString:@"countOfBytesExpectedToReceive"]) {
@@ -76,14 +84,6 @@
             hasUpdate = YES;
         } else {
             info.countOfBytesExpectedToReceive = model.dataLength;
-        }
-    }
-    
-    // 下载中间件返回任务进度
-    for (id<FKDownloadMiddlewareProtocol> middleware in [[FKMiddleware shared] downloadMiddlewareArray]) {
-        if ([middleware respondsToSelector:@selector(downloadURL:countOfBytesReceived:countOfBytesPreviousReceived:countOfBytesExpectedToReceive:)]) {
-            
-            [middleware downloadURL:model.url countOfBytesReceived:info.countOfBytesReceived countOfBytesPreviousReceived:info.countOfBytesPreviousReceived countOfBytesExpectedToReceive:info.countOfBytesExpectedToReceive];
         }
     }
 
