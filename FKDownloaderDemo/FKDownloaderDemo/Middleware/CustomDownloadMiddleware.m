@@ -10,8 +10,8 @@
 
 @implementation CustomDownloadMiddleware
 
-- (void)downloadURL:(NSString *)url state:(FKState)state {
-    NSLog(@"url: %@, state: %ld", url, state);
+- (void)downloadURL:(NSString *)url state:(FKState)state error:(nullable NSError *)error{
+    NSLog(@"url: %@, state: %ld, error: %@", url, state, error);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"com.fk.middleware.download.state" object:nil userInfo:@{@"url": url, @"state": @(state)}];
 }
 
