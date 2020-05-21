@@ -38,7 +38,17 @@ typedef void(^ProgressBlock)(int64_t countOfBytesReceived,
 @protocol FKDownloadMiddlewareProtocol <NSObject>
 
 @optional
-- (void)downloadURL:(NSString *)url state:(FKState)state;
+
+/// 获得链接对应的任务状态
+/// @param url 链接
+/// @param state 任务状态
+- (void)downloadURL:(NSString *)url state:(FKState)state error:(nullable NSError *)error;
+
+/// 获取链接对应的任务下载进度
+/// @param url 链接
+/// @param countOfBytesReceived 已下载大小
+/// @param countOfBytesPreviousReceived 上次已下载大小
+/// @param countOfBytesExpectedToReceive 任务总大小
 - (void)downloadURL:(NSString *)url countOfBytesReceived:(int64_t)countOfBytesReceived
                             countOfBytesPreviousReceived:(int64_t)countOfBytesPreviousReceived
                            countOfBytesExpectedToReceive:(int64_t)countOfBytesExpectedToReceive;

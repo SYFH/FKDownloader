@@ -474,8 +474,8 @@
 
 - (void)downloadMiddlewareStateWithRequest:(FKCacheRequestModel *)request {
     for (id<FKDownloadMiddlewareProtocol> middleware in [[FKMiddleware shared] downloadMiddlewareArray]) {
-        if ([middleware respondsToSelector:@selector(downloadURL:state:)]) {
-            [middleware downloadURL:request.url state:request.state];
+        if ([middleware respondsToSelector:@selector(downloadURL:state:error:)]) {
+            [middleware downloadURL:request.url state:request.state error:request.error];
         }
     }
     [FKLogger debug:@"调用下载中间件返回任务状态"];
