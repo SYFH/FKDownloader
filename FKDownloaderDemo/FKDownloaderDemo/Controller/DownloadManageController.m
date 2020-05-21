@@ -68,6 +68,32 @@
     [self settingRightItem];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadStateNotify:) name:@"com.fk.middleware.download.state" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadProgressNotify:) name:@"com.fk.middleware.download.progress" object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"com.fk.middleware.download.state" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"com.fk.middleware.download.progress" object:nil];
+}
+
+
+#pragma mark - Notification
+- (void)downloadStateNotify:(NSNotification *)notify {
+    NSDictionary *info = notify.userInfo;
+    NSLog(@"%@", info);
+}
+
+- (void)downloadProgressNotify:(NSNotification *)notify {
+    NSDictionary *info = notify.userInfo;
+    NSLog(@"%@", info);
+}
+
 
 #pragma mark - UITableViewDataSource, UITableViewDelegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
