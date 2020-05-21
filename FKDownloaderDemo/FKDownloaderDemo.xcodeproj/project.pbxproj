@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D2F8D4724768EC0003CA0F1 /* CustomDownloadMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F8D4624768EC0003CA0F1 /* CustomDownloadMiddleware.m */; };
 		3D63540E23CEB38D00F2A4B3 /* CustomRequestMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D63540D23CEB38D00F2A4B3 /* CustomRequestMiddleware.m */; };
 		3D63541123CEB3A200F2A4B3 /* CustomResponseMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D63541023CEB3A200F2A4B3 /* CustomResponseMiddleware.m */; };
 		3D66171323B75BE6008EBE8A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D66171223B75BE6008EBE8A /* AppDelegate.m */; };
@@ -25,6 +26,8 @@
 
 /* Begin PBXFileReference section */
 		1FB6ECB7D278981428518BA4 /* Pods-FKDownloaderDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKDownloaderDemo.release.xcconfig"; path = "Target Support Files/Pods-FKDownloaderDemo/Pods-FKDownloaderDemo.release.xcconfig"; sourceTree = "<group>"; };
+		3D2F8D4524768EC0003CA0F1 /* CustomDownloadMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomDownloadMiddleware.h; sourceTree = "<group>"; };
+		3D2F8D4624768EC0003CA0F1 /* CustomDownloadMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomDownloadMiddleware.m; sourceTree = "<group>"; };
 		3D63540C23CEB38D00F2A4B3 /* CustomRequestMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomRequestMiddleware.h; sourceTree = "<group>"; };
 		3D63540D23CEB38D00F2A4B3 /* CustomRequestMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomRequestMiddleware.m; sourceTree = "<group>"; };
 		3D63540F23CEB3A200F2A4B3 /* CustomResponseMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomResponseMiddleware.h; sourceTree = "<group>"; };
@@ -111,6 +114,8 @@
 				3D63540D23CEB38D00F2A4B3 /* CustomRequestMiddleware.m */,
 				3D63540F23CEB3A200F2A4B3 /* CustomResponseMiddleware.h */,
 				3D63541023CEB3A200F2A4B3 /* CustomResponseMiddleware.m */,
+				3D2F8D4524768EC0003CA0F1 /* CustomDownloadMiddleware.h */,
+				3D2F8D4624768EC0003CA0F1 /* CustomDownloadMiddleware.m */,
 			);
 			path = Middleware;
 			sourceTree = "<group>";
@@ -289,6 +294,7 @@
 				3D63541123CEB3A200F2A4B3 /* CustomResponseMiddleware.m in Sources */,
 				3D7842FF23D3F09D004537AC /* DownloadManageController.m in Sources */,
 				3D7842FC23D3F092004537AC /* ResourceListController.m in Sources */,
+				3D2F8D4724768EC0003CA0F1 /* CustomDownloadMiddleware.m in Sources */,
 				3D66171923B75BE6008EBE8A /* ViewController.m in Sources */,
 				3D66171323B75BE6008EBE8A /* AppDelegate.m in Sources */,
 				3D66172423B75BE8008EBE8A /* main.m in Sources */,

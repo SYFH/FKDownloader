@@ -7,10 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <FKDownloader/FKDownloader.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CustomDownloadMiddleware : NSObject
+@interface CustomDownloadMiddleware : NSObject<FKDownloadMiddlewareProtocol>
 
 @end
 

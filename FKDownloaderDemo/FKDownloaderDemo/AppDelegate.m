@@ -12,6 +12,7 @@
 
 #import "CustomRequestMiddleware.h"
 #import "CustomResponseMiddleware.h"
+#import "CustomDownloadMiddleware.h"
 
 @interface AppDelegate ()
 
@@ -23,6 +24,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     [[FKMiddleware shared] registeRequestMiddleware:[CustomRequestMiddleware new]];
+    [[FKMiddleware shared] registeDownloadMiddleware:[CustomDownloadMiddleware new]];
     [[FKMiddleware shared] registeResponseMiddleware:[CustomResponseMiddleware new]];
     
     [FKConfigure configure].distributeSpeed = 1;
