@@ -36,9 +36,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param url 请求链接
 - (void)suspendRequestWithURL:(NSString *)url;
 
+/// 暂停所有任务
+- (void)suspendAllTask;
+
 /// 继续任务
 /// @param url 请求链接
 - (void)resumeRequestWithURL:(NSString *)url;
+
+/// 恢复所有任务
+- (void)resumeAllTask;
 
 /// 取消任务
 /// @param url 请求链接

@@ -449,8 +449,16 @@
     [[FKScheduler shared] suspendRequestWithURL:url];
 }
 
+- (void)suspendAllTask {
+    [[FKScheduler shared] suspendAllTask];
+}
+
 - (void)resumeRequestWithURL:(NSString *)url {
     [[FKScheduler shared] resumeRequestWithURL:url];
+}
+
+- (void)resumeAllTask {
+    [[FKScheduler shared] resumeAllTask];
 }
 
 - (void)cancelRequestWithURL:(NSString *)url {

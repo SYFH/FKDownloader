@@ -166,6 +166,12 @@
     }
 }
 
+- (void)suspendAllTask {
+    [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
+        [[FKScheduler shared] suspendRequestWithURL:model.url];
+    }];
+}
+
 - (void)resumeRequestWithURL:(NSString *)url {
     NSString *requestID = url.SHA256;
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
@@ -237,6 +243,16 @@
     
     // 调用下载中间件状态返回方法
     [[FKEngine engine] downloadMiddlewareStateWithRequest:info];
+}
+
+- (void)resumeAllTask {
+    [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
+        if (model.state == FKStateSuspend) {
+            [[FKScheduler shared] resumeRequestWithURL:model.url];
+        } else {
+            [[FKScheduler shared] actionRequestWithURL:model.url];
+        }
+    }];
 }
 
 - (void)cancelRequestWithURL:(NSString *)url {

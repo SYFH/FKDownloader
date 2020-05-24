@@ -24,8 +24,16 @@
     [[FKEngine engine] suspendRequestWithURL:url];
 }
 
++ (void)suspendAllTask {
+    [[FKEngine engine] suspendAllTask];
+}
+
 + (void)resumeRequestWithURL:(NSString *)url {
     [[FKEngine engine] resumeRequestWithURL:url];
+}
+
++ (void)resumeAllTask {
+    [[FKEngine engine] resumeAllTask];
 }
 
 + (void)cancelRequestWithURL:(NSString *)url {

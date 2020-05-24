@@ -47,9 +47,7 @@
 
 /// 暂停所有任务
 + (void)suspendAllTask {
-    [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
-        [FKControl suspendRequestWithURL:model.url];
-    }];
+    [FKControl suspendAllTask];
 }
 
 /// 恢复
@@ -59,13 +57,7 @@
 
 /// 恢复所有任务
 + (void)resumeAllTask {
-    [[[FKCache cache] requestArray] enumerateObjectsUsingBlock:^(FKCacheRequestModel *model, NSUInteger idx, BOOL *stop) {
-        if (model.state == FKStateSuspend) {
-            [FKControl resumeRequestWithURL:model.url];
-        } else {
-            [FKControl actionRequestWithURL:model.url];
-        }
-    }];
+    [FKControl resumeAllTask];
 }
 
 /// 取消并删除任务
