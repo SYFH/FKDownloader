@@ -189,6 +189,9 @@
             FKCacheRequestModel *info = [[FKCache cache] localRequestFileWithRequestID:requestID];
             if (!info) { return; }
             
+            // 内存队列中存在时不做处理
+            if ([[FKCache cache] requestWithRequestID:requestID]) { return; }
+            
             info.state = [self stateTransform:task.state];
             
             // 更新缓存
