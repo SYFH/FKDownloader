@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FKConfigure : NSObject
 
+/// FKDownloader 的工作目录, 默认为 Library/Caches/com.fk.downloader.work/
+/// 下载中途改变路径将会造成不可预料的后果, 请在开始下载前设置
+@property (nonatomic, strong) NSString *workPath;
+
 /// 最大执行任务数量, 默认 3, 范围 1~6, 生成 Session 后可更改, 但超出的正在执行
 /// 的任务不受影响, 直至正在执行任务数量小于此值后, 之后的任务才可被控制
 @property (nonatomic, assign) unsigned int maxAction;

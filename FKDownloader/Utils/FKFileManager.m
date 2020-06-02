@@ -13,12 +13,12 @@
 #import "FKCache.h"
 #import "FKSingleNumber.h"
 #import "FKCacheModel.h"
+#import "FKConfigure.h"
 
 @interface FKFileManager ()
 
 @property (nonatomic, strong) NSString *requestFileExtension;
 @property (nonatomic, strong) NSFileManager *fileManager;
-@property (nonatomic, strong) NSString *workPath;
 
 @end
 
@@ -36,17 +36,13 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-        NSString *workName = @"com.fk.downloader.work";
-        NSString *workPath = [cachePath stringByAppendingPathComponent:workName];
-        [self.fileManager createDirectoryAtPath:workPath withIntermediateDirectories:YES attributes:nil error:nil];
-        self.workPath = workPath;
+        
     }
     return self;
 }
 
 - (NSString *)workFinder {
-    return self.workPath;
+    return [FKConfigure configure].workPath;
 }
 
 - (BOOL)fileExistsAtPath:(NSString *)path {
@@ -69,14 +65,14 @@
 @implementation FKFileManager (SingleNumber)
 
 - (void)saveSingleNumber {
-    NSString *path = [self.workPath stringByAppendingPathComponent:@"singleNumner"];
+    NSString *path = [[FKFileManager manager].workFinder stringByAppendingPathComponent:@"singleNumner"];
     unsigned long long number = FKSingleNumber.shared.current;
     [self.fileManager createFileAtPath:path contents:[NSData dataWithBytes:&number length:sizeof(unsigned long long)] attributes:nil];
 }
 
 - (unsigned long long)loadSingleNumber {
     unsigned long long number = 0;
-    NSString *path = [self.workPath stringByAppendingPathComponent:@"singleNumner"];
+    NSString *path = [[FKFileManager manager].workFinder stringByAppendingPathComponent:@"singleNumner"];
     if ([self.fileManager fileExistsAtPath:path]) {
         NSData *data = [NSData dataWithContentsOfFile:path];
         [data getBytes:&number length:sizeof(unsigned long long)];
@@ -90,7 +86,7 @@
 @implementation FKFileManager (Request)
 
 - (void)createRequestFinderWithRequestID:(NSString *)request {
-    NSString *requestPath = [self.workPath stringByAppendingPathComponent:request];
+    NSString *requestPath = [[FKFileManager manager].workFinder stringByAppendingPathComponent:request];
     
     if ([self.fileManager fileExistsAtPath:requestPath] == NO) {
         [self.fileManager createDirectoryAtPath:requestPath withIntermediateDirectories:YES attributes:nil error:nil];
@@ -104,7 +100,7 @@
 }
 
 - (void)deleteRequestFinderWithRequestID:(NSString *)request {
-    NSString *requestPath = [self.workPath stringByAppendingPathComponent:request];
+    NSString *requestPath = [[FKFileManager manager].workFinder stringByAppendingPathComponent:request];
     if ([self.fileManager fileExistsAtPath:requestPath]) {
         [self.fileManager removeItemAtPath:requestPath error:nil];
     }
@@ -132,7 +128,7 @@
 }
 
 - (void)moveFile:(NSURL *)fileURL toRequestFinder:(NSString *)requestID fileName:(nonnull NSString *)fileName {
-    NSString *requestFinder = [self.workPath stringByAppendingPathComponent:requestID];
+    NSString *requestFinder = [[FKFileManager manager].workFinder stringByAppendingPathComponent:requestID];
     NSString *requestFileName = [requestFinder stringByAppendingPathComponent:fileName];
     [self.fileManager moveItemAtURL:fileURL toURL:[NSURL fileURLWithPath:requestFileName] error:nil];
 }
@@ -145,7 +141,7 @@
 }
 
 - (NSString *)requestFinderPath:(NSString *)requestID {
-    return [self.workPath stringByAppendingPathComponent:requestID];
+    return [[FKFileManager manager].workFinder stringByAppendingPathComponent:requestID];
 }
 
 - (NSString *)requestFilePath:(NSString *)requestID extension:(NSString *)extension {
@@ -156,7 +152,7 @@
 - (NSString *)filePathWithRequestID:(NSString *)requestID {
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
     NSString *fileName = [NSString stringWithFormat:@"%@%@", info.requestID, info.extension];
-    NSString *requestFinder = [self.workPath stringByAppendingPathComponent:requestID];
+    NSString *requestFinder = [[FKFileManager manager].workFinder stringByAppendingPathComponent:requestID];
     NSString *requestFilePath = [requestFinder stringByAppendingPathComponent:fileName];
     return requestFilePath;
 }

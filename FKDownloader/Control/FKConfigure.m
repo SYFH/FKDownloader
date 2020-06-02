@@ -35,6 +35,11 @@
         self.maxAction = 3;
         self.distributeSpeed = 5;
         self.distributeTimeinterval = 0.2;
+        
+        NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+        NSString *workName = @"com.fk.downloader.work";
+        NSString *workPath = [cachePath stringByAppendingPathComponent:workName];
+        self.workPath = workPath;
     }
     return self;
 }
