@@ -28,6 +28,7 @@
     [[FKMiddleware shared] registeResponseMiddleware:[CustomResponseMiddleware new]];
     
     [FKConfigure configure].distributeSpeed = 1;
+    [FKConfigure configure].workPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"FKDownloader"];
     [[FKConfigure configure] takeSession];
     [[FKConfigure configure] activateQueue];
     return YES;
