@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name          = "FKDownloader"
-  s.version       = "1.0.8"
+  s.version       = "1.0.9"
   s.summary       = "👍📥 Maybe the best file downloader."
   s.homepage      = "https://github.com/SYFH/FKDownloader"
   s.license       = "MIT"
