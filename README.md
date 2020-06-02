@@ -229,6 +229,22 @@ FKDownloader 包含了单元测试, 可在 FKDownloader.xcodeproj 中选择 FKDo
 　　将`FKDownloader` 文件夹复制到项目中, `#import "FKDownloader.h"` 即可开始  
 
 # Change log
+- 1.0.9
+    1. 优化便捷类内部逻辑
+    2. FKConfigure 添加工作目录属性
+- 1.0.8
+    1. 优化下载中间件调用逻辑
+    2. 下载中间件状态获取添加错误信息参数
+- 1.0.7
+    1. 添加下载中间件, 可获取下载进度和下载状态, 与 FKMessager 不同, 不会循环调用, 下载进度与 NSURLSessionDownloadTask 的进度同步, 下载状态只在状态被改变时调用
+- 1.0.6
+    1. 添加便捷类 FKDownloader, 可直接进行简单操作
+    2. FKBuilder 修改初始化逻辑, URL 不合法时返回 nil
+    3. FKControl 添加开始/暂停/恢复所有任务 API
+    4. 修复上次已下载大小逻辑
+- 1.0.5
+    1. FKMessger 添加检查任务是否存在 API
+    2. 添加任务状态 FKStateUnknown, 表示任务不存在
 - 1.0.4
     1. 对 FKMessager 添加删除回调缓存 API, 单次获取任务信息 API, 对集合增删改查链接信息 API
     2. 调整 FKControl API
