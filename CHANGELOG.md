@@ -1,6 +1,5 @@
-#Change Log
-
-
+# Change Log
+---
 
 ## 1.0.9
     1. 优化便捷类内部逻辑
