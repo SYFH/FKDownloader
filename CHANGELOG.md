@@ -1,6 +1,11 @@
 # Change Log
 ---
 
+## 1.0.10
+    1. 优化 FKMessager 流程, 主动获取本地缓存
+    2. 修改便捷类 `FKDownloader.h` 命名为 `FKDownloadTool.h`
+
+
 ## 1.0.9
     1. 优化便捷类内部逻辑
     2. FKConfigure 添加工作目录属性
