@@ -151,10 +151,14 @@
 
 - (NSString *)filePathWithRequestID:(NSString *)requestID {
     FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-    NSString *fileName = [NSString stringWithFormat:@"%@%@", info.requestID, info.extension];
-    NSString *requestFinder = [[FKFileManager manager].workFinder stringByAppendingPathComponent:requestID];
-    NSString *requestFilePath = [requestFinder stringByAppendingPathComponent:fileName];
-    return requestFilePath;
+    if (info) {
+        NSString *fileName = [NSString stringWithFormat:@"%@%@", info.requestID, info.extension];
+        NSString *requestFinder = [[FKFileManager manager].workFinder stringByAppendingPathComponent:requestID];
+        NSString *requestFilePath = [requestFinder stringByAppendingPathComponent:fileName];
+        return requestFilePath;
+    } else {
+        return @"";
+    }
 }
 
 @end
