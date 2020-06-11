@@ -59,9 +59,9 @@
 
 - (void)rightItemDidTap:(UIBarButtonItem *)sender {
     if (self.isAllSuspended) {
-        [FKDownloader resumeAllTask];
+        [FKDownloadTool resumeAllTask];
     } else {
-        [FKDownloader suspendAllTask];
+        [FKDownloadTool suspendAllTask];
     }
     
     self.allSuspended = !self.allSuspended;

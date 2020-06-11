@@ -1,5 +1,5 @@
 PODS:
-  - FKDownloader (1.0.8)
+  - FKDownloader (1.0.9)
   - Masonry (1.1.0)
   - MBProgressHUD (1.2.0)
 
@@ -18,10 +18,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  FKDownloader: e34f24ba63ef2851593b6ab864fb1cbbf953d6a5
+  FKDownloader: 787174c840761c764976a38d6256c6712b0e9cd2
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
 
 PODFILE CHECKSUM: 4589ae8d12d58e2c9cf08b397e545577968b8b6d
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3
