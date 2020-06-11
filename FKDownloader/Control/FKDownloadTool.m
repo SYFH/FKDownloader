@@ -8,11 +8,6 @@
 
 #import "FKDownloadTool.h"
 
-#import "FKCache.h"
-#import "FKCacheModel.h"
-#import "FKBuilder.h"
-#import "FKControl.h"
-
 @implementation FKDownloadTool
 
 + (void)addURL:(NSString *)url {
