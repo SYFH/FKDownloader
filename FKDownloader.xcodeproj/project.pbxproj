@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D1A53762491D5FC00F85938 /* FKDownloadTool.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D1A53742491D5FC00F85938 /* FKDownloadTool.h */; };
+		3D1A53772491D5FC00F85938 /* FKDownloadTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A53752491D5FC00F85938 /* FKDownloadTool.m */; };
 		3D3079D823E66C72005F0105 /* TestMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3079D723E66C72005F0105 /* TestMiddleware.m */; };
 		3D3079E123E67E68005F0105 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3079E023E67E68005F0105 /* AppDelegate.m */; };
 		3D3079E723E67E68005F0105 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3079E623E67E68005F0105 /* ViewController.m */; };
@@ -44,7 +46,6 @@
 		3D933F0A23BB46E9006C6C95 /* FKMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0823BB46E9006C6C95 /* FKMiddleware.m */; };
 		3D933F0E23BB54C1006C6C95 /* FKSingleNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */; };
 		3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */; };
-		3D999C6A246F8E2F00F94E77 /* FKDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D999C69246F8E2F00F94E77 /* FKDownloader.m */; };
 		3D999C6D246F982A00F94E77 /* NSError+FKCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D999C6B246F982A00F94E77 /* NSError+FKCategory.h */; };
 		3D999C6E246F982A00F94E77 /* NSError+FKCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D999C6C246F982A00F94E77 /* NSError+FKCategory.m */; };
 		3DB8FB2F23D584B2002B7450 /* FKResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB8FB2D23D584B2002B7450 /* FKResponse.h */; };
@@ -84,6 +85,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3D1A53742491D5FC00F85938 /* FKDownloadTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKDownloadTool.h; sourceTree = "<group>"; };
+		3D1A53752491D5FC00F85938 /* FKDownloadTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKDownloadTool.m; sourceTree = "<group>"; };
 		3D3079D623E66C72005F0105 /* TestMiddleware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestMiddleware.h; sourceTree = "<group>"; };
 		3D3079D723E66C72005F0105 /* TestMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestMiddleware.m; sourceTree = "<group>"; };
 		3D3079DD23E67E68005F0105 /* FKDownloaderTestsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKDownloaderTestsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -128,7 +131,6 @@
 		3D933F0823BB46E9006C6C95 /* FKMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKMiddleware.m; sourceTree = "<group>"; };
 		3D933F0C23BB54C1006C6C95 /* FKSingleNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKSingleNumber.h; sourceTree = "<group>"; };
 		3D933F0D23BB54C1006C6C95 /* FKSingleNumber.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKSingleNumber.m; sourceTree = "<group>"; };
-		3D999C69246F8E2F00F94E77 /* FKDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FKDownloader.m; sourceTree = "<group>"; };
 		3D999C6B246F982A00F94E77 /* NSError+FKCategory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSError+FKCategory.h"; sourceTree = "<group>"; };
 		3D999C6C246F982A00F94E77 /* NSError+FKCategory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSError+FKCategory.m"; sourceTree = "<group>"; };
 		3DB8FB2D23D584B2002B7450 /* FKResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FKResponse.h; sourceTree = "<group>"; };
@@ -257,7 +259,6 @@
 				3DF8F75C23BB2A0100A9E363 /* Middleware */,
 				3DF8F75B23BB29E600A9E363 /* Control */,
 				3D6616FD23B75BA9008EBE8A /* FKDownloader.h */,
-				3D999C69246F8E2F00F94E77 /* FKDownloader.m */,
 				3D6616FE23B75BA9008EBE8A /* Info.plist */,
 			);
 			path = FKDownloader;
@@ -308,6 +309,8 @@
 				3DF8F75823BB229700A9E363 /* FKBuilder.m */,
 				3D933F0323BB4660006C6C95 /* FKControl.h */,
 				3D933F0423BB4660006C6C95 /* FKControl.m */,
+				3D1A53742491D5FC00F85938 /* FKDownloadTool.h */,
+				3D1A53752491D5FC00F85938 /* FKDownloadTool.m */,
 			);
 			path = Control;
 			sourceTree = "<group>";
@@ -371,6 +374,7 @@
 				3DF8F74923BB214900A9E363 /* FKEngine.h in Headers */,
 				3D933F0E23BB54C1006C6C95 /* FKSingleNumber.h in Headers */,
 				3DF8F75923BB229700A9E363 /* FKBuilder.h in Headers */,
+				3D1A53762491D5FC00F85938 /* FKDownloadTool.h in Headers */,
 				3DF8F74D23BB217600A9E363 /* FKConfigure.h in Headers */,
 				3D613EFB23BCAA78005F489F /* NSString+FKCategory.h in Headers */,
 				3D6A396523C571A500A97A29 /* FKLogger.h in Headers */,
@@ -537,8 +541,8 @@
 				3D999C6E246F982A00F94E77 /* NSError+FKCategory.m in Sources */,
 				3D933F0623BB4660006C6C95 /* FKControl.m in Sources */,
 				3D933F0F23BB54C1006C6C95 /* FKSingleNumber.m in Sources */,
+				3D1A53772491D5FC00F85938 /* FKDownloadTool.m in Sources */,
 				3DF8F74A23BB214900A9E363 /* FKEngine.m in Sources */,
-				3D999C6A246F8E2F00F94E77 /* FKDownloader.m in Sources */,
 				3D36748923BD8FB40023E3A0 /* FKCacheModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

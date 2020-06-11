@@ -1,19 +1,20 @@
 //
-//  FKDownloader.m
+//  FKDownloadTool.m
 //  FKDownloader
 //
-//  Created by norld on 2019/12/28.
-//  Copyright © 2019 norld. All rights reserved.
+//  Created by norld on 2020/6/11.
+//  Copyright © 2020 norld. All rights reserved.
 //
 
-#import "FKDownloader.h"
+#import "FKDownloadTool.h"
 
 #import "FKCache.h"
 #import "FKCacheModel.h"
+#import "FKBuilder.h"
+#import "FKControl.h"
 
-@implementation FKDownloader
+@implementation FKDownloadTool
 
-/// 添加并开始方法
 + (void)addURL:(NSString *)url {
     if ([FKMessager existWithURL:url]) {
         if ([FKMessager stateWithURL:url] == FKStateSuspend) {
@@ -27,7 +28,6 @@
     }
 }
 
-/// 获取任务所有信息
 + (void)getInfoWithURL:(NSString *)url complete:(MessagerInfoBlock)complete {
     if ([FKMessager existWithURL:url]) {
         [FKBuilder loadCacheWithURL:url];
@@ -40,27 +40,22 @@
     }
 }
 
-/// 暂停
 + (void)suspendWithURL:(NSString *)url {
     [FKControl suspendRequestWithURL:url];
 }
 
-/// 暂停所有任务
 + (void)suspendAllTask {
     [FKControl suspendAllTask];
 }
 
-/// 恢复
 + (void)resumeWithURL:(NSString *)url {
     [FKControl resumeRequestWithURL:url];
 }
 
-/// 恢复所有任务
 + (void)resumeAllTask {
     [FKControl resumeAllTask];
 }
 
-/// 取消并删除任务
 + (void)cancelWithURL:(NSString *)url {
     [FKControl trashRequestWithURL:url];
 }
