@@ -349,8 +349,8 @@
 }
 
 
-- (NSMapTable *)observerBlockTable {
-    return self.blockMap;
+- (NSArray<NSString *> *)observerBlockTable {
+    return self.blockMap.keyEnumerator.allObjects;
 }
 
 - (void)addObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID {
@@ -379,8 +379,8 @@
 }
 
 
-- (NSMapTable *)observerBarrelTable {
-    return self.barrelMap;
+- (NSArray<NSString *> *)observerBarrelTable {
+    return self.barrelMap.keyEnumerator.allObjects;
 }
 
 - (void)addObserverBarrelWithURLs:(NSArray<NSString *> *)urls forBarrel:(NSString *)barrel {

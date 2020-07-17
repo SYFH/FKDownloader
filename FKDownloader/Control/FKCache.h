@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (MessagerInfoBlock)reserveObserverBlockWithRequestID:(NSString *)requestID;
 
 // 请求监听回调
-- (NSMapTable *)observerBlockTable;
+- (NSArray<NSString *> *)observerBlockTable;
 - (void)addObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID;
 - (void)removeObserverBlockWithRequestID:(NSString *)requestID;
 - (MessagerInfoBlock)observerBlockWithRequestID:(NSString *)requestID;
@@ -144,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)observerBarrelIndexWithRequestID:(NSString *)requestID;
 
 // 集合监听缓存
-- (NSMapTable *)observerBarrelTable;
+- (NSArray<NSString *> *)observerBarrelTable;
 - (void)addObserverBarrelWithURLs:(NSArray<NSString *> *)urls forBarrel:(NSString *)barrel;
 - (void)addURL:(NSString *)url fromObserverBarrel:(NSString *)barrel;
 - (void)removeURL:(NSString *)url fromObserverBarrel:(NSString *)barrel;

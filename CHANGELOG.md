@@ -1,5 +1,7 @@
 # Change Log
 ---
+## 1.0.11
+    1. 修复问题 [#46](https://github.com/SYFH/FKDownloader/issues/46)
 
 ## 1.0.10
     1. 优化 FKMessager 流程, 主动获取本地缓存
