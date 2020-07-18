@@ -1,5 +1,10 @@
 # Change Log
 ---
+## 1.0.12
+    1. 调整缓存模块逻辑, 更安全的多线程访问
+    2. 调整加载本地缓存限制
+    3. 优化监听逻辑
+
 ## 1.0.11
     1. 修复问题 [#46](https://github.com/SYFH/FKDownloader/issues/46)
 
