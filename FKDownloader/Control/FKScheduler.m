@@ -36,6 +36,7 @@
 }
 
 - (void)loadCacheWithURL:(NSString *)url {
+    if ([[FKCache cache] existRequestWithURL:url]) { return; }
     FKCacheRequestModel *localRequest = [[FKCache cache] localRequestFileWithRequestID:url.SHA256];
     if (localRequest) {
         // 清除错误信息

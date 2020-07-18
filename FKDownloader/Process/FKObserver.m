@@ -288,8 +288,8 @@
         if (block) {
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
             FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
-            NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
-            FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+            NSError *error = info.error;
+            FKState state = info ? info.state : FKStateUnknown;
             if (block) {
                 block(MAX(model.countOfBytesReceived, info.receivedLength),
                       model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
@@ -309,8 +309,8 @@
         if (block) {
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
             FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
-            NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
-            FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+            NSError *error = info.error;
+            FKState state = info ? info.state : FKStateUnknown;
             
             block(MAX(model.countOfBytesReceived, info.receivedLength),
                   model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
@@ -347,8 +347,8 @@
     FKCacheRequestModel *cacheModel = [[FKCache cache] requestWithRequestID:requestID];
     if (info && cacheModel) {
         FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
-        NSError *error = [[FKCache cache] errorRequestWithRequestID:requestID];
-        FKState state = [[FKCache cache] stateRequestWithRequestID:requestID];
+        NSError *error = cacheModel.error;
+        FKState state = cacheModel ? cacheModel.state : FKStateUnknown;
         info(MAX(model.countOfBytesReceived, cacheModel.receivedLength),
              model.countOfBytesAccumulateReceived,
              MAX(model.countOfBytesExpectedToReceive, cacheModel.dataLength),
