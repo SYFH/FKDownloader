@@ -326,9 +326,7 @@
 }
 
 - (void)distributeRequestInfo {
-    [self.messagerQueue addOperationWithBlock:^{
-        [[FKObserver observer] execRequestInfoBlock];
-    }];
+    [[FKObserver observer] execRequestInfoBlock];
 }
 
 - (void)processCompleteDownload:(NSURLSessionDownloadTask *)downloadTask location:(NSURL *)location {

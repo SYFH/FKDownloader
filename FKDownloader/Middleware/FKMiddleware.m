@@ -52,33 +52,30 @@
 }
 
 - (NSArray<id<FKRequestMiddlewareProtocol>> *)requestMiddlewareArray {
-    __block NSArray<id<FKRequestMiddlewareProtocol>> *allRequestMiddleware = @[];
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        allRequestMiddleware = self.requestMiddlewares.objectEnumerator.allObjects;
-    }]] waitUntilFinished:YES];
-    NSSortDescriptor *requestMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
-    NSArray<id<FKRequestMiddlewareProtocol>> *middlewares = [allRequestMiddleware sortedArrayUsingDescriptors:@[requestMiddlewareSort]];
-    return middlewares;
+    @synchronized (self.requestMiddlewares) {
+        NSArray<id<FKRequestMiddlewareProtocol>> *allRequestMiddleware = self.requestMiddlewares.objectEnumerator.allObjects;
+        NSSortDescriptor *requestMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
+        NSArray<id<FKRequestMiddlewareProtocol>> *middlewares = [allRequestMiddleware sortedArrayUsingDescriptors:@[requestMiddlewareSort]];
+        return middlewares;
+    }
 }
 
 - (NSArray<id<FKDownloadMiddlewareProtocol>> *)downloadMiddlewareArray {
-    __block NSArray<id<FKDownloadMiddlewareProtocol>> *allDownloadMiddleware = @[];
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        allDownloadMiddleware = self.downloadMiddlewares.objectEnumerator.allObjects;
-    }]] waitUntilFinished:YES];
-    NSSortDescriptor *downloadMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
-    NSArray<id<FKDownloadMiddlewareProtocol>> *middlewares = [allDownloadMiddleware sortedArrayUsingDescriptors:@[downloadMiddlewareSort]];
-    return middlewares;
+    @synchronized (self.downloadMiddlewares) {
+        NSArray<id<FKDownloadMiddlewareProtocol>> *allDownloadMiddleware = self.downloadMiddlewares.objectEnumerator.allObjects;
+        NSSortDescriptor *downloadMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
+        NSArray<id<FKDownloadMiddlewareProtocol>> *middlewares = [allDownloadMiddleware sortedArrayUsingDescriptors:@[downloadMiddlewareSort]];
+        return middlewares;
+    }
 }
 
 - (NSArray<id<FKResponseMiddlewareProtocol>> *)responseMiddlewareArray {
-    __block NSArray<id<FKResponseMiddlewareProtocol>> *allResponseMiddleware = @[];
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        allResponseMiddleware = self.responseMiddlewares.objectEnumerator.allObjects;
-    }]] waitUntilFinished:YES];
-    NSSortDescriptor *responseMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
-    NSArray<id<FKResponseMiddlewareProtocol>> *middlewares = [allResponseMiddleware sortedArrayUsingDescriptors:@[responseMiddlewareSort]];
-    return middlewares;
+    @synchronized (self.responseMiddlewares) {
+        NSArray<id<FKResponseMiddlewareProtocol>> *allResponseMiddleware = self.responseMiddlewares.objectEnumerator.allObjects;
+        NSSortDescriptor *responseMiddlewareSort = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES];
+        NSArray<id<FKResponseMiddlewareProtocol>> *middlewares = [allResponseMiddleware sortedArrayUsingDescriptors:@[responseMiddlewareSort]];
+        return middlewares;
+    }
 }
 
 

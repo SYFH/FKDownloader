@@ -166,11 +166,10 @@
 }
 
 - (BOOL)existRequestWithRequestID:(NSString *)requestID {
-    __block NSString *requestSingleID = @"";
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        requestSingleID = [self.requestIndexMap objectForKey:requestID];
-    }]] waitUntilFinished:YES];
-    return requestSingleID.length > 0;
+    @synchronized (self.requestIndexMap) {
+        NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
+        return requestSingleID.length > 0;
+    }
 }
 
 - (BOOL)existLocalRequestFileWithRequest:(FKCacheRequestModel *)model {
@@ -225,12 +224,11 @@
 }
 
 - (FKCacheRequestModel *)requestWithRequestID:(NSString *)requestID {
-    __block FKCacheRequestModel *info = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
+    @synchronized (self.requestIndexMap) {
         NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
-        info = [self.requestMap objectForKey:requestSingleID];
-    }]] waitUntilFinished:YES];
-    return info;
+        FKCacheRequestModel *info = [self.requestMap objectForKey:requestSingleID];
+        return info;
+    }
 }
 
 - (FKCacheRequestModel *)localRequestFileWithRequestID:(NSString *)requestID {
@@ -246,11 +244,10 @@
 }
 
 - (NSArray<FKCacheRequestModel *> *)requestArray {
-    __block NSArray<FKCacheRequestModel *> *array = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        array = self.requestMap.objectEnumerator.allObjects;
-    }]] waitUntilFinished:YES];
-    return array;
+    @synchronized (self.requestMap) {
+        NSArray<FKCacheRequestModel *> *array = self.requestMap.objectEnumerator.allObjects;
+        return array;
+    }
 }
 
 - (FKCacheRequestModel *)firstIdelRequest {
@@ -304,12 +301,11 @@
 }
 
 - (NSURLSessionDownloadTask *)downloadTaskWithRequestID:(NSString *)requestID {
-    __block NSURLSessionDownloadTask *downloadTask = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
+    @synchronized (self.requestIndexMap) {
         NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
-        downloadTask = [self.taskMap objectForKey:requestSingleID];
-    }]] waitUntilFinished:YES];
-    return downloadTask;
+        NSURLSessionDownloadTask *downloadTask = [self.taskMap objectForKey:requestSingleID];
+        return downloadTask;
+    }
 }
 
 - (FKState)stateRequestWithRequestID:(NSString *)requestID {
@@ -335,11 +331,10 @@
 }
 
 - (FKObserverModel *)observerInfoWithRequestID:(NSString *)requestID {
-    __block FKObserverModel *model = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        model = [self.infoMap objectForKey:requestID];
-    }]] waitUntilFinished:YES];
-    return model;
+    @synchronized (self.infoMap) {
+        FKObserverModel *model = [self.infoMap objectForKey:requestID];
+        return model;
+    }
 }
 
 
@@ -357,11 +352,10 @@
 
 
 - (NSArray<NSString *> *)observerBlockTable {
-    __block NSArray *keys = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        keys = self.blockMap.keyEnumerator.allObjects;
-    }]] waitUntilFinished:YES];
-    return keys;
+    @synchronized (self.blockMap) {
+        NSArray *keys = self.blockMap.keyEnumerator.allObjects;
+        return keys;
+    }
 }
 
 - (void)addObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID {
@@ -373,11 +367,10 @@
 }
 
 - (MessagerInfoBlock)observerBlockWithRequestID:(NSString *)requestID {
-    __block MessagerInfoBlock block = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        block = [self.blockMap objectForKey:requestID];
-    }]] waitUntilFinished:YES];
-    return block;
+    @synchronized (self.blockMap) {
+        MessagerInfoBlock block = [self.blockMap objectForKey:requestID];
+        return block;
+    }
 }
 
 
@@ -395,11 +388,10 @@
 
 
 - (NSArray<NSString *> *)observerBarrelTable {
-    __block NSArray *keys = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        keys = self.barrelMap.keyEnumerator.allObjects;
-    }]] waitUntilFinished:YES];
-    return keys;
+    @synchronized (self.barrelMap) {
+        NSArray *keys = self.barrelMap.keyEnumerator.allObjects;
+        return keys;
+    }
 }
 
 - (void)addObserverBarrelWithURLs:(NSArray<NSString *> *)urls forBarrel:(NSString *)barrel {
@@ -429,8 +421,8 @@
 }
 
 - (NSArray<NSString *> *)observerBarrelWithBarrel:(NSString *)barrel {
-    __block NSMutableArray <NSString *> *urls = [NSMutableArray array];
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
+    @synchronized (self.requestIndexMap) {
+        NSMutableArray <NSString *> *urls = [NSMutableArray array];
         NSArray<NSString *> *requestIDs = [self.barrelMap objectForKey:barrel];
         for (NSString *requestID in requestIDs) {
             NSString *requestSingleID = [self.requestIndexMap objectForKey:requestID];
@@ -439,8 +431,8 @@
                 [urls addObject:model.url];
             }
         }
-    }]] waitUntilFinished:YES];
-    return [NSArray arrayWithArray:urls];
+        return [NSArray arrayWithArray:urls];
+    }
 }
 
 
@@ -453,11 +445,10 @@
 }
 
 - (MessagerBarrelBlock)observerBarrelBlockWithBarrel:(NSString *)barrel {
-    __block MessagerBarrelBlock block = nil;
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        block = [self.barrelBlockMap objectForKey:barrel];
-    }]] waitUntilFinished:YES];
-    return block;
+    @synchronized (self.barrelBlockMap) {
+        MessagerBarrelBlock block = [self.barrelBlockMap objectForKey:barrel];
+        return block;
+    }
 }
 
 

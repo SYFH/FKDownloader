@@ -270,10 +270,7 @@
 }
 
 - (NSArray<NSString *> *)acquireURLsWithBarrel:(NSString *)barrel {
-    __block NSArray<NSString *> *urls = [NSArray array];
-    [[FKEngine engine].ioQueue addOperations:@[[NSBlockOperation blockOperationWithBlock:^{
-        urls = [[FKCache cache] observerBarrelWithBarrel:barrel];
-    }]] waitUntilFinished:YES];
+    NSArray<NSString *> *urls = [[FKCache cache] observerBarrelWithBarrel:barrel];
     return urls;
 }
 
@@ -286,18 +283,17 @@
     [[FKEngine engine].messagerQueue addOperationWithBlock:^{
         MessagerInfoBlock block = [[FKCache cache] observerBlockWithRequestID:requestID];
         if (block) {
+            __strong typeof(block) sb = block;
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
             FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
             NSError *error = info.error;
             FKState state = info ? info.state : FKStateUnknown;
-            if (block) {
-                block(MAX(model.countOfBytesReceived, info.receivedLength),
-                      model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
-                      MAX(model.countOfBytesExpectedToReceive, info.dataLength),
-                      state,
-                      error);
-                model.countOfBytesAccumulateReceived = 0;
-            }
+            sb(MAX(model.countOfBytesReceived, info.receivedLength),
+               model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
+               MAX(model.countOfBytesExpectedToReceive, info.dataLength),
+               state,
+               error);
+            model.countOfBytesAccumulateReceived = 0;
         }
     }];
 }
@@ -307,16 +303,17 @@
     for (NSString *requestID in [[FKCache cache] observerBlockTable]) {
         MessagerInfoBlock block = [[FKCache cache] observerBlockWithRequestID:requestID];
         if (block) {
+            __strong typeof(block) sb = block;
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
             FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
             NSError *error = info.error;
             FKState state = info ? info.state : FKStateUnknown;
             
-            block(MAX(model.countOfBytesReceived, info.receivedLength),
-                  model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
-                  MAX(model.countOfBytesExpectedToReceive, info.dataLength),
-                  state,
-                  error);
+            sb(MAX(model.countOfBytesReceived, info.receivedLength),
+               model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
+               MAX(model.countOfBytesExpectedToReceive, info.dataLength),
+               state,
+               error);
             model.countOfBytesAccumulateReceived = 0;
         }
     }
@@ -325,6 +322,7 @@
     for (NSString *barrel in [[FKCache cache] observerBarrelTable]) {
         MessagerBarrelBlock block = [[FKCache cache] observerBarrelBlockWithBarrel:barrel];
         if (block) {
+            __strong typeof(block) sb = block;
             NSArray<NSString *> *urls = [[FKCache cache] observerBarrelWithBarrel:barrel];
             int64_t countOfBytesReceived = 0;
             int64_t countOfBytesPreviousReceived = 0;
@@ -338,7 +336,7 @@
                 countOfBytesExpectedToReceive += MAX(model.countOfBytesExpectedToReceive, info.dataLength);
                 model.countOfBytesAccumulateReceived = 0;
             }
-            block(countOfBytesReceived, countOfBytesPreviousReceived, countOfBytesExpectedToReceive);
+            sb(countOfBytesReceived, countOfBytesPreviousReceived, countOfBytesExpectedToReceive);
         }
     }
 }
