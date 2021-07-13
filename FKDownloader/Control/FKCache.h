@@ -126,6 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addObserverInfo:(FKObserverModel *)info forRequestID:(NSString *)requestID;
 - (void)removeObserverInfoWithRequestID:(NSString *)requestID;
 - (FKObserverModel *)observerInfoWithRequestID:(NSString *)requestID;
+- (void)observerInfoWithRequestID:(NSString *)requestID finish:(void(^)(FKObserverModel *model))finish;
 
 // 预备监听缓存
 - (void)addReserveObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID;

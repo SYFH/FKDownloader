@@ -46,10 +46,8 @@
     
     NSURLSessionDownloadTask *downloadTask = object;
     NSString *requestID = downloadTask.taskDescription;
-    FKObserverModel *info = [[FKCache cache] observerInfoWithRequestID:requestID];
     
     // 更新下载文件后缀
-    BOOL hasUpdate = NO;
     FKCacheRequestModel *model = [[FKCache cache] requestWithRequestID:requestID];
     if (model.extension.length == 0) {
         NSString *fileExtension = downloadTask.response.MIMEType.toExtension;
@@ -58,38 +56,41 @@
         } else {
             model.extension = @"";
         }
-        hasUpdate = YES;
+        
+        [[FKCache cache] updateRequestWithModel:model];
+        [[FKCache cache] updateLocalRequestWithModel:model];
     }
 
     if ([keyPath isEqualToString:@"countOfBytesReceived"]) {
-        info.countOfBytesPreviousReceived = info.countOfBytesReceived;
-        info.countOfBytesAccumulateReceived += downloadTask.countOfBytesReceived - info.countOfBytesReceived;
-        info.countOfBytesReceived = downloadTask.countOfBytesReceived;
-        
-        // 下载中间件返回任务进度
-        for (id<FKDownloadMiddlewareProtocol> middleware in [[FKMiddleware shared] downloadMiddlewareArray]) {
-            if ([middleware respondsToSelector:@selector(downloadURL:countOfBytesReceived:countOfBytesPreviousReceived:countOfBytesExpectedToReceive:)]) {
-                
-                [middleware downloadURL:model.url countOfBytesReceived:info.countOfBytesReceived countOfBytesPreviousReceived:info.countOfBytesPreviousReceived countOfBytesExpectedToReceive:info.countOfBytesExpectedToReceive];
+        [[FKCache cache] observerInfoWithRequestID:requestID finish:^(FKObserverModel *info) {
+            info.countOfBytesPreviousReceived = info.countOfBytesReceived;
+            info.countOfBytesAccumulateReceived += downloadTask.countOfBytesReceived - info.countOfBytesReceived;
+            info.countOfBytesReceived = downloadTask.countOfBytesReceived;
+            
+            // 下载中间件返回任务进度
+            for (id<FKDownloadMiddlewareProtocol> middleware in [[FKMiddleware shared] downloadMiddlewareArray]) {
+                if ([middleware respondsToSelector:@selector(downloadURL:countOfBytesReceived:countOfBytesPreviousReceived:countOfBytesExpectedToReceive:)]) {
+                    
+                    [middleware downloadURL:model.url countOfBytesReceived:info.countOfBytesReceived countOfBytesPreviousReceived:info.countOfBytesPreviousReceived countOfBytesExpectedToReceive:info.countOfBytesExpectedToReceive];
+                }
             }
-        }
+        }];
     }
     
     if ([keyPath isEqualToString:@"countOfBytesExpectedToReceive"]) {
-        info.countOfBytesExpectedToReceive = downloadTask.countOfBytesExpectedToReceive;
-        
-        // 更新下载文件总大小
-        if (model.dataLength == 0) {
-            model.dataLength = info.countOfBytesExpectedToReceive;
-            hasUpdate = YES;
-        } else {
-            info.countOfBytesExpectedToReceive = model.dataLength;
-        }
-    }
-
-    if (hasUpdate) {
-        [[FKCache cache] updateRequestWithModel:model];
-        [[FKCache cache] updateLocalRequestWithModel:model];
+        [[FKCache cache] observerInfoWithRequestID:requestID finish:^(FKObserverModel *info) {
+            info.countOfBytesExpectedToReceive = downloadTask.countOfBytesExpectedToReceive;
+            
+            // 更新下载文件总大小
+            if (model.dataLength == 0) {
+                model.dataLength = info.countOfBytesExpectedToReceive;
+                
+                [[FKCache cache] updateRequestWithModel:model];
+                [[FKCache cache] updateLocalRequestWithModel:model];
+            } else {
+                info.countOfBytesExpectedToReceive = model.dataLength;
+            }
+        }];
     }
 }
 
@@ -285,15 +286,16 @@
         if (block) {
             __strong typeof(block) sb = block;
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-            FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
-            NSError *error = info.error;
-            FKState state = info ? info.state : FKStateUnknown;
-            sb(MAX(model.countOfBytesReceived, info.receivedLength),
-               model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
-               MAX(model.countOfBytesExpectedToReceive, info.dataLength),
-               state,
-               error);
-            model.countOfBytesAccumulateReceived = 0;
+            [[FKCache cache] observerInfoWithRequestID:requestID finish:^(FKObserverModel *model) {
+                NSError *error = info.error;
+                FKState state = info ? info.state : FKStateUnknown;
+                sb(MAX(model.countOfBytesReceived, info.receivedLength),
+                   model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
+                   MAX(model.countOfBytesExpectedToReceive, info.dataLength),
+                   state,
+                   error);
+                model.countOfBytesAccumulateReceived = 0;
+            }];
         }
     }];
 }
@@ -305,16 +307,17 @@
         if (block) {
             __strong typeof(block) sb = block;
             FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-            FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
-            NSError *error = info.error;
-            FKState state = info ? info.state : FKStateUnknown;
-            
-            sb(MAX(model.countOfBytesReceived, info.receivedLength),
-               model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
-               MAX(model.countOfBytesExpectedToReceive, info.dataLength),
-               state,
-               error);
-            model.countOfBytesAccumulateReceived = 0;
+            [[FKCache cache] observerInfoWithRequestID:requestID finish:^(FKObserverModel *model) {
+                NSError *error = info.error;
+                FKState state = info ? info.state : FKStateUnknown;
+                
+                sb(MAX(model.countOfBytesReceived, info.receivedLength),
+                   model.countOfBytesReceived - model.countOfBytesAccumulateReceived,
+                   MAX(model.countOfBytesExpectedToReceive, info.dataLength),
+                   state,
+                   error);
+                model.countOfBytesAccumulateReceived = 0;
+            }];
         }
     }
     
@@ -324,17 +327,19 @@
         if (block) {
             __strong typeof(block) sb = block;
             NSArray<NSString *> *urls = [[FKCache cache] observerBarrelWithBarrel:barrel];
-            int64_t countOfBytesReceived = 0;
-            int64_t countOfBytesPreviousReceived = 0;
-            int64_t countOfBytesExpectedToReceive = 0;
+            __block int64_t countOfBytesReceived = 0;
+            __block int64_t countOfBytesPreviousReceived = 0;
+            __block int64_t countOfBytesExpectedToReceive = 0;
             
             for (NSString *requestID in urls) {
                 FKCacheRequestModel *info = [[FKCache cache] requestWithRequestID:requestID];
-                FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
-                countOfBytesReceived += MAX(model.countOfBytesReceived, info.receivedLength);
-                countOfBytesPreviousReceived += model.countOfBytesReceived -model.countOfBytesAccumulateReceived;
-                countOfBytesExpectedToReceive += MAX(model.countOfBytesExpectedToReceive, info.dataLength);
-                model.countOfBytesAccumulateReceived = 0;
+                [[FKCache cache] observerInfoWithRequestID:requestID finish:^(FKObserverModel *model) {
+                    countOfBytesReceived += MAX(model.countOfBytesReceived, info.receivedLength);
+                    countOfBytesPreviousReceived += model.countOfBytesReceived -model.countOfBytesAccumulateReceived;
+                    countOfBytesExpectedToReceive += MAX(model.countOfBytesExpectedToReceive, info.dataLength);
+                    model.countOfBytesAccumulateReceived = 0;
+                }];
+                
             }
             sb(countOfBytesReceived, countOfBytesPreviousReceived, countOfBytesExpectedToReceive);
         }
@@ -344,14 +349,15 @@
 - (void)execAcquireInfo:(MessagerInfoBlock)info requestID:(NSString *)requestID {
     FKCacheRequestModel *cacheModel = [[FKCache cache] requestWithRequestID:requestID];
     if (info && cacheModel) {
-        FKObserverModel *model = [[FKCache cache] observerInfoWithRequestID:requestID];
-        NSError *error = cacheModel.error;
-        FKState state = cacheModel ? cacheModel.state : FKStateUnknown;
-        info(MAX(model.countOfBytesReceived, cacheModel.receivedLength),
-             model.countOfBytesAccumulateReceived,
-             MAX(model.countOfBytesExpectedToReceive, cacheModel.dataLength),
-             state,
-             error);
+        [[FKCache cache] observerInfoWithRequestID:requestID finish:^(FKObserverModel *model) {
+            NSError *error = cacheModel.error;
+            FKState state = cacheModel ? cacheModel.state : FKStateUnknown;
+            info(MAX(model.countOfBytesReceived, cacheModel.receivedLength),
+                 model.countOfBytesAccumulateReceived,
+                 MAX(model.countOfBytesExpectedToReceive, cacheModel.dataLength),
+                 state,
+                 error);
+        }];
     }
 }
 

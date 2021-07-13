@@ -337,6 +337,13 @@
     }
 }
 
+- (void)observerInfoWithRequestID:(NSString *)requestID finish:(void(^)(FKObserverModel *model))finish {
+    @synchronized (self.infoMap) {
+        FKObserverModel *model = [self.infoMap objectForKey:requestID];
+        if (finish) { finish(model); }
+    }
+}
+
 
 - (void)addReserveObserverBlock:(MessagerInfoBlock)block forRequestID:(NSString *)requestID {
     [self.reserveBlockMap setObject:block forKey:requestID];
